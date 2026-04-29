@@ -2,8 +2,6 @@
 
 import React from 'react';
 
-import React from 'react';
-
 const ReviewEpass = () => {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 py-12" 
