@@ -64,5 +64,3 @@ const ReviewEpass = () => {
 };
 
 export default ReviewEpass;
-
-export default ReviewEpass;
