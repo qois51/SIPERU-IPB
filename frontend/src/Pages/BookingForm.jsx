@@ -26,12 +26,12 @@ const BookingForm = () => {
            backgroundRepeat: 'no-repeat'
          }}>
       
-      {/* Kotak Form Biru Spesifik #263C92 */}
-      <div className="w-full max-w-4xl bg-[#263C92] rounded-2xl p-8 shadow-2xl border border-white/10 overflow-y-auto max-h-[90vh]">
+   
+      <div className="w-full max-w-4xl bg-[#263C92]/70 backdrop-blur-md rounded-2xl p-8 shadow-2xl border border-white/20 overflow-y-auto max-h-[90vh]">
         
         <form className="space-y-8 text-white">
           
-          {/* Section 1: Detail Ruangan */}
+          
           <section className="space-y-4">
             <h2 className="text-2xl font-bold mb-6 border-b border-white/20 pb-2">Detail Ruangan</h2>
             
