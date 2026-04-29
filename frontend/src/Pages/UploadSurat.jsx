@@ -38,8 +38,8 @@ const UploadSurat = () => {
             <div className="relative flex items-center">
               <select className="w-full p-4 pr-12 rounded-xl border-none bg-white text-gray-800 outline-none appearance-none">
                 <option value="">--Pilih--</option>
-                <option value="KOD-001">KOD-001</option>
-                <option value="KOD-002">KOD-002</option>
+                <option value="A-001">KOD-001</option>
+                <option value="B-002">KOD-002</option>
               </select>
               <div className="absolute right-4 pointer-events-none">
                 <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -53,7 +53,7 @@ const UploadSurat = () => {
             <label className="block text-sm font-medium">Upload Surat (*pdf)</label>
             <input 
               type="file" 
-              className="w-full p-2 rounded-full bg-white text-gray-500 file:mr-4 file:py-2.5 file:px-6 file:rounded-full file:border-0 file:text-sm file:font-medium file:bg-[#CCCACA] file:text-gray-500 hover:file:bg-[#b8b8b8] file:cursor-pointer transition"
+              className="w-full p-2 rounded-full bg-white text-gray-500 file:mr-4 file:py-2.5 file:px-6 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#263C92] file:text-white hover:file:bg-blue-800 file:cursor-pointer transition"
             />
           </div>
 
