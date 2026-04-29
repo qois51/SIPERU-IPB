@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
 function App() {
   const [status, setStatus] = useState("Loading...");
@@ -17,7 +17,7 @@ function App() {
         const data = await response.json();
         setStatus(`${data.status} - ${data.message}`);
       } catch (error) {
-        setStatus("Backend belum terhubung. Jalankan Flask API.");
+        setStatus("Backend belum terhubung. Jalankan FastAPI server.");
       }
     }
 
@@ -25,12 +25,14 @@ function App() {
   }, []);
 
   return (
-    <main className="page">
-      <section className="card">
-        <h1>SIPERU Fullstack Starter</h1>
-        <p>Frontend: React + Vite</p>
-        <p>Backend: Flask</p>
-        <p className="status">API Status: {status}</p>
+    <main className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+      <section className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">
+        <h1 className="text-2xl font-bold text-blue-600 mb-4">SIPERU Fullstack Starter</h1>
+        <p className="text-gray-700">Frontend: React + Vite + Tailwind</p>
+        <p className="text-gray-700 mb-6">Backend: FastAPI + PostgreSQL</p>
+        <p className="bg-blue-50 text-blue-800 p-3 rounded-md font-medium">
+          API Status: {status}
+        </p>
       </section>
     </main>
   );
