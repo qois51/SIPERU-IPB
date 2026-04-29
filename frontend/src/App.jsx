@@ -26,27 +26,18 @@ function App() {
     checkBackend();
   }, []);
 
-return (
-    <Router>
-      <Routes>
-        {/* Halaman milik Qois tetap utuh di path "/" */}
-        <Route path="/" element={
-          <main className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-            <section className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">
-              <h1 className="text-2xl font-bold text-[#263C92] mb-4">SIPERU Fullstack Starter</h1>
-              <p className="text-gray-700">Frontend: React + Vite + Tailwind</p>
-              <p className="text-gray-700 mb-6">Backend: FastAPI + PostgreSQL</p>
-              <p className="bg-blue-50 text-blue-800 p-3 rounded-md font-medium">
-                API Status: {status}
-              </p>
-            </section>
-          </main>
-        } />
-
-        {/* Daftarkan halaman kamu di bawah sini tanpa mengganggu kode atas */}
-        <Route path="/booking" element={<BookingForm />} />
-      </Routes>
-    </Router>
+  return (
+    <main className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+      <section className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">
+        <h1 className="text-2xl font-bold text-blue-600 mb-4">SIPERU Fullstack Starter</h1>
+        <p className="text-gray-700">Frontend: React + Vite + Tailwind</p>
+        <p className="text-gray-700 mb-6">Backend: FastAPI + PostgreSQL</p>
+        <p className="bg-blue-50 text-blue-800 p-3 rounded-md font-medium">
+          API Status: {status}
+        </p>
+        
+      </section>
+    </main>
   );
 }
 

@@ -87,7 +87,7 @@ const BookingForm = () => {
           </section>
 
           <div className="pt-6">
-            <button type="submit" className="w-full bg-white text-[#263C92] font-extrabold py-4 px-6 rounded-xl hover:bg-slate-100 transition duration-300 shadow-xl text-lg">
+            <button type="submit" className="w-full bg-[#009B4D] text-[#FFFFFF] font-extrabold py-4 px-6 rounded-xl hover:bg-[#008542] transition duration-300 shadow-xl text-lg">
               Ajukan Peminjaman
             </button>
           </div>
