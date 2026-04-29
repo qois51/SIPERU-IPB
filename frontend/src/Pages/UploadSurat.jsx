@@ -1,8 +1,10 @@
 /*---- Punya Agoy ----*/
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const UploadSurat = () => {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen flex items-center justify-center p-4 py-12" 
          style={{ 
@@ -11,10 +13,11 @@ const UploadSurat = () => {
            backgroundPosition: 'center',
            backgroundRepeat: 'no-repeat'
          }}>
+  
       
       <div className="w-full max-w-4xl bg-[#263C92]/70 backdrop-blur-md rounded-2xl p-8 shadow-2xl border border-white/20">
         
-        <form className="space-y-8 text-white">
+        <form onSubmit={(e) => { e.preventDefault(); navigate('/review'); }} className="space-y-8 text-white">
           <h2 className="text-3xl font-bold mb-8 border-b border-white/20 pb-2">Upload Surat</h2>
           
           <div className="space-y-2">
@@ -42,7 +45,7 @@ const UploadSurat = () => {
                 <option value="B-002">KOD-002</option>
               </select>
               <div className="absolute right-4 pointer-events-none">
-                <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">surat
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path>
                 </svg>
               </div>
