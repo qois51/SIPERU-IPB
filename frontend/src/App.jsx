@@ -33,17 +33,12 @@ return (
         <Route path="/" element={
           <main className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
             <section className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">
-              <h1 className="text-2xl font-bold text-blue-600 mb-4">SIPERU Fullstack Starter</h1>
+              <h1 className="text-2xl font-bold text-[#263C92] mb-4">SIPERU Fullstack Starter</h1>
               <p className="text-gray-700">Frontend: React + Vite + Tailwind</p>
               <p className="text-gray-700 mb-6">Backend: FastAPI + PostgreSQL</p>
-              <p className="bg-blue-50 text-blue-800 p-3 rounded-md font-medium mb-6">
+              <p className="bg-blue-50 text-blue-800 p-3 rounded-md font-medium">
                 API Status: {status}
               </p>
-              
-              {/* 3. Tambahkan satu tombol ini saja untuk akses ke halamanmu */}
-              <Link to="/booking" className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
-                Buka Form Booking
-              </Link>
             </section>
           </main>
         } />
