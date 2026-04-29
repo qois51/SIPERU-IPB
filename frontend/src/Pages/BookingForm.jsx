@@ -1,8 +1,14 @@
 /*---- Punya Agoy ----*/
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const BookingForm = () => {
+  const navigate = useNavigate();
+  const handleSubmit = (e) => {
+    e.preventDefault(); // Biar gk reload halaman
+    navigate('/upload'); // Pindah halaman ke /upload
+  };
   const [formData, setFormData] = useState({
     fakultas: '',
     namaRuangan: '',
@@ -29,8 +35,7 @@ const BookingForm = () => {
    
       <div className="w-full max-w-4xl bg-[#263C92]/70 backdrop-blur-md rounded-2xl p-8 shadow-2xl border border-white/20 overflow-y-auto max-h-[90vh]">
         
-        <form className="space-y-8 text-white">
-          
+        <form onSubmit={handleSubmit} className="space-y-8 text-white">
           
           <section className="space-y-4">
             <h2 className="text-2xl font-bold mb-6 border-b border-white/20 pb-2">Detail Ruangan</h2>

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"; 
 import "./App.css";
 import BookingForm from './pages/BookingForm'; /* Agoy */
+import UploadSurat from './pages/UploadSurat'; /* Agoy */
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
@@ -40,7 +41,8 @@ function App() {
           </main>
         } />
 
-        <Route path="/booking" element={<BookingForm />} />
+        <Route path="/booking" element={<BookingForm />} /> 
+        <Route path="/upload" element={<UploadSurat />} /> 
         
       </Routes>
     </Router>
