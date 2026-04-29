@@ -2,6 +2,8 @@
 
 import React from 'react';
 
+import React from 'react';
+
 const ReviewEpass = () => {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 py-12" 
@@ -14,10 +16,10 @@ const ReviewEpass = () => {
       
       <div className="w-full max-w-4xl bg-[#263C92]/70 backdrop-blur-md rounded-2xl p-8 shadow-2xl border border-white/20 text-white font-sans">
         
-        <h2 className="text-3xl font-bold mb-8 border-b border-white/20 pb-2 italic">Upload Surat</h2>
+        {/* JUDUL SUDAH DIGANTI DAN TIDAK MIRING */}
+        <h2 className="text-3xl font-bold mb-8 border-b border-white/20 pb-2">Review E-Pass</h2>
         
         <div className="space-y-8">
-         
           <div className="space-y-2">
             <label className="block text-sm font-medium">Nama Ruangan</label>
             <div className="w-full p-4 rounded-xl bg-white text-gray-800 font-bold border-none">
@@ -25,7 +27,6 @@ const ReviewEpass = () => {
             </div>
           </div>
 
-        
           <div className="space-y-2">
             <label className="block text-sm font-medium">Kode Peminjaman</label>
             <div className="w-full p-4 rounded-xl bg-white text-gray-800 font-bold border-none">
@@ -33,9 +34,8 @@ const ReviewEpass = () => {
             </div>
           </div>
 
-          
           <div className="space-y-2">
-            <label className="block text-sm font-medium">Upload Surat (*pdf)</label>
+            <label className="block text-sm font-medium">Upload Surat</label>
             <div className="w-full p-2 pl-4 rounded-xl bg-white flex items-center justify-between shadow-inner">
               <div className="flex items-center space-x-3 text-blue-900 font-bold">
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -44,7 +44,6 @@ const ReviewEpass = () => {
                 <span className="underline cursor-pointer">.....</span>
               </div>
               
-           
               <button className="bg-[#1a237e] text-white px-4 py-2 rounded-lg flex items-center space-x-2 text-sm hover:bg-black transition">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a2 2 0 002 2h12 a2 2 0 002-2v-1M7 10l5 5 5-5M12 15V3" />
@@ -65,5 +64,7 @@ const ReviewEpass = () => {
     </div>
   );
 };
+
+export default ReviewEpass;
 
 export default ReviewEpass;
