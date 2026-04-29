@@ -14,7 +14,7 @@ const ReviewEpass = () => {
       
       <div className="w-full max-w-4xl bg-[#263C92]/70 backdrop-blur-md rounded-2xl p-8 shadow-2xl border border-white/20 text-white font-sans">
         
-        {/* JUDUL SUDAH DIGANTI DAN TIDAK MIRING */}
+        
         <h2 className="text-3xl font-bold mb-8 border-b border-white/20 pb-2">Review E-Pass</h2>
         
         <div className="space-y-8">
