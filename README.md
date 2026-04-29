@@ -3,7 +3,17 @@
 Starter project fullstack dengan:
 
 - Frontend: React + Vite
-- Backend: Python Flask
+- Backend: FastAPI
+
+### Tech Stack Backend
+- `fastapi`
+- `uvicorn[standard]`
+- `sqlalchemy[asyncio]`
+- `asyncpg`
+- `pydantic`
+- `pydantic-settings`
+- `python-dotenv`
+- `alembic`
 
 ## Struktur Folder
 
@@ -62,7 +72,8 @@ Backend API aktif di `http://127.0.0.1:8000`.
 ## 3) Catatan Akses Aplikasi
 
 - Walaupun backend aktif di port 8000, akses aplikasi tetap dari `http://127.0.0.1:5173`.
-- Jika endpoint backend di 5000 tidak bisa diakses langsung dari browser, frontend tetap digunakan sebagai entry point.
+- Jika endpoint backend di 8000 tidak bisa diakses langsung dari browser, frontend tetap digunakan sebagai entry point.
+- Periksa status endpoint dengan `http://127.0.0.1:8000/docs`.
 - Request API diteruskan dari frontend ke backend lewat Vite proxy untuk path `/api`.
 
 ## Opsional: Environment Frontend
@@ -73,3 +84,13 @@ Kalau ingin pakai URL API non-proxy, copy `frontend/.env.example` menjadi `front
 cd frontend
 copy .env.example .env
 ```
+
+## Tutorial Database Migrations (Alembic)
+
+| Perintah | Deskripsi |
+|---|---|
+| `alembic revision --autogenerate -m "pesan"` | Membuat file migrasi baru berdasarkan perubahan di models.py. |
+| `alembic upgrade head` | Menerapkan semua migrasi yang tertunda ke database. |
+| `alembic downgrade -1` | Membatalkan migrasi terakhir. |
+| `alembic current` | Melihat status migrasi saat ini. |
+
