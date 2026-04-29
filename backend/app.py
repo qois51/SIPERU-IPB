@@ -2,8 +2,11 @@ from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 from sqlalchemy import text
 from database import get_db
+from models import Mahasiswa
+import schemas
 
 app = FastAPI()
 
@@ -42,6 +45,36 @@ async def test_db_connection(db: AsyncSession = Depends(get_db)):
 @app.get("/")
 def read_root():
     return {"message": "Digital Signage API is running"}
+
+@app.post("/test-insert-mahasiswa", response_model=schemas.MahasiswaOut)
+async def create_mahasiswa(data: schemas.MahasiswaCreate, db: AsyncSession = Depends(get_db)):
+    query = select(Mahasiswa).where(Mahasiswa.email == data.email)
+    result = await db.execute(query)
+    if result.scalars().first():
+        raise HTTPException(status_code=400, detail="Email sudah digunakan")
+
+    new_mahasiswa = Mahasiswa(
+        nama=data.nama,
+        email=data.email,
+        password=data.password,
+        no_telp=data.no_telp,
+        nim=data.nim
+    )
+
+    db.add(new_mahasiswa)
+    await db.commit()
+    await db.refresh(new_mahasiswa)
+
+    return new_mahasiswa
+
+@app.get("/test-get-mahasiswa", response_model=list[schemas.MahasiswaOut])
+async def get_all_mahasiswa(db: AsyncSession = Depends(get_db)):
+    # Ambil semua data mahasiswa
+    query = select(Mahasiswa)
+    result = await db.execute(query)
+    mahasiswas = result.scalars().all()
+
+    return mahasiswas
 
 if __name__ == "__main__":
     import uvicorn
