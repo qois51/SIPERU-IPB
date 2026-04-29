@@ -17,67 +17,80 @@ const BookingForm = () => {
   };
 
   return (
-    /* Latar belakang utama menggunakan overlay biru transparan agar mirip desain */
-    <div className="min-h-screen bg-slate-200 flex items-center justify-center p-4 py-12" 
+    <div className="min-h-screen flex items-center justify-center p-4 py-12" 
          style={{ 
-           backgroundImage: 'linear-gradient(rgba(38, 60, 146, 0.8), rgba(38, 60, 146, 0.8)), url("https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80")',
+      
+           backgroundImage: 'url("/assets/bg-kampus.jpg")', 
            backgroundSize: 'cover',
-           backgroundPosition: 'center'
+           backgroundPosition: 'center',
+           backgroundRepeat: 'no-repeat'
          }}>
       
-      {/* Kotak Form Utama */}
-      <div className="w-full max-w-4xl bg-white/20 backdrop-blur-md rounded-2xl p-8 shadow-2xl border border-white/30 overflow-y-auto max-h-[90vh]">
+      {/* Kotak Form Biru Spesifik #263C92 */}
+      <div className="w-full max-w-4xl bg-[#263C92] rounded-2xl p-8 shadow-2xl border border-white/10 overflow-y-auto max-h-[90vh]">
         
         <form className="space-y-8 text-white">
           
           {/* Section 1: Detail Ruangan */}
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold mb-6">Detail Ruangan</h2>
+            <h2 className="text-2xl font-bold mb-6 border-b border-white/20 pb-2">Detail Ruangan</h2>
             
             <div className="space-y-2">
-              <label className="block text-sm font-medium">Fakultas</label>
-              <select name="fakultas" onChange={handleChange} className="w-full p-4 rounded-xl border-none bg-white text-gray-800 focus:ring-4 focus:ring-[#263C92]/50 outline-none appearance-none bg-[url('https://cdn-icons-png.flaticon.com/512/60/60995.png')] bg-[length:12px] bg-[right_1.5rem_center] bg-no-reverse">
-                <option value="">--Pilih--</option>
-                <option value="FMIPA">FMIPA</option>
-                <option value="FEM">FEM</option>
-              </select>
+              <label className="block text-sm font-medium text-white/90">Fakultas</label>
+              <div className="relative flex items-center">
+                <select name="fakultas" onChange={handleChange} className="w-full p-4 pr-12 rounded-xl border-none bg-white text-gray-800 focus:ring-4 focus:ring-white/30 outline-none appearance-none transition">
+                  <option value="">--Pilih--</option>
+                  <option value="FMIPA">FMIPA</option>
+                  <option value="FEM">FEM</option>
+                </select>
+                {/* Segitiga Pojok Kanan */}
+                <div className="absolute right-4 pointer-events-none">
+                  <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </div>
+              </div>
             </div>
 
             <div className="space-y-2">
-              <label className="block text-sm font-medium">Nama Ruangan</label>
-              <select name="namaRuangan" onChange={handleChange} className="w-full p-4 rounded-xl border-none bg-white text-gray-800 focus:ring-4 focus:ring-[#263C92]/50 outline-none appearance-none bg-[url('https://cdn-icons-png.flaticon.com/512/60/60995.png')] bg-[length:12px] bg-[right_1.5rem_center] bg-no-reverse">
-                <option value="">--Pilih--</option>
-                <option value="LSI">LSI</option>
-                <option value="RK U-201">RK U-201</option>
-              </select>
+              <label className="block text-sm font-medium text-white/90">Nama Ruangan</label>
+              <div className="relative flex items-center">
+                <select name="namaRuangan" onChange={handleChange} className="w-full p-4 pr-12 rounded-xl border-none bg-white text-gray-800 focus:ring-4 focus:ring-white/30 outline-none appearance-none transition">
+                  <option value="">--Pilih--</option>
+                  <option value="LSI">LSI</option>
+                  <option value="RK U-201">RK U-201</option>
+                </select>
+                <div className="absolute right-4 pointer-events-none">
+                  <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </div>
+              </div>
             </div>
           </section>
 
           {/* Section 2: Identitas Peminjam */}
           <section className="space-y-6">
-            <h2 className="text-2xl font-bold mb-6">Identitas Peminjam</h2>
+            <h2 className="text-2xl font-bold mb-6 border-b border-white/20 pb-2">Identitas Peminjam</h2>
             
-            <div className="space-y-2">
-              <label className="block text-sm font-medium">Nama</label>
-              <input type="text" name="nama" onChange={handleChange} className="w-full p-4 rounded-xl border-none bg-white text-gray-800 focus:ring-4 focus:ring-[#263C92]/50 outline-none" />
-            </div>
-
-            <div className="space-y-2">
-              <label className="block text-sm font-medium">NIM</label>
-              <input type="text" name="nim" onChange={handleChange} className="w-full p-4 rounded-xl border-none bg-white text-gray-800 focus:ring-4 focus:ring-[#263C92]/50 outline-none" />
-            </div>
-
-            <div className="space-y-2">
-              <label className="block text-sm font-medium">Fakultas</label>
-              <input type="text" name="fakultasPeminjam" onChange={handleChange} className="w-full p-4 rounded-xl border-none bg-white text-gray-800 focus:ring-4 focus:ring-[#263C92]/50 outline-none" />
-            </div>
-
-            <div className="space-y-2">
-              <label className="block text-sm font-medium">Departemen</label>
-              <input type="text" name="departemen" onChange={handleChange} className="w-full p-4 rounded-xl border-none bg-white text-gray-800 focus:ring-4 focus:ring-[#263C92]/50 outline-none" />
-            </div>
+            {["Nama", "NIM", "Fakultas", "Departemen"].map((label) => (
+              <div key={label} className="space-y-2">
+                <label className="block text-sm font-medium text-white/90">{label}</label>
+                <input 
+                  type="text" 
+                  name={label.toLowerCase()} 
+                  onChange={handleChange} 
+                  className="w-full p-4 rounded-xl border-none bg-white text-gray-800 focus:ring-4 focus:ring-white/30 outline-none transition" 
+                />
+              </div>
+            ))}
           </section>
 
+          <div className="pt-6">
+            <button type="submit" className="w-full bg-white text-[#263C92] font-extrabold py-4 px-6 rounded-xl hover:bg-slate-100 transition duration-300 shadow-xl text-lg">
+              Ajukan Peminjaman
+            </button>
+          </div>
         </form>
       </div>
     </div>
