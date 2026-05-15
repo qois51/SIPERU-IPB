@@ -1,8 +1,22 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
+import os
+from datetime import timedelta
+from dotenv import load_dotenv
 
-class Settings(BaseSettings):
-    database_url: str
+load_dotenv()
 
-    model_config = SettingsConfigDict(env_file="./.env")
-
-settings = Settings()
+class Config:
+    SECRET_KEY = os.getenv('SECRET_KEY', 'super-secret-key')
+    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'jwt-secret-key')
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=1)
+    DEBUG = True
+    
+    # Database
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    
+    # Swagger Config
+    SWAGGER = {
+        'title': 'API Login Modular',
+        'uiversion': 3,
+        'specs_route': '/apidocs/'
+    }
