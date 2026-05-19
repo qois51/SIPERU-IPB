@@ -55,7 +55,10 @@ def create_app(config_class=Config):
     from app.routes.room_routes import room_bp
     from app.routes.booking_routes import booking_bp
     from app.routes.user_routes import user_bp
-    
+
+    # Ensure all models are imported so SQLAlchemy registers them
+    from app.models import user_model, room_model, booking_model, booking_facility_model  # noqa
+
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
     app.register_blueprint(protected_bp, url_prefix='/api/data')
     app.register_blueprint(room_bp, url_prefix='/api/rooms')
@@ -65,5 +68,15 @@ def create_app(config_class=Config):
     @app.route('/')
     def index():
         return {"message": "Server is running", "docs": "/apidocs/"}
+
+    # Serve uploaded files (surat, documents)
+    import os
+    from flask import send_from_directory
+
+    UPLOAD_BASE = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'uploads')
+
+    @app.route('/uploads/<path:filename>')
+    def serve_upload(filename):
+        return send_from_directory(UPLOAD_BASE, filename)
 
     return app

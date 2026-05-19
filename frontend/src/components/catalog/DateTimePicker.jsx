@@ -26,7 +26,24 @@ const DateTimePicker = ({ roomId, onSelectionChange }) => {
     const dateStr = formatDate(selectedDate);
     axios.get(`http://localhost:5000/api/bookings/room/${roomId}?date=${dateStr}`)
       .then(res => {
-        const slots = res.data.map(b => `${b.start_time.slice(0,5)}-${b.end_time.slice(0,5)}`);
+        const slots = [];
+        const payload = res.data?.data || res.data;
+        if (payload && payload.booked_slots) {
+          payload.booked_slots.forEach(b => {
+            const startH = parseInt(b.start_time.split(':')[0], 10);
+            let endH = parseInt(b.end_time.split(':')[0], 10);
+            
+            // If end time has minutes (e.g., 10:30), we might want to block the 10:00-11:00 slot as well
+            const endM = parseInt(b.end_time.split(':')[1], 10);
+            if (endM > 0) endH += 1;
+
+            for (let h = startH; h < endH; h++) {
+              const sh = String(h).padStart(2, '0');
+              const eh = String(h + 1).padStart(2, '0');
+              slots.push(`${sh}:00-${eh}:00`);
+            }
+          });
+        }
         setBookedSlots(slots);
       })
       .catch(() => setBookedSlots([]));
@@ -214,9 +231,9 @@ const DateTimePicker = ({ roomId, onSelectionChange }) => {
                   style={{
                     padding: '10px',
                     borderRadius: '8px',
-                    border: selected ? '2px solid #1e3a8a' : booked ? '1px solid #e2e8f0' : '1px solid #93c5fd',
-                    background: selected ? '#1e3a8a' : booked ? '#f1f5f9' : '#eff6ff',
-                    color: selected ? 'white' : booked ? '#94a3b8' : '#1e3a8a',
+                    border: selected ? '2px solid #1e3a8a' : booked ? '1px solid #d1d5db' : '1px solid #93c5fd',
+                    background: selected ? '#1e3a8a' : booked ? '#e5e7eb' : '#eff6ff',
+                    color: selected ? 'white' : booked ? '#6b7280' : '#1e3a8a',
                     fontWeight: 700,
                     fontSize: '13px',
                     cursor: booked ? 'default' : 'pointer',
@@ -240,7 +257,7 @@ const DateTimePicker = ({ roomId, onSelectionChange }) => {
               Dipilih
             </span>
             <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ width: '14px', height: '14px', background: '#f1f5f9', borderRadius: '3px', display: 'inline-block' }}></span>
+              <span style={{ width: '14px', height: '14px', background: '#e5e7eb', borderRadius: '3px', display: 'inline-block' }}></span>
               Sudah terpesan
             </span>
           </div>

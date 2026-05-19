@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { Globe, Phone, Mail, MapPin, Download, ChevronRight, Shield, Monitor, Trophy } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import html2pdf from 'html2pdf.js';
+import BukuPanduanPDF from './pdf/BukuPanduanPDF';
 
 const FooterBadge = ({ icon: Icon, text }) => (
   <div style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid white', padding: '6px 12px', borderRadius: '6px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', fontWeight: 600 }}>
@@ -31,6 +33,38 @@ const SocialBox = ({ imgSrc }) => (
 );
 
 const Footer = () => {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const pdfRef = useRef();
+
+  const handleDownloadPanduan = () => {
+    const element = pdfRef.current;
+    if (!element || isGenerating) return;
+
+    setIsGenerating(true);
+    element.style.display = 'block';
+
+    const opt = {
+      margin: [0, 0, 0, 0], // Margin is handled by the component's internal padding
+      filename: 'Buku_Panduan_SIPERU_IPB.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).toPdf().get('pdf').then((pdf) => {
+      const totalPages = pdf.internal.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        pdf.setPage(i);
+        pdf.setFontSize(9);
+        pdf.setTextColor(150);
+        pdf.text('Halaman ' + i + ' dari ' + totalPages, pdf.internal.pageSize.getWidth() / 2, pdf.internal.pageSize.getHeight() - 10, { align: 'center' });
+      }
+    }).save().then(() => {
+      element.style.display = 'none';
+      setIsGenerating(false);
+    });
+  };
+
   return (
     <footer style={{ background: '#263C92', color: 'white' }}>
       <div className="footer-grid" style={{ padding: '60px 80px' }}>
@@ -46,7 +80,7 @@ const Footer = () => {
             </div>
           </div>
           <p style={{ opacity: 0.9, fontSize: '13px', lineHeight: '1.6', marginBottom: '24px' }}>
-            Platform digital resmi untuk peminjaman ruangan dan fasilitas kampus. 
+            Platform digital resmi untuk peminjaman ruangan dan fasilitas kampus.
             Mengubah birokrasi berhari-hari menjadi kepastian dalam satu klik.
           </p>
           <div style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
@@ -107,12 +141,21 @@ const Footer = () => {
             <Globe size={20} color="#fbbf24" />
             <span>08.00 - 16.00 WIB Senin - Jumat</span>
           </div>
-          <button style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid white', padding: '12px 20px', borderRadius: '8px', color: 'white', display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontSize: '14px', fontWeight: 600 }}>
-            <Download size={20} /> Unduh Buku Panduan
+          <button
+            onClick={handleDownloadPanduan}
+            disabled={isGenerating}
+            style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid white', padding: '12px 20px', borderRadius: '8px', color: 'white', display: 'flex', alignItems: 'center', gap: '10px', cursor: isGenerating ? 'wait' : 'pointer', fontSize: '14px', fontWeight: 600, opacity: isGenerating ? 0.7 : 1 }}
+          >
+            <Download size={20} /> {isGenerating ? 'Membuat PDF...' : 'Unduh Buku Panduan'}
           </button>
         </div>
       </div>
       <img src="/footerAsset/footer.png" alt="Pattern" style={{ width: '100%', height: 'auto', display: 'block' }} />
+
+      {/* Hidden PDF Content */}
+      <div style={{ display: 'none' }}>
+        <BukuPanduanPDF ref={pdfRef} />
+      </div>
     </footer>
   );
 };

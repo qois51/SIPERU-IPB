@@ -3,8 +3,13 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 from app.schemas.auth_schema import LoginSchema
 from app.models.user_model import User
 from marshmallow import ValidationError
+import random, time
 
 auth_bp = Blueprint('auth', __name__)
+
+# In-memory OTP store: { email: { otp, expires_at } }
+_otp_store = {}
+
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
@@ -13,92 +18,161 @@ def login():
     ---
     tags:
       - Authentication
-    summary: Authenticate user and get JWT token
-    description: Login dengan username dan password untuk mendapatkan access token
     parameters:
       - name: body
         in: body
         required: true
         schema:
           type: object
-          required:
-            - username
-            - password
+          required: [username, password]
           properties:
             username:
               type: string
-              example: "mahasiswa1"
             password:
               type: string
-              example: "password123"
+            role:
+              type: string
+              description: Role yang dipilih user di form login
     responses:
       200:
         description: Login berhasil
-        schema:
-          type: object
-          properties:
-            message:
-              type: string
-              example: "Login Berhasil"
-            access_token:
-              type: string
-              example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-            role:
-              type: string
-              example: "mahasiswa"
-            user:
-              type: object
-              properties:
-                id:
-                  type: integer
-                username:
-                  type: string
-                full_name:
-                  type: string
-                email:
-                  type: string
-                nim_nip:
-                  type: string
-                role:
-                  type: string
-      400:
-        description: Validation error - data tidak lengkap atau format salah
-        schema:
-          type: object
-          properties:
-            message:
-              type: string
       401:
-        description: Unauthorized - username atau password salah
-        schema:
-          type: object
-          properties:
-            message:
-              type: string
-              example: "Username atau Password salah"
+        description: Credentials atau role tidak cocok
     """
     schema = LoginSchema()
     try:
-        data = schema.load(request.json)
+        data = schema.load(request.json or {})
     except ValidationError as err:
         return jsonify(err.messages), 400
 
     username = data['username']
     password = data['password']
+    selected_role = (request.json or {}).get('role', '').strip()
 
     user = User.query.filter_by(username=username).first()
-    
-    if user and user.check_password(password):
-        access_token = create_access_token(identity={"username": username, "role": user.role})
-        from app.schemas.user_schema import user_schema
-        return jsonify(
-            message="Login Berhasil",
-            access_token=access_token,
-            role=user.role,
-            user=user_schema.dump(user)
-        ), 200
 
-    return jsonify({"message": "Username atau Password salah"}), 401
+    if not user or not user.check_password(password):
+        return jsonify({"message": "Username atau Password salah"}), 401
+
+    # Role enforcement: if user selected a role, it must match their actual role
+    if selected_role and user.role != selected_role:
+        return jsonify({"message": "Username atau Password salah"}), 401
+
+    access_token = create_access_token(identity=username, additional_claims={"role": user.role})
+    from app.schemas.user_schema import user_schema
+    return jsonify(
+        message="Login Berhasil",
+        access_token=access_token,
+        role=user.role,
+        user=user_schema.dump(user)
+    ), 200
+
+
+@auth_bp.route('/forgot-password', methods=['POST'])
+def forgot_password():
+    """
+    Forgot Password — Send OTP to email
+    ---
+    tags:
+      - Authentication
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          required: [email]
+          properties:
+            email:
+              type: string
+    responses:
+      200:
+        description: OTP dikirim ke email
+      404:
+        description: Email tidak ditemukan
+    """
+    data = request.json or {}
+    email = data.get('email', '').strip().lower()
+    if not email:
+        return jsonify({"message": "Email wajib diisi"}), 400
+
+    user = User.query.filter(User.email.ilike(email)).first()
+    if not user:
+        return jsonify({"message": "Email tidak terdaftar di sistem"}), 404
+
+    otp = str(random.randint(100000, 999999))
+    _otp_store[email] = {"otp": otp, "expires_at": time.time() + 600}  # 10 menit
+
+    # In production: kirim email via SMTP/SendGrid
+    # Untuk development: log ke konsol
+    print(f"[DEV] OTP untuk {email}: {otp}")
+
+    return jsonify({
+        "message": f"Kode OTP telah dikirim ke {email}. Berlaku 10 menit.",
+        "dev_otp": otp  # Hapus di production
+    }), 200
+
+
+@auth_bp.route('/reset-password', methods=['POST'])
+def reset_password():
+    """
+    Reset Password using OTP
+    ---
+    tags:
+      - Authentication
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          required: [email, otp, new_password]
+          properties:
+            email:
+              type: string
+            otp:
+              type: string
+            new_password:
+              type: string
+    responses:
+      200:
+        description: Password berhasil diubah
+      400:
+        description: OTP salah atau kadaluarsa
+    """
+    data = request.json or {}
+    email = data.get('email', '').strip().lower()
+    otp = data.get('otp', '').strip()
+    new_password = data.get('new_password', '').strip()
+
+    if not email or not otp or not new_password:
+        return jsonify({"message": "Email, OTP, dan password baru wajib diisi"}), 400
+
+    if len(new_password) < 6:
+        return jsonify({"message": "Password baru minimal 6 karakter"}), 400
+
+    stored = _otp_store.get(email)
+    if not stored:
+        return jsonify({"message": "OTP tidak ditemukan. Silakan minta OTP baru."}), 400
+
+    if time.time() > stored['expires_at']:
+        del _otp_store[email]
+        return jsonify({"message": "OTP sudah kadaluarsa. Silakan minta OTP baru."}), 400
+
+    if stored['otp'] != otp:
+        return jsonify({"message": "Kode OTP salah"}), 400
+
+    user = User.query.filter(User.email.ilike(email)).first()
+    if not user:
+        return jsonify({"message": "User tidak ditemukan"}), 404
+
+    user.set_password(new_password)
+    from app import db
+    db.session.commit()
+    del _otp_store[email]
+
+    return jsonify({"message": "Password berhasil diubah! Silakan login dengan password baru."}), 200
+
 
 @auth_bp.route('/me', methods=['GET'])
 @jwt_required()
@@ -108,27 +182,14 @@ def get_profile():
     ---
     tags:
       - Authentication
-    summary: Retrieve current logged-in user profile
-    description: Dapatkan profil user yang sedang login (memerlukan JWT token)
     security:
       - Bearer: []
     responses:
       200:
         description: User profile data
-        schema:
-          type: object
-          properties:
-            logged_in_as:
-              type: object
-              properties:
-                username:
-                  type: string
-                  example: "mahasiswa1"
-                role:
-                  type: string
-                  example: "mahasiswa"
-      401:
-        description: Unauthorized - token tidak valid atau expired
     """
+    from flask_jwt_extended import get_jwt
     current_user = get_jwt_identity()
-    return jsonify(logged_in_as=current_user), 200
+    claims = get_jwt()
+    return jsonify(logged_in_as={"username": current_user, "role": claims.get("role")}), 200
+

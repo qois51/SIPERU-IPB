@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ChevronRight, MapPin, Users, User } from 'lucide-react';
+import { ChevronRight, MapPin, Users, User, AlertCircle, X } from 'lucide-react';
 import axios from 'axios';
 
 import Navbar from '../../components/Navbar';
@@ -8,6 +8,7 @@ import Footer from '../../components/Footer';
 import RoomGallery from '../../components/catalog/RoomGallery';
 import RoomInfoCard from '../../components/catalog/RoomInfoCard';
 import DateTimePicker from '../../components/catalog/DateTimePicker';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 const RoomDetailPage = () => {
   const { id } = useParams();
@@ -17,6 +18,12 @@ const RoomDetailPage = () => {
   const [allRooms, setAllRooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selection, setSelection] = useState({ date: null, slots: [] });
+  const [toast, setToast] = useState({ show: false, message: '' });
+
+  const showToast = (message) => {
+    setToast({ show: true, message });
+    setTimeout(() => setToast({ show: false, message: '' }), 3000);
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -59,20 +66,32 @@ const RoomDetailPage = () => {
       return;
     }
     if (selection.slots.length === 0) {
-      alert('Silakan pilih tanggal dan slot waktu terlebih dahulu.');
+      showToast('Silakan pilih tanggal dan slot waktu terlebih dahulu.');
       return;
     }
-    // Navigate to booking form with selection pre-filled (can extend later)
-    alert(`Melanjutkan pemesanan untuk:\nTanggal: ${selection.date}\nJam: ${selection.slots.join(', ')}`);
+
+    const params = new URLSearchParams();
+    if (selection.date) params.set('date', selection.date);
+
+    if (selection.slots.length > 0) {
+      // Sort slots chronologically e.g. ['08:00-09:00', '09:00-10:00']
+      const sortedSlots = [...selection.slots].sort();
+      // start = left side of first slot: '08:00'
+      const startStr = sortedSlots[0].split('-')[0];
+      // end = right side of last slot: '10:00'
+      const endStr = sortedSlots[sortedSlots.length - 1].split('-')[1];
+      params.set('start', startStr);
+      params.set('end', endStr);
+    }
+
+    navigate(`/booking/${room.id}?${params.toString()}`);
   };
 
   if (loading) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
         <Navbar />
-        <div style={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', fontWeight: 600 }}>
-          Memuat detail ruangan...
-        </div>
+        <div style={{ flexGrow: 1 }}><LoadingSpinner text="Memuat detail ruangan..." /></div>
         <Footer />
       </div>
     );
@@ -210,6 +229,42 @@ const RoomDetailPage = () => {
 
       </div>
       <Footer />
+
+      {/* Modern Toast Notification */}
+      {toast.show && (
+        <div style={{
+          position: 'fixed',
+          top: '100px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: '#1e3a8a',
+          color: 'white',
+          padding: '12px 24px',
+          borderRadius: '8px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          zIndex: 9999,
+          animation: 'slideDown 0.3s ease-out'
+        }}>
+          <AlertCircle size={20} color="#facc15" />
+          <span style={{ fontSize: '14px', fontWeight: 500 }}>{toast.message}</span>
+          <button 
+            onClick={() => setToast({ show: false, message: '' })}
+            style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', display: 'flex', padding: 0 }}
+          >
+            <X size={16} />
+          </button>
+        </div>
+      )}
+
+      <style>{`
+        @keyframes slideDown {
+          from { transform: translate(-50%, -100%); opacity: 0; }
+          to { transform: translate(-50%, 0); opacity: 1; }
+        }
+      `}</style>
     </div>
   );
 };

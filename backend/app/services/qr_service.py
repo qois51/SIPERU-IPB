@@ -1,0 +1,97 @@
+"""
+QR Code Service
+Generates QR codes for approved bookings containing E-Pass information.
+"""
+import os
+import qrcode
+from io import BytesIO
+
+UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'uploads')
+QR_FOLDER = os.path.join(UPLOAD_FOLDER, 'qr')
+
+
+def _ensure_qr_dir():
+    os.makedirs(QR_FOLDER, exist_ok=True)
+
+
+def generate_qr_for_booking(booking):
+    """
+    Generate a QR code image for an approved booking.
+    
+    QR content includes:
+    - booking_code
+    - nama peminjam
+    - room name
+    - tanggal
+    - jam
+    
+    Returns: relative path to saved QR image, or None on error.
+    """
+    try:
+        _ensure_qr_dir()
+
+        # Build QR content
+        room_name = booking.room_data.name if booking.room_data else "N/A"
+        qr_content = (
+            f"SIPERU E-Pass\n"
+            f"Kode: {booking.booking_code}\n"
+            f"Peminjam: {booking.nama_peminjam or booking.user.username}\n"
+            f"Ruangan: {room_name}\n"
+            f"Tanggal: {booking.date.strftime('%d/%m/%Y') if booking.date else 'N/A'}\n"
+            f"Jam: {booking.start_time} - {booking.end_time}\n"
+            f"Status: {booking.status}"
+        )
+
+        # Generate QR image
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_M,
+            box_size=10,
+            border=4,
+        )
+        qr.add_data(qr_content)
+        qr.make(fit=True)
+
+        img = qr.make_image(fill_color="black", back_color="white")
+
+        # Save to file
+        filename = f"qr_{booking.booking_code}.png"
+        filepath = os.path.join(QR_FOLDER, filename)
+        img.save(filepath)
+
+        return f"uploads/qr/{filename}"
+
+    except Exception as e:
+        print(f"Error generating QR code: {e}")
+        return None
+
+
+def get_qr_image_bytes(booking):
+    """
+    Generate QR code and return as bytes (for embedding in PDF).
+    """
+    room_name = booking.room_data.name if booking.room_data else "N/A"
+    qr_content = (
+        f"SIPERU E-Pass\n"
+        f"Kode: {booking.booking_code}\n"
+        f"Peminjam: {booking.nama_peminjam or booking.user.username}\n"
+        f"Ruangan: {room_name}\n"
+        f"Tanggal: {booking.date.strftime('%d/%m/%Y') if booking.date else 'N/A'}\n"
+        f"Jam: {booking.start_time} - {booking.end_time}"
+    )
+
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_M,
+        box_size=8,
+        border=3,
+    )
+    qr.add_data(qr_content)
+    qr.make(fit=True)
+
+    img = qr.make_image(fill_color="black", back_color="white")
+
+    buffer = BytesIO()
+    img.save(buffer, format='PNG')
+    buffer.seek(0)
+    return buffer

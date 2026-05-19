@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, FileCheck, DoorOpen, Users, Calendar, FileBarChart } from 'lucide-react';
+import { Home, FileCheck, DoorOpen, Users, Calendar, FileBarChart, ScanLine } from 'lucide-react';
 import SidebarItem from './SidebarItem';
 
 const Sidebar = ({ isOpen, activeMenu, onMenuChange }) => {
@@ -27,6 +27,9 @@ const Sidebar = ({ isOpen, activeMenu, onMenuChange }) => {
         </div>
         <div onClick={() => onMenuChange('user')}>
           <SidebarItem icon={Users} label="Kelola User" active={activeMenu === 'user'} />
+        </div>
+        <div onClick={() => onMenuChange('scanner')}>
+          <SidebarItem icon={ScanLine} label="Scan E-Pass" active={activeMenu === 'scanner'} />
         </div>
         <SidebarItem icon={Calendar} label="Kalender" />
         <SidebarItem icon={FileBarChart} label="Laporan" />

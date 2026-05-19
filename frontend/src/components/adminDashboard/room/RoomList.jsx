@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import adminService from '../../../services/adminService';
 
 const RoomList = ({ onViewDetail, onAddRoom, onZoomImage }) => {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/rooms/')
-      .then(res => {
-        setRooms(res.data);
-        setLoading(false);
-      })
-      .catch(err => {
+    const fetchRooms = async () => {
+      try {
+        const res = await adminService.getRooms();
+        const roomData = res.data?.rooms || res.rooms || res.data || res || [];
+        setRooms(Array.isArray(roomData) ? roomData : []);
+      } catch (err) {
         console.error(err);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+    fetchRooms();
   }, []);
 
   if (loading) return <div>Loading data ruangan...</div>;

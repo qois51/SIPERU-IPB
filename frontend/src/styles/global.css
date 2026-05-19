@@ -28,6 +28,13 @@ body {
   color: var(--gray-900);
 }
 
+/* Hide native browser password reveal icon (Edge/Chrome) */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear,
+input::-webkit-credentials-auto-fill-button {
+  display: none !important;
+}
+
 .form-group {
   margin-bottom: 24px;
 }
@@ -100,6 +107,9 @@ body {
 .status-pill.pending { background: #fef3c7; color: #92400e; }
 .status-pill.approved { background: #d1fae5; color: #065f46; }
 .status-pill.rejected { background: #fee2e2; color: #991b1b; }
+.status-pill.checkedin { background: #dbeafe; color: #1e40af; }
+.status-pill.completed { background: #fce7f3; color: #9d174d; }
+.status-pill.expired { background: #f1f5f9; color: #64748b; }
 
 .badge-day, .badge-day-small { 
   background: #1e3a8a; 

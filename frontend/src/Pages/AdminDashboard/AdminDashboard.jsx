@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import adminService from '../../services/adminService';
 import Sidebar from '../../components/adminDashboard/Sidebar';
 import Header from '../../components/adminDashboard/Header';
 import StatCards from '../../components/adminDashboard/StatCards';
@@ -7,6 +7,7 @@ import ActivityList from '../../components/adminDashboard/ActivityList';
 import VerificationPage from './verification/VerificationPage';
 import RoomPage from './room/RoomPage';
 import UserPage from './user/UserPage';
+import EPassScanner from './scanner/EPassScanner';
 
 const AdminDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -17,8 +18,13 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/bookings/dashboard/stats');
-        setDashboardData(res.data);
+        const res = await adminService.getDashboardStats();
+        // Backend returns { success, message, data: { stats, upcoming } }
+        const payload = res.data || res;
+        setDashboardData({
+          stats: payload.stats || payload,
+          upcoming: payload.upcoming || [],
+        });
       } catch (err) {
         console.error('Error fetching dashboard stats:', err);
       } finally {
@@ -48,6 +54,8 @@ const AdminDashboard = () => {
         return <RoomPage />;
       case 'user':
         return <UserPage />;
+      case 'scanner':
+        return <EPassScanner />;
       default:
         return <div>Halaman tidak ditemukan</div>;
     }
@@ -57,7 +65,7 @@ const AdminDashboard = () => {
     <div className="dashboard-container">
       <Sidebar isOpen={isSidebarOpen} activeMenu={activeView} onMenuChange={(view) => setActiveView(view)} />
       <div className={`dashboard-main ${!isSidebarOpen ? 'full' : ''}`}>
-        <Header toggleSidebar={toggleSidebar} />
+        <Header toggleSidebar={toggleSidebar} onMenuChange={(view) => setActiveView(view)} />
         <main className="dashboard-content">
           {renderContent()}
         </main>

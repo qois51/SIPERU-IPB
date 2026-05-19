@@ -13,9 +13,10 @@
 }
 
 .status-pill.mahasiswa { background: #dbeafe; color: #1e40af; }
+.status-pill.dosen { background: #d1fae5; color: #065f46; }
 .status-pill.karyawan { background: #fef3c7; color: #92400e; }
 .status-pill.admin { background: #fee2e2; color: #991b1b; }
-.status-pill.satpam { background: #e5e7eb; color: #374151; }
+.status-pill.satpam { background: #f3f4f6; color: #374151; }
 
 .btn-action { 
   width: 36px; 
