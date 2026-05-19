@@ -1,0 +1,231 @@
+/* Premium Form Styles */
+.premium-form {
+  background: white;
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  border: 1px solid #f3f4f6;
+}
+
+.form-section {
+  margin-bottom: 40px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #f3f4f6;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.full-width {
+  grid-column: span 2;
+}
+
+.premium-form .form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.premium-form .input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.premium-form .input-icon {
+  position: absolute;
+  left: 16px;
+  color: #9ca3af;
+}
+
+.premium-form input, 
+.premium-form select {
+  width: 100%;
+  padding: 14px 16px 14px 48px;
+  background: #f9fafb;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 15px;
+  transition: all 0.2s;
+}
+
+.premium-form input:focus,
+.premium-form select:focus {
+  outline: none;
+  border-color: #1e3a8a;
+  background: white;
+  box-shadow: 0 0 0 4px rgba(30, 58, 138, 0.1);
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+  padding-top: 30px;
+  border-top: 2px solid #f3f4f6;
+}
+
+.form-actions .btn-primary {
+  width: auto;
+  padding: 14px 40px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+}
+
+/* Multi Upload Grid */
+.multi-upload-container {
+  background: #fcfcfd;
+  padding: 30px;
+  border-radius: 20px;
+  border: 1.5px dashed #d1d5db;
+}
+
+.image-grid-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.preview-item-small {
+  width: 100%;
+  aspect-ratio: 1;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  position: relative;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.preview-item-small img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.remove-img-small {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.add-image-placeholder {
+  aspect-ratio: 1;
+  border: 2px dashed #1e3a8a;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1e3a8a;
+  cursor: pointer;
+  background: #f0f4ff;
+  transition: all 0.2s;
+}
+
+.add-image-placeholder:hover {
+  background: #e0e7ff;
+  transform: scale(1.02);
+}
+
+.premium-upload-btn {
+  background: #1e3a8a;
+  color: #ffffff !important;
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.2s;
+  box-shadow: 0 4px 10px rgba(30, 58, 138, 0.2);
+}
+
+.premium-upload-btn:hover {
+  background: #162a63;
+  transform: translateY(-2px);
+}
+
+/* PIC specific upload */
+.pic-upload-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  background: #fcfcfd;
+  border: 1.5px dashed #d1d5db;
+  border-radius: 20px;
+}
+
+.pic-preview-box {
+  width: 100px;
+  height: 100px;
+  background: #f3f4f6;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pic-preview-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Time & Day Range Picker */
+.time-range-wrapper, .day-range-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.time-range-wrapper input[type="time"], .day-range-wrapper select {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 14px;
+  color: #1e293b;
+  outline: none;
+  transition: border-color 0.2s;
+  background: white;
+}
+
+.time-range-wrapper span, .day-range-wrapper span {
+  font-weight: 600;
+  color: #64748b;
+  font-size: 14px;
+}

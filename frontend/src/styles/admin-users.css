@@ -1,0 +1,57 @@
+/* User Management Styles */
+.user-avatar-mini { 
+  width: 40px; 
+  height: 40px; 
+  border-radius: 50%; 
+  overflow: hidden; 
+  background: #f3f4f6; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  border: 2px solid white; 
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
+}
+
+.status-pill.mahasiswa { background: #dbeafe; color: #1e40af; }
+.status-pill.dosen { background: #d1fae5; color: #065f46; }
+.status-pill.karyawan { background: #fef3c7; color: #92400e; }
+.status-pill.admin { background: #fee2e2; color: #991b1b; }
+.status-pill.satpam { background: #f3f4f6; color: #374151; }
+
+.btn-action { 
+  width: 36px; 
+  height: 36px; 
+  border-radius: 10px; 
+  border: none; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  cursor: pointer; 
+  transition: all 0.2s; 
+  padding: 0; 
+}
+
+.btn-action.edit { background: #eff6ff; color: #2563eb; }
+.btn-action.edit:hover { background: #2563eb; color: white; }
+
+.btn-action.delete { background: #fff1f2; color: #e11d48; }
+.btn-action.delete:hover { background: #e11d48; color: white; }
+
+.profile-image-preview {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 4px solid white;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.profile-image-preview img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+}

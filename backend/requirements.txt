@@ -6,4 +6,12 @@ pydantic
 pydantic-settings
 python-dotenv
 alembic
-
+python-jose[cryptography]
+passlib[bcrypt]
+bcrypt==4.0.1
+python-multipart
+qrcode[pil]
+reportlab
+Pillow
+email-validator
+werkzeug

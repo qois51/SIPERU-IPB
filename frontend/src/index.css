@@ -1,17 +1,15 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-:root {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-}
+/* Global & Variables */
+@import './styles/global.css';
 
-* {
-  box-sizing: border-box;
-}
+/* Pages */
+@import './styles/login.css';
 
-body {
-  margin: 0;
-}
+/* Admin Dashboard Modules */
+@import './styles/admin-layout.css';
+@import './styles/dashboard-content.css';
+@import './styles/admin-rooms.css';
+@import './styles/admin-verification.css';
+@import './styles/admin-users.css';
+@import './styles/admin-forms.css';
