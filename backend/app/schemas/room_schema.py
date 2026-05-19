@@ -1,15 +1,19 @@
-from marshmallow import Schema, fields, validate
+from pydantic import BaseModel, Field, EmailStr
+from typing import Optional
 
-class RoomSchema(Schema):
-    id = fields.Int(dump_only=True)
-    name = fields.Str(required=True, validate=validate.Length(min=3, max=100))
-    location = fields.Str(required=True)
-    capacity = fields.Int(required=True)
-    operational_hours = fields.Str(required=True)
-    facilities = fields.Str(required=True)
-    pic_name = fields.Str(required=True)
-    pic_email = fields.Email(required=True)
-    pic_phone = fields.Str(required=True)
-    price = fields.Int(required=True)
-    image_url = fields.Str(allow_none=True)
-    pic_image_url = fields.Str(allow_none=True)
+class RoomSchema(BaseModel):
+    id: Optional[int] = None
+    name: str = Field(..., min_length=3, max_length=100)
+    location: str
+    capacity: int
+    operational_hours: str
+    facilities: str
+    pic_name: str
+    pic_email: EmailStr
+    pic_phone: str
+    price: int
+    image_url: Optional[str] = None
+    pic_image_url: Optional[str] = None
+    
+    class Config:
+        from_attributes = True

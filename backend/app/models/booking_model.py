@@ -1,8 +1,9 @@
-from app import db
+from database import Base
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, Date, DateTime
+from sqlalchemy.orm import relationship
 from datetime import datetime
 import random
 import string
-
 
 def generate_booking_code():
     """Generate unique booking code: BK-YYYY-XXXX"""
@@ -10,60 +11,54 @@ def generate_booking_code():
     rand = ''.join(random.choices(string.digits, k=4))
     return f"BK-{year}-{rand}"
 
-
-class Booking(db.Model):
+class Booking(Base):
     __tablename__ = 'bookings'
 
-    id = db.Column(db.Integer, primary_key=True)
-    booking_code = db.Column(db.String(20), unique=True, nullable=True)  # BK-2026-1234
+    id = Column(Integer, primary_key=True)
+    booking_code = Column(String(20), unique=True, nullable=True)  # BK-2026-1234
 
     # Foreign keys
-    room_id = db.Column(db.Integer, db.ForeignKey('rooms.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    room_id = Column(Integer, ForeignKey('rooms.id'), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
 
     # --- Data Peminjam ---
-    nama_peminjam = db.Column(db.String(100), nullable=True)
-    nim_nip = db.Column(db.String(30), nullable=True)
-    program_studi = db.Column(db.String(100), nullable=True)
-    email = db.Column(db.String(100), nullable=True)
-    nomor_hp = db.Column(db.String(20), nullable=True)
+    nama_peminjam = Column(String(100), nullable=True)
+    nim_nip = Column(String(30), nullable=True)
+    program_studi = Column(String(100), nullable=True)
+    email = Column(String(100), nullable=True)
+    nomor_hp = Column(String(20), nullable=True)
 
     # --- Data Kegiatan ---
-    activity_name = db.Column(db.String(200), nullable=False)
-    jenis_kegiatan = db.Column(db.String(100), nullable=True)
-    organization = db.Column(db.String(200), nullable=True, default='-')
-    participants = db.Column(db.Integer, default=1)
-    purpose = db.Column(db.String(500), nullable=True, default='')
-    deskripsi_kegiatan = db.Column(db.Text, nullable=True)
+    activity_name = Column(String(200), nullable=False)
+    jenis_kegiatan = Column(String(100), nullable=True)
+    organization = Column(String(200), nullable=True, default='-')
+    participants = Column(Integer, default=1)
+    purpose = Column(String(500), nullable=True, default='')
+    deskripsi_kegiatan = Column(Text, nullable=True)
 
     # --- Booking Schedule ---
-    date = db.Column(db.Date, nullable=False)
-    start_time = db.Column(db.String(10), nullable=False)  # Format HH:MM
-    end_time = db.Column(db.String(10), nullable=False)     # Format HH:MM
+    date = Column(Date, nullable=False)
+    start_time = Column(String(10), nullable=False)  # Format HH:MM
+    end_time = Column(String(10), nullable=False)     # Format HH:MM
 
     # --- Status & Documents ---
-    status = db.Column(db.String(20), default='Pending')  # Pending, Approved, Rejected, CheckedIn, Completed, Expired
-    surat_file = db.Column(db.String(500), nullable=True)  # Path ke file upload
-    document_url = db.Column(db.Text, nullable=True)       # Legacy: Base64 or URL
-    qr_code = db.Column(db.String(500), nullable=True)     # Path ke QR image
-    notes = db.Column(db.Text, nullable=True)               # Admin notes (alasan reject, dll)
+    status = Column(String(20), default='Pending')  # Pending, Approved, Rejected, CheckedIn, Completed, Expired
+    surat_file = Column(String(500), nullable=True)  # Path ke file upload
+    document_url = Column(Text, nullable=True)       # Legacy: Base64 or URL
+    qr_code = Column(String(500), nullable=True)     # Path ke QR image
+    notes = Column(Text, nullable=True)               # Admin notes (alasan reject, dll)
 
     # --- Timestamps ---
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    checked_in_at = db.Column(db.DateTime, nullable=True)
-    checked_out_at = db.Column(db.DateTime, nullable=True)
-    expired_at = db.Column(db.DateTime, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    checked_in_at = Column(DateTime, nullable=True)
+    checked_out_at = Column(DateTime, nullable=True)
+    expired_at = Column(DateTime, nullable=True)
 
     # --- Relationships ---
-    room_data = db.relationship('Room', backref=db.backref('bookings_list', lazy=True), viewonly=True)
-    user = db.relationship('User', backref=db.backref('bookings', lazy=True))
-    facilities = db.relationship('BookingFacility', backref='booking', lazy=True, cascade='all, delete-orphan')
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        if not self.booking_code:
-            self.booking_code = generate_booking_code()
+    room_data = relationship('Room', back_populates='room_bookings', lazy="selectin")
+    user = relationship('User', lazy="selectin")
+    facilities = relationship('BookingFacility', back_populates='booking', lazy="selectin", cascade='all, delete-orphan')
 
     def to_dict(self):
         return {

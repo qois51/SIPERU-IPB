@@ -125,6 +125,14 @@ def generate_epass_pdf(booking):
     room_name = booking.room_data.name if booking.room_data else "-"
     room_location = booking.room_data.location if booking.room_data else "-"
 
+    # Safe date helper
+    def format_date_pdf(d):
+        if not d:
+            return "-"
+        if hasattr(d, 'strftime'):
+            return d.strftime('%d %B %Y')
+        return str(d)
+
     kegiatan_items = [
         ("Nama Kegiatan", booking.activity_name or "-"),
         ("Jenis Kegiatan", booking.jenis_kegiatan or "-"),
@@ -132,7 +140,7 @@ def generate_epass_pdf(booking):
         ("Jumlah Peserta", str(booking.participants or 0)),
         ("Ruangan", room_name),
         ("Lokasi", room_location),
-        ("Tanggal", booking.date.strftime('%d %B %Y') if booking.date else "-"),
+        ("Tanggal", format_date_pdf(booking.date)),
         ("Jam", f"{booking.start_time} - {booking.end_time}"),
     ]
 

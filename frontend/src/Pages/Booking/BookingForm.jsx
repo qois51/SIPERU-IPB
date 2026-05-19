@@ -11,7 +11,7 @@ import bookingService from '../../services/bookingService';
 import { JENIS_KEGIATAN, FACILITY_OPTIONS } from '../../utils/constants';
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
 const bookingSchema = yup.object({
   nama_peminjam: yup.string().required('Nama lengkapnya belum diisi ya.'),

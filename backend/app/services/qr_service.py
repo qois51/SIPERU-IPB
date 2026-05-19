@@ -30,14 +30,23 @@ def generate_qr_for_booking(booking):
     try:
         _ensure_qr_dir()
 
+        # Safe date helper
+        def format_date(d):
+            if not d:
+                return 'N/A'
+            if hasattr(d, 'strftime'):
+                return d.strftime('%d/%m/%Y')
+            return str(d)
+
         # Build QR content
         room_name = booking.room_data.name if booking.room_data else "N/A"
+        peminjam_name = booking.nama_peminjam or (booking.user.username if booking.user else "N/A")
         qr_content = (
             f"SIPERU E-Pass\n"
             f"Kode: {booking.booking_code}\n"
-            f"Peminjam: {booking.nama_peminjam or booking.user.username}\n"
+            f"Peminjam: {peminjam_name}\n"
             f"Ruangan: {room_name}\n"
-            f"Tanggal: {booking.date.strftime('%d/%m/%Y') if booking.date else 'N/A'}\n"
+            f"Tanggal: {format_date(booking.date)}\n"
             f"Jam: {booking.start_time} - {booking.end_time}\n"
             f"Status: {booking.status}"
         )
@@ -71,12 +80,22 @@ def get_qr_image_bytes(booking):
     Generate QR code and return as bytes (for embedding in PDF).
     """
     room_name = booking.room_data.name if booking.room_data else "N/A"
+    
+    # Safe date helper
+    def format_date(d):
+        if not d:
+            return 'N/A'
+        if hasattr(d, 'strftime'):
+            return d.strftime('%d/%m/%Y')
+        return str(d)
+
+    peminjam_name = booking.nama_peminjam or (booking.user.username if booking.user else "N/A")
     qr_content = (
         f"SIPERU E-Pass\n"
         f"Kode: {booking.booking_code}\n"
-        f"Peminjam: {booking.nama_peminjam or booking.user.username}\n"
+        f"Peminjam: {peminjam_name}\n"
         f"Ruangan: {room_name}\n"
-        f"Tanggal: {booking.date.strftime('%d/%m/%Y') if booking.date else 'N/A'}\n"
+        f"Tanggal: {format_date(booking.date)}\n"
         f"Jam: {booking.start_time} - {booking.end_time}"
     )
 

@@ -18,7 +18,8 @@ const RoomCatalog = () => {
   ];
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/rooms/')
+    const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+    axios.get(`${API_BASE}/rooms/`)
       .then(res => {
         if (res.data && res.data.length > 0) {
           // Take up to 3 rooms for the landing page display

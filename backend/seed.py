@@ -1,15 +1,11 @@
-from app import create_app, db
+import asyncio
+from sqlalchemy.future import select
+from database import AsyncSessionLocal, Base
 from app.models.user_model import User
 
-def seed_users():
-    app = create_app()
-    with app.app_context():
-        # Cek apakah user sudah ada
-        if User.query.first():
-            print("Database sudah berisi data. Seeder dibatalkan.")
-            return
-
-        print("Sedang mengisi data awal (seeding)...")
+async def seed_users():
+    async with AsyncSessionLocal() as db:
+        print("Sedang menyelaraskan data pengguna default...")
         
         users_data = [
             {"username": "admin", "password": "admin123", "role": "admin", "full_name": "Administrator Utama", "nim_nip": "198001012005011001", "email": "admin@sipberu.ac.id"},
@@ -18,24 +14,38 @@ def seed_users():
         ]
 
         for data in users_data:
-            user = User(
-                username=data['username'], 
-                role=data['role'],
-                full_name=data['full_name'],
-                nim_nip=data['nim_nip'],
-                email=data['email']
-            )
-            user.set_password(data['password'])
-            db.session.add(user)
+            # Check if user already exists
+            stmt = select(User).where(User.username == data['username'])
+            result = await db.execute(stmt)
+            user = result.scalars().first()
+            
+            if user:
+                print(f"Mengupdate password/data untuk user: {data['username']}")
+                user.role = data['role']
+                user.full_name = data['full_name']
+                user.nim_nip = data['nim_nip']
+                user.email = data['email']
+                user.set_password(data['password'])
+            else:
+                print(f"Membuat user baru: {data['username']}")
+                user = User(
+                    username=data['username'], 
+                    role=data['role'],
+                    full_name=data['full_name'],
+                    nim_nip=data['nim_nip'],
+                    email=data['email']
+                )
+                user.set_password(data['password'])
+                db.add(user)
         
         try:
-            db.session.commit()
+            await db.commit()
             print("Seeding berhasil! Akun default telah dibuat:")
             for u in users_data:
                 print(f"- {u['username']} ({u['role']})")
         except Exception as e:
-            db.session.rollback()
+            await db.rollback()
             print(f"Error saat seeding: {e}")
 
 if __name__ == "__main__":
-    seed_users()
+    asyncio.run(seed_users())

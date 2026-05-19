@@ -1,17 +1,13 @@
-import sys
-import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-from app import create_app, db
+import asyncio
+from database import engine, Base, AsyncSessionLocal
 from app.models.room_model import Room
 
-app = create_app()
-
-with app.app_context():
+async def seed_rooms():
     # Refresh database schema
     print("Refreshing database schema...")
-    db.drop_all()
-    db.create_all()
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+        await conn.run_sync(Base.metadata.create_all)
     
     rooms = [
         Room(
@@ -55,6 +51,10 @@ with app.app_context():
         )
     ]
     
-    db.session.bulk_save_objects(rooms)
-    db.session.commit()
+    async with AsyncSessionLocal() as db:
+        db.add_all(rooms)
+        await db.commit()
     print("Room data seeded successfully!")
+
+if __name__ == "__main__":
+    asyncio.run(seed_rooms())

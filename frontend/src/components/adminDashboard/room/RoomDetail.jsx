@@ -2,6 +2,8 @@ import React from 'react';
 import { MapPin, Users, Clock, ArrowLeft, Mail, Phone, User as UserIcon, Banknote } from 'lucide-react';
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+
 const RoomDetail = ({ room, onBack, onEdit, onDeleteSuccess, onZoomImage }) => {
   if (!room) return null;
 
@@ -22,7 +24,7 @@ const RoomDetail = ({ room, onBack, onEdit, onDeleteSuccess, onZoomImage }) => {
     setMainImage(imageUrls[0]);
     // Fetch some upcoming bookings for this room to show to admin
     const today = new Date().toISOString().split('T')[0];
-    axios.get(`http://localhost:5000/api/bookings/room/${room.id}?date=${today}`)
+    axios.get(`${API_URL}/bookings/room/${room.id}?date=${today}`)
       .then(res => setBookings(res.data))
       .catch(err => console.error(err));
   }, [room.id]);
@@ -30,7 +32,7 @@ const RoomDetail = ({ room, onBack, onEdit, onDeleteSuccess, onZoomImage }) => {
   const handleDelete = async () => {
     if (window.confirm('Apakah Anda yakin ingin menghapus ruangan ini?')) {
       try {
-        await axios.delete(`http://localhost:5000/api/rooms/${room.id}`);
+        await axios.delete(`${API_URL}/rooms/${room.id}`);
         onDeleteSuccess();
       } catch (err) {
         console.error(err);

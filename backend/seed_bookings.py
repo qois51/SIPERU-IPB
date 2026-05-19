@@ -1,35 +1,33 @@
-import sys
-import os
-from datetime import datetime, date
-
-# Add the parent directory to sys.path to import app
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-from app import create_app, db
+import asyncio
+from datetime import datetime, date, timedelta
+import random
+from sqlalchemy.future import select
+from database import AsyncSessionLocal
 from app.models.room_model import Room
 from app.models.user_model import User
 from app.models.booking_model import Booking
 
-def seed_bookings():
-    app = create_app()
-    with app.app_context():
+async def seed_bookings():
+    async with AsyncSessionLocal() as db:
         # Get first room and first user
-        room = Room.query.first()
-        user = User.query.first()
+        room_result = await db.execute(select(Room))
+        room = room_result.scalars().first()
+        
+        user_result = await db.execute(select(User))
+        user = user_result.scalars().first()
         
         if not room or not user:
             print("Room or User not found. Run seed_rooms.py first.")
             return
 
         print("Cleaning up old bookings...")
-        Booking.query.delete()
-        db.session.commit()
+        # Since we use Async SQL Alchemy, delete using standard statements
+        from sqlalchemy import delete
+        await db.execute(delete(Booking))
+        await db.commit()
 
         print("Seeding 10 test bookings...")
         
-        from datetime import timedelta
-        import random
-
         activities = [
             ("Rapat Himpunan", "HIMA ILKOM"),
             ("Workshop UI/UX", "GDSC UNNES"),
@@ -71,10 +69,10 @@ def seed_bookings():
                 purpose=f"Kegiatan rutin {activity_name} untuk meningkatkan kompetensi mahasiswa.",
                 document_url=pdf_samples[i % len(pdf_samples)]
             )
-            db.session.add(b)
+            db.add(b)
         
-        db.session.commit()
+        await db.commit()
         print("10 test bookings seeded successfully!")
 
 if __name__ == "__main__":
-    seed_bookings()
+    asyncio.run(seed_bookings())

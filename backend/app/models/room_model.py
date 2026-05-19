@@ -1,23 +1,25 @@
-from app import db
+from database import Base
+from sqlalchemy import Column, Integer, String, Text
+from sqlalchemy.orm import relationship
 
-class Room(db.Model):
+class Room(Base):
     __tablename__ = 'rooms'
     
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    location = db.Column(db.String(200), nullable=False)
-    capacity = db.Column(db.Integer, nullable=False)
-    operational_hours = db.Column(db.String(100), nullable=False)
-    facilities = db.Column(db.String(500), nullable=False) # Store as comma separated string
-    pic_name = db.Column(db.String(100), nullable=False)
-    pic_email = db.Column(db.String(100), nullable=False)
-    pic_phone = db.Column(db.String(20), nullable=False)
-    price = db.Column(db.Integer, nullable=False, default=0)
-    image_url = db.Column(db.Text, nullable=True)
-    pic_image_url = db.Column(db.Text, nullable=True)
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100), nullable=False)
+    location = Column(String(200), nullable=False)
+    capacity = Column(Integer, nullable=False)
+    operational_hours = Column(String(100), nullable=False)
+    facilities = Column(String(500), nullable=False) # Store as comma separated string
+    pic_name = Column(String(100), nullable=False)
+    pic_email = Column(String(100), nullable=False)
+    pic_phone = Column(String(20), nullable=False)
+    price = Column(Integer, nullable=False, default=0)
+    image_url = Column(Text, nullable=True)
+    pic_image_url = Column(Text, nullable=True)
     
     # Relationship to bookings with cascade delete
-    room_bookings = db.relationship('Booking', backref='room_parent', cascade='all, delete-orphan', lazy=True)
+    room_bookings = relationship('Booking', back_populates='room_data', cascade='all, delete-orphan', lazy="selectin")
 
     def to_dict(self):
         return {

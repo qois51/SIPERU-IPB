@@ -3,6 +3,8 @@ import { User, Lock, Eye, EyeOff, ArrowRight, GraduationCap, Mail, CheckCircle, 
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+
 const LoginForm = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -29,7 +31,7 @@ const LoginForm = () => {
     setLoading(true);
     setError('');
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', formData);
+      const response = await axios.post(`${API_URL}/auth/login`, formData);
       localStorage.setItem('token', response.data.access_token);
       localStorage.setItem('role', response.data.role);
       localStorage.setItem('user', JSON.stringify(response.data.user));
@@ -55,11 +57,11 @@ const LoginForm = () => {
     setForgotMsg('');
     try {
       if (forgotStep === 1) {
-        const res = await axios.post('http://localhost:5000/api/auth/forgot-password', { email: forgotData.email });
+        const res = await axios.post(`${API_URL}/auth/forgot-password`, { email: forgotData.email });
         setForgotMsg(res.data.message);
         setForgotStep(2);
       } else {
-        const res = await axios.post('http://localhost:5000/api/auth/reset-password', { 
+        const res = await axios.post(`${API_URL}/auth/reset-password`, { 
           email: forgotData.email, 
           otp: forgotData.otp, 
           new_password: forgotData.newPassword 

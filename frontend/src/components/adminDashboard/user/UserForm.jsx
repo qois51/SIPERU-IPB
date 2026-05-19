@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ArrowLeft, Save, User, Mail, CreditCard, Shield, Key, Image as ImageIcon, X } from 'lucide-react';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+
 const UserForm = ({ user, onBack, onSuccess, onZoomImage }) => {
   const [formData, setFormData] = useState({
     username: '',
@@ -39,14 +41,14 @@ const UserForm = ({ user, onBack, onSuccess, onZoomImage }) => {
       if (!payload.password) delete payload.password; // Don't send empty password
 
       if (user) {
-        await axios.put(`http://localhost:5000/api/users/${user.id}`, payload);
+        await axios.put(`${API_URL}/users/${user.id}`, payload);
       } else {
         if (!formData.password) {
           alert('Password wajib diisi untuk user baru');
           setLoading(false);
           return;
         }
-        await axios.post('http://localhost:5000/api/users/', payload);
+        await axios.post(`${API_URL}/users/`, payload);
       }
       onSuccess();
     } catch (err) {

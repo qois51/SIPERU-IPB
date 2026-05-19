@@ -1,45 +1,64 @@
-from marshmallow import Schema, fields, validate
+from pydantic import BaseModel, Field, field_validator
+from typing import Optional, List
+from datetime import date, datetime
+import re
 
-
-class BookingSchema(Schema):
-    id = fields.Int(dump_only=True)
-    booking_code = fields.Str(dump_only=True)
+class BookingSchema(BaseModel):
+    id: Optional[int] = None
+    booking_code: Optional[str] = None
 
     # Foreign keys
-    room_id = fields.Int(required=True)
-    user_id = fields.Int(required=True)
+    room_id: int
+    user_id: int
 
     # Data Peminjam
-    nama_peminjam = fields.Str(validate=validate.Length(max=100))
-    nim_nip = fields.Str(validate=validate.Length(max=30))
-    program_studi = fields.Str(validate=validate.Length(max=100))
-    email = fields.Email(validate=validate.Regexp(r'.*@apps\.ipb\.ac\.id$', error='Harap gunakan email @apps.ipb.ac.id'))
-    nomor_hp = fields.Str(validate=[validate.Length(min=10, max=20), validate.Regexp(r'^08[0-9]+$', error='Nomor HP harus diawali 08')])
+    nama_peminjam: Optional[str] = Field(None, max_length=100)
+    nim_nip: Optional[str] = Field(None, max_length=30)
+    program_studi: Optional[str] = Field(None, max_length=100)
+    email: Optional[str] = None
+    nomor_hp: Optional[str] = None
 
     # Data Kegiatan
-    activity_name = fields.Str(required=True, validate=validate.Length(min=3, max=200))
-    jenis_kegiatan = fields.Str(validate=validate.Length(max=100))
-    organization = fields.Str(load_default='-', validate=validate.Length(max=200))
-    participants = fields.Int()
-    purpose = fields.Str(load_default='', validate=validate.Length(max=500))
-    deskripsi_kegiatan = fields.Str()
+    activity_name: str = Field(..., min_length=3, max_length=200)
+    jenis_kegiatan: Optional[str] = Field(None, max_length=100)
+    organization: Optional[str] = Field("-", max_length=200)
+    participants: Optional[int] = 1
+    purpose: Optional[str] = Field("", max_length=500)
+    deskripsi_kegiatan: Optional[str] = None
 
     # Schedule
-    date = fields.Date(required=True)
-    start_time = fields.Str(required=True)
-    end_time = fields.Str(required=True)
+    date: date
+    start_time: str
+    end_time: str
 
     # Status & Documents
-    status = fields.Str()
-    surat_file = fields.Str(allow_none=True)
-    document_url = fields.Str(allow_none=True)
-    qr_code = fields.Str(dump_only=True)
-    notes = fields.Str(allow_none=True)
+    status: Optional[str] = "Pending"
+    surat_file: Optional[str] = None
+    document_url: Optional[str] = None
+    qr_code: Optional[str] = None
+    notes: Optional[str] = None
 
     # Facilities (list of facility names)
-    facilities = fields.List(fields.Str(), load_default=[])
+    facilities: Optional[List[str]] = []
 
     # Timestamps
-    created_at = fields.DateTime(dump_only=True)
-    updated_at = fields.DateTime(dump_only=True)
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
+    @field_validator('email')
+    def validate_email(cls, v):
+        if v and not v.endswith('@apps.ipb.ac.id'):
+            raise ValueError('Harap gunakan email @apps.ipb.ac.id')
+        return v
+
+    @field_validator('nomor_hp')
+    def validate_nomor_hp(cls, v):
+        if v:
+            if not (10 <= len(v) <= 20):
+                raise ValueError('Nomor HP harus antara 10 sampai 20 karakter')
+            if not v.startswith('08'):
+                raise ValueError('Nomor HP harus diawali 08')
+        return v
+
+    class Config:
+        from_attributes = True

@@ -24,7 +24,8 @@ const DateTimePicker = ({ roomId, onSelectionChange }) => {
   useEffect(() => {
     if (!selectedDate || !roomId) return;
     const dateStr = formatDate(selectedDate);
-    axios.get(`http://localhost:5000/api/bookings/room/${roomId}?date=${dateStr}`)
+    const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+    axios.get(`${API_BASE}/bookings/room/${roomId}?date=${dateStr}`)
       .then(res => {
         const slots = [];
         const payload = res.data?.data || res.data;

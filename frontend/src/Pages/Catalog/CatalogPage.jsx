@@ -43,7 +43,9 @@ const CatalogPage = () => {
     // Scroll to top upon navigation
     window.scrollTo(0, 0);
 
-    axios.get('http://localhost:5000/api/rooms/')
+    const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+
+    axios.get(`${API_BASE}/rooms/`)
       .then(res => {
         if (res.data && res.data.length > 0) {
           setRooms(res.data);

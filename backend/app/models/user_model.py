@@ -1,23 +1,35 @@
-from app import db
-from werkzeug.security import generate_password_hash, check_password_hash
+from database import Base
+from sqlalchemy import Column, Integer, String, Text
+import bcrypt
 
-class User(db.Model):
+class User(Base):
     __tablename__ = 'users'
     
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), unique=True, nullable=False)
-    password_hash = db.Column(db.String(255), nullable=False)
-    role = db.Column(db.String(20), nullable=False) # mahasiswa, admin, satpam
-    full_name = db.Column(db.String(100))
-    nim_nip = db.Column(db.String(20))
-    email = db.Column(db.String(100))
-    profile_image = db.Column(db.Text)
+    id = Column(Integer, primary_key=True)
+    username = Column(String(50), unique=True, nullable=False)
+    password_hash = Column(String(255), nullable=False)
+    role = Column(String(20), nullable=False) # mahasiswa, admin, satpam
+    full_name = Column(String(100))
+    nim_nip = Column(String(20))
+    email = Column(String(100))
+    profile_image = Column(Text)
 
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
+    def set_password(self, password: str):
+        salt = bcrypt.gensalt()
+        self.password_hash = bcrypt.hashpw(password.encode('utf-8'), salt).decode('utf-8')
 
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
+    def check_password(self, password: str):
+        if self.password_hash.startswith(('scrypt:', 'pbkdf2:', 'sha256:', 'bcrypt:')):
+            from werkzeug.security import check_password_hash
+            return check_password_hash(self.password_hash, password)
+        try:
+            return bcrypt.checkpw(password.encode('utf-8'), self.password_hash.encode('utf-8'))
+        except Exception:
+            from werkzeug.security import check_password_hash
+            try:
+                return check_password_hash(self.password_hash, password)
+            except Exception:
+                return False
 
     def to_dict(self):
         return {

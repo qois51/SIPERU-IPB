@@ -1,195 +1,127 @@
-from flask import Blueprint, request, jsonify
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from fastapi import APIRouter, Depends, HTTPException, status, Request
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+from database import get_db
 from app.schemas.auth_schema import LoginSchema
+from app.schemas.user_schema import UserSchema
 from app.models.user_model import User
-from marshmallow import ValidationError
-import random, time
+from app.utils.auth_middleware import create_access_token, get_current_user
+import random
+import time
+from typing import Optional
+from pydantic import BaseModel
 
-auth_bp = Blueprint('auth', __name__)
+auth_router = APIRouter()
 
 # In-memory OTP store: { email: { otp, expires_at } }
 _otp_store = {}
 
+class LoginRequest(LoginSchema):
+    role: Optional[str] = None
 
-@auth_bp.route('/login', methods=['POST'])
-def login():
-    """
-    User Login
-    ---
-    tags:
-      - Authentication
-    parameters:
-      - name: body
-        in: body
-        required: true
-        schema:
-          type: object
-          required: [username, password]
-          properties:
-            username:
-              type: string
-            password:
-              type: string
-            role:
-              type: string
-              description: Role yang dipilih user di form login
-    responses:
-      200:
-        description: Login berhasil
-      401:
-        description: Credentials atau role tidak cocok
-    """
-    schema = LoginSchema()
-    try:
-        data = schema.load(request.json or {})
-    except ValidationError as err:
-        return jsonify(err.messages), 400
+class ForgotPasswordRequest(BaseModel):
+    email: str
 
-    username = data['username']
-    password = data['password']
-    selected_role = (request.json or {}).get('role', '').strip()
+class ResetPasswordRequest(BaseModel):
+    email: str
+    otp: str
+    new_password: str
 
-    user = User.query.filter_by(username=username).first()
+@auth_router.post('/login')
+async def login(data: LoginRequest, db: AsyncSession = Depends(get_db)):
+    username = data.username
+    password = data.password
+    selected_role = data.role.strip() if data.role else ""
+
+    result = await db.execute(select(User).filter_by(username=username))
+    user = result.scalars().first()
 
     if not user or not user.check_password(password):
-        return jsonify({"message": "Username atau Password salah"}), 401
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Username atau Password salah"
+        )
 
     # Role enforcement: if user selected a role, it must match their actual role
     if selected_role and user.role != selected_role:
-        return jsonify({"message": "Username atau Password salah"}), 401
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Username atau Password salah"
+        )
 
     access_token = create_access_token(identity=username, additional_claims={"role": user.role})
-    from app.schemas.user_schema import user_schema
-    return jsonify(
-        message="Login Berhasil",
-        access_token=access_token,
-        role=user.role,
-        user=user_schema.dump(user)
-    ), 200
+    
+    # We can dump user via Pydantic UserSchema.model_validate(user).model_dump()
+    user_data = UserSchema.model_validate(user).model_dump()
+    if 'password' in user_data:
+        del user_data['password']
 
+    return {
+        "message": "Login Berhasil",
+        "access_token": access_token,
+        "role": user.role,
+        "user": user_data
+    }
 
-@auth_bp.route('/forgot-password', methods=['POST'])
-def forgot_password():
-    """
-    Forgot Password — Send OTP to email
-    ---
-    tags:
-      - Authentication
-    parameters:
-      - name: body
-        in: body
-        required: true
-        schema:
-          type: object
-          required: [email]
-          properties:
-            email:
-              type: string
-    responses:
-      200:
-        description: OTP dikirim ke email
-      404:
-        description: Email tidak ditemukan
-    """
-    data = request.json or {}
-    email = data.get('email', '').strip().lower()
+@auth_router.post('/forgot-password')
+async def forgot_password(data: ForgotPasswordRequest, db: AsyncSession = Depends(get_db)):
+    email = data.email.strip().lower()
     if not email:
-        return jsonify({"message": "Email wajib diisi"}), 400
+        raise HTTPException(status_code=400, detail="Email wajib diisi")
 
-    user = User.query.filter(User.email.ilike(email)).first()
+    result = await db.execute(select(User).filter(User.email.ilike(email)))
+    user = result.scalars().first()
     if not user:
-        return jsonify({"message": "Email tidak terdaftar di sistem"}), 404
+        raise HTTPException(status_code=404, detail="Email tidak terdaftar di sistem")
 
     otp = str(random.randint(100000, 999999))
     _otp_store[email] = {"otp": otp, "expires_at": time.time() + 600}  # 10 menit
 
-    # In production: kirim email via SMTP/SendGrid
-    # Untuk development: log ke konsol
+    # For development, log to console
     print(f"[DEV] OTP untuk {email}: {otp}")
 
-    return jsonify({
+    return {
         "message": f"Kode OTP telah dikirim ke {email}. Berlaku 10 menit.",
         "dev_otp": otp  # Hapus di production
-    }), 200
+    }
 
-
-@auth_bp.route('/reset-password', methods=['POST'])
-def reset_password():
-    """
-    Reset Password using OTP
-    ---
-    tags:
-      - Authentication
-    parameters:
-      - name: body
-        in: body
-        required: true
-        schema:
-          type: object
-          required: [email, otp, new_password]
-          properties:
-            email:
-              type: string
-            otp:
-              type: string
-            new_password:
-              type: string
-    responses:
-      200:
-        description: Password berhasil diubah
-      400:
-        description: OTP salah atau kadaluarsa
-    """
-    data = request.json or {}
-    email = data.get('email', '').strip().lower()
-    otp = data.get('otp', '').strip()
-    new_password = data.get('new_password', '').strip()
+@auth_router.post('/reset-password')
+async def reset_password(data: ResetPasswordRequest, db: AsyncSession = Depends(get_db)):
+    email = data.email.strip().lower()
+    otp = data.otp.strip()
+    new_password = data.new_password.strip()
 
     if not email or not otp or not new_password:
-        return jsonify({"message": "Email, OTP, dan password baru wajib diisi"}), 400
+        raise HTTPException(status_code=400, detail="Email, OTP, dan password baru wajib diisi")
 
     if len(new_password) < 6:
-        return jsonify({"message": "Password baru minimal 6 karakter"}), 400
+        raise HTTPException(status_code=400, detail="Password baru minimal 6 karakter")
 
     stored = _otp_store.get(email)
     if not stored:
-        return jsonify({"message": "OTP tidak ditemukan. Silakan minta OTP baru."}), 400
+        raise HTTPException(status_code=400, detail="OTP tidak ditemukan. Silakan minta OTP baru.")
 
     if time.time() > stored['expires_at']:
-        del _otp_store[email]
-        return jsonify({"message": "OTP sudah kadaluarsa. Silakan minta OTP baru."}), 400
+        if email in _otp_store:
+            del _otp_store[email]
+        raise HTTPException(status_code=400, detail="OTP sudah kadaluarsa. Silakan minta OTP baru.")
 
     if stored['otp'] != otp:
-        return jsonify({"message": "Kode OTP salah"}), 400
+        raise HTTPException(status_code=400, detail="Kode OTP salah")
 
-    user = User.query.filter(User.email.ilike(email)).first()
+    result = await db.execute(select(User).filter(User.email.ilike(email)))
+    user = result.scalars().first()
     if not user:
-        return jsonify({"message": "User tidak ditemukan"}), 404
+        raise HTTPException(status_code=404, detail="User tidak ditemukan")
 
     user.set_password(new_password)
-    from app import db
-    db.session.commit()
-    del _otp_store[email]
+    await db.commit()
+    
+    if email in _otp_store:
+        del _otp_store[email]
 
-    return jsonify({"message": "Password berhasil diubah! Silakan login dengan password baru."}), 200
+    return {"message": "Password berhasil diubah! Silakan login dengan password baru."}
 
-
-@auth_bp.route('/me', methods=['GET'])
-@jwt_required()
-def get_profile():
-    """
-    Get Current User Profile
-    ---
-    tags:
-      - Authentication
-    security:
-      - Bearer: []
-    responses:
-      200:
-        description: User profile data
-    """
-    from flask_jwt_extended import get_jwt
-    current_user = get_jwt_identity()
-    claims = get_jwt()
-    return jsonify(logged_in_as={"username": current_user, "role": claims.get("role")}), 200
-
+@auth_router.get('/me')
+async def get_profile(current_user: dict = Depends(get_current_user)):
+    return {"logged_in_as": {"username": current_user.get("username"), "role": current_user.get("role")}}

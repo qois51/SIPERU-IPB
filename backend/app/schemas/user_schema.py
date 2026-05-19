@@ -1,17 +1,15 @@
-from marshmallow import Schema, fields, validate, EXCLUDE
+from pydantic import BaseModel, Field, EmailStr
+from typing import Optional, Literal
 
-class UserSchema(Schema):
-    class Meta:
-        unknown = EXCLUDE
-        
-    id = fields.Integer(dump_only=True)
-    username = fields.String(required=True, validate=validate.Length(min=3, max=50))
-    password = fields.String(load_only=True, validate=validate.Length(min=6))
-    role = fields.String(required=True, validate=validate.OneOf(['mahasiswa', 'admin', 'satpam', 'karyawan']))
-    full_name = fields.String(required=True, validate=validate.Length(min=1, max=100))
-    nim_nip = fields.String(required=True, validate=validate.Length(min=1, max=20))
-    email = fields.Email(required=True)
-    profile_image = fields.String(allow_none=True)
+class UserSchema(BaseModel):
+    id: Optional[int] = None
+    username: str = Field(..., min_length=3, max_length=50)
+    password: Optional[str] = Field(None, min_length=6)
+    role: Literal['mahasiswa', 'admin', 'satpam', 'karyawan']
+    full_name: str = Field(..., min_length=1, max_length=100)
+    nim_nip: str = Field(..., min_length=1, max_length=20)
+    email: EmailStr
+    profile_image: Optional[str] = None
 
-user_schema = UserSchema()
-users_schema = UserSchema(many=True)
+    class Config:
+        from_attributes = True

@@ -5,7 +5,7 @@ import bookingService from '../../../services/bookingService';
 import BookingStatusBadge from '../../common/BookingStatusBadge';
 import { formatDateID, formatTimeRange } from '../../../utils/formatDate';
 
-const BACKEND_URL = 'http://localhost:5000';
+const BACKEND_URL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'http://localhost:8000';
 
 const VerificationDetail = ({ item, onBack }) => {
   const [loading, setLoading] = useState(false);

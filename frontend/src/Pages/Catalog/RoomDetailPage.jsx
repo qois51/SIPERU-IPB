@@ -28,8 +28,10 @@ const RoomDetailPage = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
 
+    const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+
     // Fetch the specific room
-    axios.get(`http://localhost:5000/api/rooms/${id}`)
+    axios.get(`${API_BASE}/rooms/${id}`)
       .then(res => {
         setRoom(res.data);
         setLoading(false);
@@ -37,7 +39,7 @@ const RoomDetailPage = () => {
       .catch(() => setLoading(false));
 
     // Fetch all rooms for "Ruangan Lain" section
-    axios.get('http://localhost:5000/api/rooms/')
+    axios.get(`${API_BASE}/rooms/`)
       .then(res => setAllRooms(res.data))
       .catch(() => {});
   }, [id]);

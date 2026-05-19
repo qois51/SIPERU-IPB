@@ -1,12 +1,11 @@
-from marshmallow import Schema, fields, validate, EXCLUDE
+from pydantic import BaseModel, Field
+from typing import Literal
 
-class LoginSchema(Schema):
-    class Meta:
-        unknown = EXCLUDE
-    username = fields.String(required=True, validate=validate.Length(min=3, max=50))
-    password = fields.String(required=True, validate=validate.Length(min=6))
+class LoginSchema(BaseModel):
+    username: str = Field(..., min_length=3, max_length=50)
+    password: str = Field(..., min_length=6)
 
-class RegisterSchema(Schema):
-    username = fields.String(required=True, validate=validate.Length(min=3, max=50))
-    password = fields.String(required=True, validate=validate.Length(min=6))
-    role = fields.String(required=True, validate=validate.OneOf(['mahasiswa', 'admin', 'satpam']))
+class RegisterSchema(BaseModel):
+    username: str = Field(..., min_length=3, max_length=50)
+    password: str = Field(..., min_length=6)
+    role: Literal['mahasiswa', 'admin', 'satpam']
