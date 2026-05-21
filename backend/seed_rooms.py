@@ -1,6 +1,6 @@
 import asyncio
 from database import engine, Base, AsyncSessionLocal
-from app.models.room_model import Room
+from app.models import User, Room, Booking, BookingFacility
 
 async def seed_rooms():
     # Refresh database schema
