@@ -48,6 +48,14 @@ const adminService = {
   },
 
   /**
+   * Get single user by ID
+   */
+  getUserById: async (userId) => {
+    const response = await api.get(`/users/${userId}`);
+    return response.data;
+  },
+
+  /**
    * Get all rooms
    */
   getRooms: async () => {

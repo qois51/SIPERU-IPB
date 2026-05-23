@@ -14,9 +14,13 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     jwt_access_token_expires_minutes: int = 60 * 24 # 1 day
 
-    # Pydantic v2 configuration to read .env file
+    # Supabase credentials for file storage (optional, falls back to local storage if not provided)
+    supabase_url: Optional[str] = Field(None, validation_alias=AliasChoices("supabase_url", "SUPABASE_URL"))
+    supabase_key: Optional[str] = Field(None, validation_alias=AliasChoices("supabase_key", "SUPABASE_KEY"))
+
+    # Pydantic v2 configuration to read .env file (checks local path and backend subfolder)
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=[".env", "backend/.env"],
         env_file_encoding="utf-8",
         extra="ignore"
     )

@@ -7,6 +7,27 @@ import { formatDateID, formatTimeRange } from '../../../utils/formatDate';
 
 const BACKEND_URL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'http://localhost:8000';
 
+// ── Modal Overlay ──
+const ModalOverlay = ({ isOpen, onClose, children }) => {
+  if (!isOpen) return null;
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 9999,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      padding: '20px'
+    }}>
+      <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(3px)' }} onClick={onClose} />
+      <div style={{
+        position: 'relative', background: 'white', borderRadius: '20px',
+        boxShadow: '0 25px 60px rgba(0,0,0,0.15)', width: '100%', maxWidth: '480px',
+        overflow: 'hidden'
+      }}>
+        {children}
+      </div>
+    </div>
+  );
+};
+
 const VerificationDetail = ({ item, onBack }) => {
   const [loading, setLoading] = useState(false);
   const [showApproveModal, setShowApproveModal] = useState(false);
@@ -21,6 +42,12 @@ const VerificationDetail = ({ item, onBack }) => {
   const isApproved = item.status === 'Approved';
   const isRejected = item.status === 'Rejected';
   const isPending = item.status === 'Pending';
+
+  const getDocumentUrl = (path) => {
+    if (!path) return '';
+    if (path.startsWith('http://') || path.startsWith('https://')) return path;
+    return `${BACKEND_URL}/${path}`;
+  };
 
   const handleApprove = async () => {
     setLoading(true);
@@ -58,27 +85,6 @@ const VerificationDetail = ({ item, onBack }) => {
     await bookingService.downloadEPassPDF(item.id, item.booking_code);
   };
 
-  // ── Modal Overlay ──
-  const ModalOverlay = ({ isOpen, onClose, children }) => {
-    if (!isOpen) return null;
-    return (
-      <div style={{
-        position: 'fixed', inset: 0, zIndex: 9999,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        padding: '20px'
-      }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(3px)' }} onClick={onClose} />
-        <div style={{
-          position: 'relative', background: 'white', borderRadius: '20px',
-          boxShadow: '0 25px 60px rgba(0,0,0,0.15)', width: '100%', maxWidth: '480px',
-          overflow: 'hidden'
-        }}>
-          {children}
-        </div>
-      </div>
-    );
-  };
-
   return (
     <div className="verification-detail">
       <div className="back-link" onClick={onBack} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '24px', fontWeight: 600 }}>
@@ -103,7 +109,7 @@ const VerificationDetail = ({ item, onBack }) => {
                     style={{ cursor: 'pointer', opacity: 0.8 }}
                     title="Cetak Dokumen"
                     onClick={() => {
-                      const url = `${BACKEND_URL}/${item.surat_file}`;
+                      const url = getDocumentUrl(item.surat_file);
                       const w = window.open(url);
                       if (w) setTimeout(() => w.print(), 1500);
                     }}
@@ -112,10 +118,10 @@ const VerificationDetail = ({ item, onBack }) => {
                     size={18}
                     style={{ cursor: 'pointer', opacity: 0.8 }}
                     title="Buka di Tab Baru"
-                    onClick={() => window.open(`${BACKEND_URL}/${item.surat_file}`, '_blank')}
+                    onClick={() => window.open(getDocumentUrl(item.surat_file), '_blank')}
                   />
                   <a
-                    href={`${BACKEND_URL}/${item.surat_file}`}
+                    href={getDocumentUrl(item.surat_file)}
                     download
                     target="_blank"
                     rel="noreferrer"
@@ -131,7 +137,7 @@ const VerificationDetail = ({ item, onBack }) => {
           <div className={`preview-body ${item.surat_file ? 'with-doc' : 'no-doc'}`}>
             {item.surat_file ? (
               <iframe
-                src={`${BACKEND_URL}/${item.surat_file}#toolbar=1`}
+                src={`${getDocumentUrl(item.surat_file)}#toolbar=1`}
                 title="Surat Pengajuan"
                 style={{ width: '100%', height: '700px', border: 'none' }}
               />

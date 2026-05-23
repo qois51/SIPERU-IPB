@@ -43,6 +43,7 @@ api.interceptors.response.use(
 
       // Pass the standardized error message
       const message =
+        error.response.data?.detail ||
         error.response.data?.message ||
         error.response.data?.msg ||
         'Terjadi kesalahan. Coba lagi.';

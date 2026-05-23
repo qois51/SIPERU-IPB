@@ -9,6 +9,15 @@ from datetime import datetime
 import math
 
 async def check_room_availability(db: AsyncSession, room_id: int, date, start_time: str, end_time: str, exclude_booking_id: int = None):
+    from datetime import date as py_date, datetime as py_datetime
+    if isinstance(date, str):
+        try:
+            date = datetime.strptime(date, '%Y-%m-%d').date()
+        except ValueError:
+            pass
+    elif isinstance(date, py_datetime):
+        date = date.date()
+
     query = select(Booking).filter(
         Booking.room_id == room_id,
         Booking.date == date,
@@ -24,6 +33,16 @@ async def check_room_availability(db: AsyncSession, room_id: int, date, start_ti
     return len(conflicts) == 0, conflicts
 
 async def create_booking(db: AsyncSession, data: dict, facilities_list: list = None):
+    from datetime import date as py_date, datetime as py_datetime
+    date_val = data.get('date')
+    if isinstance(date_val, str):
+        try:
+            data['date'] = datetime.strptime(date_val, '%Y-%m-%d').date()
+        except ValueError:
+            return False, "Format tanggal tidak valid. Gunakan YYYY-MM-DD."
+    elif isinstance(date_val, py_datetime):
+        data['date'] = date_val.date()
+
     room_result = await db.execute(select(Room).filter_by(id=data.get('room_id')))
     room = room_result.scalars().first()
     if not room:
@@ -72,13 +91,24 @@ async def approve_booking(db: AsyncSession, booking_id: int, notes: str = None):
 
     booking.status = 'Approved'
     booking.notes = notes
-    await db.commit()
 
+    # Generate booking code if it doesn't exist
+    from app.models.booking_model import generate_booking_code
+    if not booking.booking_code:
+        booking.booking_code = generate_booking_code()
+
+    # Generate QR code first before commit while relationships are still loaded in session
     from app.services.qr_service import generate_qr_for_booking
     qr_path = generate_qr_for_booking(booking)
     if qr_path:
         booking.qr_code = qr_path
-        await db.commit()
+
+    await db.commit()
+    
+    # Re-query booking to fully load and refresh relationships (lazy="selectin")
+    # to avoid lazy-loading MissingGreenlet errors inside route handler's .to_dict() call
+    fresh_result = await db.execute(select(Booking).filter_by(id=booking_id))
+    booking = fresh_result.scalars().first()
 
     return True, booking
 
@@ -94,6 +124,11 @@ async def reject_booking(db: AsyncSession, booking_id: int, notes: str = None):
     booking.status = 'Rejected'
     booking.notes = notes or "Ditolak oleh admin."
     await db.commit()
+    
+    # Re-query booking to fully load and refresh relationships (lazy="selectin")
+    fresh_result = await db.execute(select(Booking).filter_by(id=booking_id))
+    booking = fresh_result.scalars().first()
+    
     return True, booking
 
 async def complete_booking(db: AsyncSession, booking_id: int):
@@ -107,6 +142,11 @@ async def complete_booking(db: AsyncSession, booking_id: int):
 
     booking.status = 'Completed'
     await db.commit()
+    
+    # Re-query booking to fully load and refresh relationships (lazy="selectin")
+    fresh_result = await db.execute(select(Booking).filter_by(id=booking_id))
+    booking = fresh_result.scalars().first()
+    
     return True, booking
 
 async def get_bookings_paginated(db: AsyncSession, page=1, per_page=10, status=None, search=None, user_id=None):

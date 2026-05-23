@@ -1,27 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import VerificationList from '../../../components/adminDashboard/verification/VerificationList';
 import VerificationDetail from '../../../components/adminDashboard/verification/VerificationDetail';
+import bookingService from '../../../services/bookingService';
+import LoadingSpinner from '../../../components/common/LoadingSpinner';
 
 const VerificationPage = () => {
-  const [view, setView] = useState('list'); // 'list' or 'detail'
+  const [searchParams, setSearchParams] = useSearchParams();
+  const sub = searchParams.get('sub') || 'list';
+  const id = searchParams.get('id');
+  
   const [selectedItem, setSelectedItem] = useState(null);
+  const [loadingItem, setLoadingItem] = useState(false);
+
+  useEffect(() => {
+    if (sub === 'detail' && id) {
+      if (!selectedItem || selectedItem.id !== parseInt(id)) {
+        const fetchItem = async () => {
+          setLoadingItem(true);
+          try {
+            const res = await bookingService.getBookingById(id);
+            setSelectedItem(res.data || res);
+          } catch (err) {
+            console.error('Failed to fetch booking detail:', err);
+          } finally {
+            setLoadingItem(false);
+          }
+        };
+        fetchItem();
+      }
+    } else {
+      setSelectedItem(null);
+    }
+  }, [sub, id, selectedItem]);
 
   const handleViewDetail = (item) => {
     setSelectedItem(item);
-    setView('detail');
+    setSearchParams({ view: 'verifikasi', sub: 'detail', id: item.id.toString() });
   };
 
   const handleBackToList = () => {
-    setView('list');
+    setSearchParams({ view: 'verifikasi' });
     setSelectedItem(null);
   };
 
+  if (sub === 'detail' && loadingItem && !selectedItem) {
+    return <LoadingSpinner text="Memuat detail pengajuan..." />;
+  }
+
   return (
     <div className="verification-page">
-      {view === 'list' ? (
+      {sub === 'list' ? (
         <VerificationList onViewDetail={handleViewDetail} />
       ) : (
-        <VerificationDetail item={selectedItem} onBack={handleBackToList} />
+        selectedItem && <VerificationDetail item={selectedItem} onBack={handleBackToList} />
       )}
     </div>
   );

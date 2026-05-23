@@ -63,13 +63,18 @@ def generate_qr_for_booking(booking):
 
         img = qr.make_image(fill_color="black", back_color="white")
 
-        # Save to file
-        filename = f"qr_{booking.booking_code}.png"
-        filepath = os.path.join(QR_FOLDER, filename)
-        img.save(filepath)
+        # Get image bytes
+        buffer = BytesIO()
+        img.save(buffer, format='PNG')
+        img_bytes = buffer.getvalue()
 
-        return f"uploads/qr/{filename}"
+        # Save to Supabase 'qrcode' bucket with local fallback
+        from app.services.upload_service import save_qrcode_file
+        ok, res_path = save_qrcode_file(booking.booking_code, img_bytes)
+        if ok:
+            return res_path
 
+        return None
     except Exception as e:
         print(f"Error generating QR code: {e}")
         return None
