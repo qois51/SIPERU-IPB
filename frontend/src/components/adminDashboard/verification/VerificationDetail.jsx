@@ -43,6 +43,12 @@ const VerificationDetail = ({ item, onBack }) => {
   const isRejected = item.status === 'Rejected';
   const isPending = item.status === 'Pending';
 
+  const getDocumentUrl = (path) => {
+    if (!path) return '';
+    if (path.startsWith('http://') || path.startsWith('https://')) return path;
+    return `${BACKEND_URL}/${path}`;
+  };
+
   const handleApprove = async () => {
     setLoading(true);
     try {
@@ -103,7 +109,7 @@ const VerificationDetail = ({ item, onBack }) => {
                     style={{ cursor: 'pointer', opacity: 0.8 }}
                     title="Cetak Dokumen"
                     onClick={() => {
-                      const url = `${BACKEND_URL}/${item.surat_file}`;
+                      const url = getDocumentUrl(item.surat_file);
                       const w = window.open(url);
                       if (w) setTimeout(() => w.print(), 1500);
                     }}
@@ -112,10 +118,10 @@ const VerificationDetail = ({ item, onBack }) => {
                     size={18}
                     style={{ cursor: 'pointer', opacity: 0.8 }}
                     title="Buka di Tab Baru"
-                    onClick={() => window.open(`${BACKEND_URL}/${item.surat_file}`, '_blank')}
+                    onClick={() => window.open(getDocumentUrl(item.surat_file), '_blank')}
                   />
                   <a
-                    href={`${BACKEND_URL}/${item.surat_file}`}
+                    href={getDocumentUrl(item.surat_file)}
                     download
                     target="_blank"
                     rel="noreferrer"
@@ -131,7 +137,7 @@ const VerificationDetail = ({ item, onBack }) => {
           <div className={`preview-body ${item.surat_file ? 'with-doc' : 'no-doc'}`}>
             {item.surat_file ? (
               <iframe
-                src={`${BACKEND_URL}/${item.surat_file}#toolbar=1`}
+                src={`${getDocumentUrl(item.surat_file)}#toolbar=1`}
                 title="Surat Pengajuan"
                 style={{ width: '100%', height: '700px', border: 'none' }}
               />

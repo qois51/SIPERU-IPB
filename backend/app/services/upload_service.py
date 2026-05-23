@@ -20,15 +20,20 @@ def allowed_file(filename):
     """Check if file extension is allowed."""
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+import json
+import urllib.request
+import urllib.error
+
 def save_uploaded_file(upload_file):
     """
-    Save an uploaded file to the documents folder.
+    Save an uploaded file to Supabase Storage if configured,
+    otherwise fallback to local documents folder.
     
     Args:
         upload_file: FastAPI UploadFile object
     
     Returns:
-        (success, filepath_or_error)
+        (success, filepath_or_url_or_error)
     """
     if not upload_file or upload_file.filename == '':
         return False, "File tidak ditemukan."
@@ -49,21 +54,73 @@ def save_uploaded_file(upload_file):
     if file_size > MAX_FILE_SIZE:
         return False, f"Ukuran file melebihi batas ({MAX_FILE_SIZE // (1024*1024)}MB)."
 
-    _ensure_dirs()
-
     # Generate unique filename
     ext = upload_file.filename.rsplit('.', 1)[1].lower()
     unique_name = f"{uuid.uuid4().hex}.{ext}"
     safe_name = secure_filename(unique_name)
+
+    # Read the file content
+    try:
+        file_bytes = upload_file.file.read()
+        # Reset pointer just in case
+        upload_file.file.seek(0)
+    except Exception as e:
+        return False, f"Gagal membaca file: {str(e)}"
+
+    # Check if Supabase Storage is configured in config settings
+    from config import settings
+    supabase_url = getattr(settings, 'supabase_url', None) or os.environ.get('SUPABASE_URL')
+    supabase_key = getattr(settings, 'supabase_key', None) or os.environ.get('SUPABASE_KEY')
+
+    if supabase_url and supabase_key:
+        try:
+            url = supabase_url.rstrip('/')
+            # Target endpoint: POST /storage/v1/object/documents/{safe_name}
+            upload_url = f"{url}/storage/v1/object/documents/{safe_name}"
+            
+            headers = {
+                "Authorization": f"Bearer {supabase_key}",
+                "apikey": supabase_key,
+                "Content-Type": "application/pdf"
+            }
+            
+            req = urllib.request.Request(
+                upload_url,
+                data=file_bytes,
+                headers=headers,
+                method="POST"
+            )
+            
+            with urllib.request.urlopen(req) as response:
+                json.loads(response.read().decode('utf-8'))
+                
+            # If upload succeeds, construct public URL
+            public_url = f"{url}/storage/v1/object/public/documents/{safe_name}"
+            return True, public_url
+            
+        except urllib.error.HTTPError as e:
+            try:
+                error_body = e.read().decode('utf-8')
+            except Exception:
+                error_body = "Gagal membaca isi respon error."
+            error_msg = f"Gagal unggah ke Supabase Storage (HTTP {e.code}): {error_body}"
+            print(f"[Supabase Storage Error] {error_msg}")
+            return False, error_msg
+        except Exception as e:
+            error_msg = f"Gagal unggah ke Supabase Storage (Unexpected): {str(e)}"
+            print(f"[Supabase Storage Error] {error_msg}")
+            return False, error_msg
+
+    # Fallback / Default: Local Storage
+    _ensure_dirs()
     filepath = os.path.join(DOCUMENTS_FOLDER, safe_name)
-
-    # Save file
-    with open(filepath, "wb") as buffer:
-        shutil.copyfileobj(upload_file.file, buffer)
-
-    # Return relative path for storage in DB
-    relative_path = f"uploads/documents/{safe_name}"
-    return True, relative_path
+    try:
+        with open(filepath, "wb") as buffer:
+            buffer.write(file_bytes)
+        relative_path = f"uploads/documents/{safe_name}"
+        return True, relative_path
+    except Exception as e:
+        return False, f"Gagal menyimpan file secara lokal: {str(e)}"
 
 def get_absolute_path(relative_path):
     """Convert relative upload path to absolute path."""

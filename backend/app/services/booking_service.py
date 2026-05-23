@@ -9,6 +9,15 @@ from datetime import datetime
 import math
 
 async def check_room_availability(db: AsyncSession, room_id: int, date, start_time: str, end_time: str, exclude_booking_id: int = None):
+    from datetime import date as py_date, datetime as py_datetime
+    if isinstance(date, str):
+        try:
+            date = datetime.strptime(date, '%Y-%m-%d').date()
+        except ValueError:
+            pass
+    elif isinstance(date, py_datetime):
+        date = date.date()
+
     query = select(Booking).filter(
         Booking.room_id == room_id,
         Booking.date == date,
@@ -24,6 +33,16 @@ async def check_room_availability(db: AsyncSession, room_id: int, date, start_ti
     return len(conflicts) == 0, conflicts
 
 async def create_booking(db: AsyncSession, data: dict, facilities_list: list = None):
+    from datetime import date as py_date, datetime as py_datetime
+    date_val = data.get('date')
+    if isinstance(date_val, str):
+        try:
+            data['date'] = datetime.strptime(date_val, '%Y-%m-%d').date()
+        except ValueError:
+            return False, "Format tanggal tidak valid. Gunakan YYYY-MM-DD."
+    elif isinstance(date_val, py_datetime):
+        data['date'] = date_val.date()
+
     room_result = await db.execute(select(Room).filter_by(id=data.get('room_id')))
     room = room_result.scalars().first()
     if not room:
