@@ -17,3 +17,10 @@ frontend/dist/
 # IDE/OS
 .DS_Store
 Thumbs.db
+
+# Ignore Upload folder tp tetep pertahankan struktur
+backend/uploads/qr/*
+backend/uploads/documents/*
+
+!backend/uploads/documents/.gitkeep
+!backend/uploads/qr/.gitkeep
