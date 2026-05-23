@@ -7,6 +7,27 @@ import { formatDateID, formatTimeRange } from '../../../utils/formatDate';
 
 const BACKEND_URL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'http://localhost:8000';
 
+// ── Modal Overlay ──
+const ModalOverlay = ({ isOpen, onClose, children }) => {
+  if (!isOpen) return null;
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 9999,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      padding: '20px'
+    }}>
+      <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(3px)' }} onClick={onClose} />
+      <div style={{
+        position: 'relative', background: 'white', borderRadius: '20px',
+        boxShadow: '0 25px 60px rgba(0,0,0,0.15)', width: '100%', maxWidth: '480px',
+        overflow: 'hidden'
+      }}>
+        {children}
+      </div>
+    </div>
+  );
+};
+
 const VerificationDetail = ({ item, onBack }) => {
   const [loading, setLoading] = useState(false);
   const [showApproveModal, setShowApproveModal] = useState(false);
@@ -56,27 +77,6 @@ const VerificationDetail = ({ item, onBack }) => {
 
   const handleDownloadPDF = async () => {
     await bookingService.downloadEPassPDF(item.id, item.booking_code);
-  };
-
-  // ── Modal Overlay ──
-  const ModalOverlay = ({ isOpen, onClose, children }) => {
-    if (!isOpen) return null;
-    return (
-      <div style={{
-        position: 'fixed', inset: 0, zIndex: 9999,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        padding: '20px'
-      }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(3px)' }} onClick={onClose} />
-        <div style={{
-          position: 'relative', background: 'white', borderRadius: '20px',
-          boxShadow: '0 25px 60px rgba(0,0,0,0.15)', width: '100%', maxWidth: '480px',
-          overflow: 'hidden'
-        }}>
-          {children}
-        </div>
-      </div>
-    );
   };
 
   return (
