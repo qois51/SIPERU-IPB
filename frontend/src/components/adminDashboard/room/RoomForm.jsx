@@ -4,6 +4,13 @@ import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
+const formatRupiah = (value) => {
+  if (value === null || value === undefined) return '';
+  const clean = value.toString().replace(/\D/g, '');
+  if (!clean) return '';
+  return new Intl.NumberFormat('id-ID').format(parseInt(clean));
+};
+
 const RoomForm = ({ room, onBack, onSuccess, onZoomImage }) => {
   const DEFAULT_IMAGE = '/loginAsset/ruanganTerdaftar.png';
   const DEFAULT_PIC_IMAGE = ''; // Empty for placeholder icon
@@ -38,6 +45,7 @@ const RoomForm = ({ room, onBack, onSuccess, onZoomImage }) => {
 
       setFormData({
         ...room,
+        price: formatRupiah(room.price),
         facilities: Array.isArray(room.facilities) ? room.facilities.join(',') : room.facilities,
         image_url: Array.isArray(room.image_url) ? room.image_url : (room.image_url ? room.image_url.split('|') : []),
         op_start_day: (startDay || 'Senin').trim(),
@@ -58,7 +66,7 @@ const RoomForm = ({ room, onBack, onSuccess, onZoomImage }) => {
         name: formData.name,
         location: formData.location,
         capacity: parseInt(formData.capacity) || 0,
-        price: parseInt(formData.price) || 0,
+        price: parseInt(formData.price.toString().replace(/\D/g, '')) || 0,
         operational_hours: operational_hours,
         facilities: formData.facilities,
         pic_name: formData.pic_name,
@@ -141,10 +149,10 @@ const RoomForm = ({ room, onBack, onSuccess, onZoomImage }) => {
               <div className="input-wrapper">
                 <Banknote className="input-icon" size={18} />
                 <input
-                  type="number"
-                  placeholder="Contoh: 150000"
+                  type="text"
+                  placeholder="Contoh: 150.000"
                   value={formData.price}
-                  onChange={e => setFormData({ ...formData, price: e.target.value })}
+                  onChange={e => setFormData({ ...formData, price: formatRupiah(e.target.value) })}
                   required
                 />
               </div>
