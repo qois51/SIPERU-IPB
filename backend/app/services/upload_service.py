@@ -73,43 +73,11 @@ def save_uploaded_file(upload_file):
     supabase_key = getattr(settings, 'supabase_key', None) or os.environ.get('SUPABASE_KEY')
 
     if supabase_url and supabase_key:
-        try:
-            url = supabase_url.rstrip('/')
-            # Target endpoint: POST /storage/v1/object/documents/{safe_name}
-            upload_url = f"{url}/storage/v1/object/documents/{safe_name}"
-            
-            headers = {
-                "Authorization": f"Bearer {supabase_key}",
-                "apikey": supabase_key,
-                "Content-Type": "application/pdf"
-            }
-            
-            req = urllib.request.Request(
-                upload_url,
-                data=file_bytes,
-                headers=headers,
-                method="POST"
-            )
-            
-            with urllib.request.urlopen(req) as response:
-                json.loads(response.read().decode('utf-8'))
-                
-            # If upload succeeds, construct public URL
-            public_url = f"{url}/storage/v1/object/public/documents/{safe_name}"
-            return True, public_url
-            
-        except urllib.error.HTTPError as e:
-            try:
-                error_body = e.read().decode('utf-8')
-            except Exception:
-                error_body = "Gagal membaca isi respon error."
-            error_msg = f"Gagal unggah ke Supabase Storage (HTTP {e.code}): {error_body}"
-            print(f"[Supabase Storage Error] {error_msg}")
-            return False, error_msg
-        except Exception as e:
-            error_msg = f"Gagal unggah ke Supabase Storage (Unexpected): {str(e)}"
-            print(f"[Supabase Storage Error] {error_msg}")
-            return False, error_msg
+        ok, res = upload_to_supabase("documents", safe_name, file_bytes, "application/pdf")
+        if ok:
+            return True, res
+        else:
+            return False, res
 
     # Fallback / Default: Local Storage
     _ensure_dirs()
@@ -121,6 +89,85 @@ def save_uploaded_file(upload_file):
         return True, relative_path
     except Exception as e:
         return False, f"Gagal menyimpan file secara lokal: {str(e)}"
+
+def upload_to_supabase(bucket: str, filename: str, file_bytes: bytes, content_type: str):
+    """
+    Upload raw file bytes directly to a Supabase Storage bucket via REST API.
+    """
+    from config import settings
+    supabase_url = getattr(settings, 'supabase_url', None) or os.environ.get('SUPABASE_URL')
+    supabase_key = getattr(settings, 'supabase_key', None) or os.environ.get('SUPABASE_KEY')
+
+    if not supabase_url or not supabase_key:
+        return False, "Kredensial Supabase belum dikonfigurasi."
+
+    try:
+        url = supabase_url.rstrip('/')
+        # Target endpoint: POST /storage/v1/object/{bucket}/{filename}
+        upload_url = f"{url}/storage/v1/object/{bucket}/{filename}"
+        
+        headers = {
+            "Authorization": f"Bearer {supabase_key}",
+            "apikey": supabase_key,
+            "Content-Type": content_type
+        }
+        
+        req = urllib.request.Request(
+            upload_url,
+            data=file_bytes,
+            headers=headers,
+            method="POST"
+        )
+        
+        with urllib.request.urlopen(req) as response:
+            json.loads(response.read().decode('utf-8'))
+            
+        # If upload succeeds, construct public URL
+        public_url = f"{url}/storage/v1/object/public/{bucket}/{filename}"
+        return True, public_url
+        
+    except urllib.error.HTTPError as e:
+        try:
+            error_body = e.read().decode('utf-8')
+        except Exception:
+            error_body = "Gagal membaca isi respon error."
+        error_msg = f"Gagal unggah ke Supabase Storage (HTTP {e.code}): {error_body}"
+        print(f"[Supabase Storage Error] {error_msg}")
+        return False, error_msg
+    except Exception as e:
+        error_msg = f"Gagal unggah ke Supabase Storage (Unexpected): {str(e)}"
+        print(f"[Supabase Storage Error] {error_msg}")
+        return False, error_msg
+
+def save_qrcode_file(booking_code: str, img_bytes: bytes):
+    """
+    Save generated QR code PNG bytes to Supabase 'qrcode' bucket,
+    falling back to local uploads/qr folder if Supabase is unconfigured or fails.
+    """
+    filename = f"qr_{booking_code}.png"
+    
+    # Check if Supabase is configured
+    from config import settings
+    supabase_url = getattr(settings, 'supabase_url', None) or os.environ.get('SUPABASE_URL')
+    supabase_key = getattr(settings, 'supabase_key', None) or os.environ.get('SUPABASE_KEY')
+    
+    if supabase_url and supabase_key:
+        ok, res = upload_to_supabase("qrcode", filename, img_bytes, "image/png")
+        if ok:
+            return True, res
+        else:
+            print(f"[Supabase Storage] QR Code upload to bucket 'qrcode' failed ({res}). Falling back to local...")
+            
+    # Fallback: Local Storage
+    _ensure_dirs()
+    filepath = os.path.join(QR_FOLDER, filename)
+    try:
+        with open(filepath, "wb") as buffer:
+            buffer.write(img_bytes)
+        relative_path = f"uploads/qr/{filename}"
+        return True, relative_path
+    except Exception as e:
+        return False, f"Gagal menyimpan QR code secara lokal: {str(e)}"
 
 def get_absolute_path(relative_path):
     """Convert relative upload path to absolute path."""
