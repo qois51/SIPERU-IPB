@@ -72,13 +72,24 @@ async def approve_booking(db: AsyncSession, booking_id: int, notes: str = None):
 
     booking.status = 'Approved'
     booking.notes = notes
-    await db.commit()
 
+    # Generate booking code if it doesn't exist
+    from app.models.booking_model import generate_booking_code
+    if not booking.booking_code:
+        booking.booking_code = generate_booking_code()
+
+    # Generate QR code first before commit while relationships are still loaded in session
     from app.services.qr_service import generate_qr_for_booking
     qr_path = generate_qr_for_booking(booking)
     if qr_path:
         booking.qr_code = qr_path
-        await db.commit()
+
+    await db.commit()
+    
+    # Re-query booking to fully load and refresh relationships (lazy="selectin")
+    # to avoid lazy-loading MissingGreenlet errors inside route handler's .to_dict() call
+    fresh_result = await db.execute(select(Booking).filter_by(id=booking_id))
+    booking = fresh_result.scalars().first()
 
     return True, booking
 
@@ -94,6 +105,11 @@ async def reject_booking(db: AsyncSession, booking_id: int, notes: str = None):
     booking.status = 'Rejected'
     booking.notes = notes or "Ditolak oleh admin."
     await db.commit()
+    
+    # Re-query booking to fully load and refresh relationships (lazy="selectin")
+    fresh_result = await db.execute(select(Booking).filter_by(id=booking_id))
+    booking = fresh_result.scalars().first()
+    
     return True, booking
 
 async def complete_booking(db: AsyncSession, booking_id: int):
@@ -107,6 +123,11 @@ async def complete_booking(db: AsyncSession, booking_id: int):
 
     booking.status = 'Completed'
     await db.commit()
+    
+    # Re-query booking to fully load and refresh relationships (lazy="selectin")
+    fresh_result = await db.execute(select(Booking).filter_by(id=booking_id))
+    booking = fresh_result.scalars().first()
+    
     return True, booking
 
 async def get_bookings_paginated(db: AsyncSession, page=1, per_page=10, status=None, search=None, user_id=None):
