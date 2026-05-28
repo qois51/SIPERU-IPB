@@ -127,6 +127,31 @@ async def get_reports_stats(
     result = await booking_service.get_reports_stats(db, period=period)
     return success_response(data=result, message="Statistik laporan berhasil diambil.")
 
+@booking_router.get('/calendar/events')
+async def get_calendar_events(
+    year: int = Query(...),
+    month: int = Query(...),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get all bookings for a given month to display on admin calendar."""
+    from calendar import monthrange
+    first_day = datetime(year, month, 1).date()
+    last_day = datetime(year, month, monthrange(year, month)[1]).date()
+
+    result = await db.execute(
+        select(Booking).filter(
+            Booking.date >= first_day,
+            Booking.date <= last_day,
+            Booking.status != 'Draft',
+        ).order_by(Booking.date.asc(), Booking.start_time.asc())
+    )
+    bookings = result.scalars().all()
+
+    return success_response(
+        data=[b.to_dict() for b in bookings],
+        message="Data kalender berhasil diambil."
+    )
+
 @booking_router.get('/{id}')
 async def get_booking(id: int, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Booking).filter_by(id=id))

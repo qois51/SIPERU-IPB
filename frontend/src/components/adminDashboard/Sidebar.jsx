@@ -31,7 +31,9 @@ const Sidebar = ({ isOpen, activeMenu, onMenuChange }) => {
         <div onClick={() => onMenuChange('scanner')}>
           <SidebarItem icon={ScanLine} label="Scan E-Pass" active={activeMenu === 'scanner'} />
         </div>
-        <SidebarItem icon={Calendar} label="Kalender" />
+        <div onClick={() => onMenuChange('kalender')}>
+          <SidebarItem icon={Calendar} label="Kalender" active={activeMenu === 'kalender'} />
+        </div>
         <div onClick={() => onMenuChange('laporan')}>
           <SidebarItem icon={FileBarChart} label="Laporan" active={activeMenu === 'laporan'} />
         </div>

@@ -10,6 +10,7 @@ import RoomPage from './room/RoomPage';
 import UserPage from './user/UserPage';
 import EPassScanner from './scanner/EPassScanner';
 import LaporanPage from './laporan/LaporanPage';
+import CalendarPage from './calendar/CalendarPage';
 
 const AdminDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -64,6 +65,8 @@ const AdminDashboard = () => {
         return <UserPage />;
       case 'scanner':
         return <EPassScanner />;
+      case 'kalender':
+        return <CalendarPage />;
       case 'laporan':
         return <LaporanPage />;
       default:
