@@ -86,6 +86,22 @@ const adminService = {
     const response = await api.delete(`/rooms/${roomId}`);
     return response.data;
   },
+
+  /**
+   * Get report statistics by period (1month, 6months, 1year, all)
+   */
+  getReportsStats: async (period = '1month') => {
+    const response = await api.get('/bookings/reports/stats', { params: { period } });
+    return response.data;
+  },
+
+  /**
+   * Get calendar events (bookings) for a specific month/year
+   */
+  getCalendarEvents: async (year, month) => {
+    const response = await api.get('/bookings/calendar/events', { params: { year, month } });
+    return response.data;
+  },
 };
 
 export default adminService;

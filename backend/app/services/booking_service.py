@@ -285,3 +285,134 @@ async def get_room_availability(db: AsyncSession, room_id: int, date_str: str):
         "date": date_str,
         "booked_slots": booked_slots,
     }, None
+
+async def get_reports_stats(db: AsyncSession, period: str):
+    from datetime import datetime, timedelta
+    from sqlalchemy.future import select
+    from app.models.booking_model import Booking
+
+    today = datetime.now().date()
+    start_date = None
+
+    if period == '1month':
+        start_date = today - timedelta(days=30)
+    elif period == '6months':
+        start_date = today - timedelta(days=180)
+    elif period == '1year':
+        start_date = today - timedelta(days=365)
+    
+    query = select(Booking).filter(Booking.status != 'Draft')
+    if start_date:
+        query = query.filter(Booking.date >= start_date)
+    
+    query = query.order_by(Booking.date.desc())
+    result = await db.execute(query)
+    bookings = result.scalars().all()
+
+    # Summaries
+    total_bookings = len(bookings)
+    total_approved = sum(1 for b in bookings if b.status in ['Approved', 'CheckedIn', 'Completed'])
+    total_completed = sum(1 for b in bookings if b.status == 'Completed')
+    total_pending = sum(1 for b in bookings if b.status == 'Pending')
+    total_rejected = sum(1 for b in bookings if b.status == 'Rejected')
+    total_participants = sum(b.participants or 0 for b in bookings)
+
+    # Durations calculation
+    total_duration_hours = 0.0
+    for b in bookings:
+        if b.start_time and b.end_time:
+            try:
+                sh, sm = map(int, b.start_time.split(':'))
+                eh, em = map(int, b.end_time.split(':'))
+                duration = (eh * 60 + em - (sh * 60 + sm)) / 60.0
+                if duration > 0:
+                    total_duration_hours += duration
+            except Exception:
+                pass
+
+    # Aggregations
+    room_stats = {}
+    dept_stats = {}
+    org_stats = {}
+    status_stats = {
+        "Pending": 0,
+        "Approved": 0,
+        "Rejected": 0,
+        "CheckedIn": 0,
+        "Completed": 0,
+        "Expired": 0,
+        "Cancelled": 0
+    }
+
+    for b in bookings:
+        # Status stats
+        status_stats[b.status] = status_stats.get(b.status, 0) + 1
+
+        # Room stats
+        room_name = b.room_data.name if b.room_data else f"Ruangan ID {b.room_id}"
+        if room_name not in room_stats:
+            room_stats[room_name] = {"count": 0, "hours": 0.0}
+        room_stats[room_name]["count"] += 1
+        
+        # Calculate duration for this booking
+        if b.start_time and b.end_time:
+            try:
+                sh, sm = map(int, b.start_time.split(':'))
+                eh, em = map(int, b.end_time.split(':'))
+                duration = (eh * 60 + em - (sh * 60 + sm)) / 60.0
+                if duration > 0:
+                    room_stats[room_name]["hours"] += duration
+            except Exception:
+                pass
+
+        # Department / Program Studi stats
+        dept_name = b.program_studi or "Umum / Non-Akademik"
+        dept_name = dept_name.strip()
+        if not dept_name or dept_name == '-':
+            dept_name = "Umum / Non-Akademik"
+        
+        dept_stats[dept_name] = dept_stats.get(dept_name, 0) + 1
+
+        # Organization stats
+        org_name = b.organization or "Individu"
+        org_name = org_name.strip()
+        if not org_name or org_name == '-':
+            org_name = "Individu"
+        
+        org_stats[org_name] = org_stats.get(org_name, 0) + 1
+
+    # Convert to sorted lists
+    by_room = [
+        {"room_name": name, "count": info["count"], "hours": round(info["hours"], 1)}
+        for name, info in room_stats.items()
+    ]
+    by_room = sorted(by_room, key=lambda x: x["count"], reverse=True)
+
+    by_department = [
+        {"program_studi": name, "count": count}
+        for name, count in dept_stats.items()
+    ]
+    by_department = sorted(by_department, key=lambda x: x["count"], reverse=True)
+
+    by_organization = [
+        {"organization": name, "count": count}
+        for name, count in org_stats.items()
+    ]
+    by_organization = sorted(by_organization, key=lambda x: x["count"], reverse=True)
+
+    return {
+        "summary": {
+            "total_bookings": total_bookings,
+            "total_approved": total_approved,
+            "total_completed": total_completed,
+            "total_pending": total_pending,
+            "total_rejected": total_rejected,
+            "total_participants": total_participants,
+            "total_duration_hours": round(total_duration_hours, 1)
+        },
+        "by_room": by_room,
+        "by_department": by_department,
+        "by_organization": by_organization,
+        "status_breakdown": status_stats,
+        "bookings": [b.to_dict() for b in bookings]
+    }
