@@ -14,7 +14,9 @@ if "supabase" in settings.db_host or "pooler" in settings.db_host:
 engine = create_async_engine(
     settings.database_url,
     echo=False,
-    connect_args=connect_args
+    connect_args=connect_args,
+    pool_pre_ping=True,
+    pool_recycle=300
 )
 
 AsyncSessionLocal = async_sessionmaker(

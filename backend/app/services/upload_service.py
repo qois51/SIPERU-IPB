@@ -77,7 +77,7 @@ def save_uploaded_file(upload_file):
         if ok:
             return True, res
         else:
-            return False, res
+            print(f"[Supabase Storage Warning] Upload failed ({res}). Falling back to local storage...")
 
     # Fallback / Default: Local Storage
     _ensure_dirs()
@@ -109,7 +109,8 @@ def upload_to_supabase(bucket: str, filename: str, file_bytes: bytes, content_ty
         headers = {
             "Authorization": f"Bearer {supabase_key}",
             "apikey": supabase_key,
-            "Content-Type": content_type
+            "Content-Type": content_type,
+            "Content-Length": str(len(file_bytes))
         }
         
         req = urllib.request.Request(
@@ -173,3 +174,80 @@ def get_absolute_path(relative_path):
     """Convert relative upload path to absolute path."""
     base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
     return os.path.join(base_dir, relative_path)
+
+def delete_from_supabase(bucket: str, filename: str):
+    """
+    Delete an object from a Supabase Storage bucket via REST API.
+    """
+    from config import settings
+    supabase_url = getattr(settings, 'supabase_url', None) or os.environ.get('SUPABASE_URL')
+    supabase_key = getattr(settings, 'supabase_key', None) or os.environ.get('SUPABASE_KEY')
+
+    if not supabase_url or not supabase_key:
+        print("[Supabase Storage] Supabase not configured. Skipping deletion.")
+        return False
+
+    try:
+        url = supabase_url.rstrip('/')
+        # Target endpoint: DELETE /storage/v1/object/{bucket}/{filename}
+        delete_url = f"{url}/storage/v1/object/{bucket}/{filename}"
+        
+        headers = {
+            "Authorization": f"Bearer {supabase_key}",
+            "apikey": supabase_key
+        }
+        
+        req = urllib.request.Request(
+            delete_url,
+            headers=headers,
+            method="DELETE"
+        )
+        
+        with urllib.request.urlopen(req) as response:
+            res_data = response.read().decode('utf-8')
+            print(f"[Supabase Storage] Successfully deleted {filename} from bucket '{bucket}': {res_data}")
+        return True
+        
+    except urllib.error.HTTPError as e:
+        try:
+            error_body = e.read().decode('utf-8')
+        except Exception:
+            error_body = ""
+        print(f"[Supabase Storage Error] Failed to delete {filename} (HTTP {e.code}): {error_body}")
+        return False
+    except Exception as e:
+        print(f"[Supabase Storage Error] Unexpected error deleting {filename}: {str(e)}")
+        return False
+
+def delete_uploaded_file(filepath: str):
+    """
+    Delete an uploaded file either from local storage or from Supabase Storage
+    depending on the filepath format.
+    """
+    if not filepath:
+        return
+    
+    # 1. Check if it's a Supabase URL
+    if "storage/v1/object/public/" in filepath:
+        try:
+            # Parse bucket and filename from URL
+            parts = filepath.split("/storage/v1/object/public/")
+            if len(parts) > 1:
+                bucket_and_file = parts[1]
+                bucket_parts = bucket_and_file.split("/", 1)
+                if len(bucket_parts) == 2:
+                    bucket, filename = bucket_parts
+                    delete_from_supabase(bucket, filename)
+        except Exception as e:
+            print(f"[Storage Warning] Failed to parse Supabase URL for deletion: {str(e)}")
+            
+    # 2. Local fallback / Local path
+    else:
+        # Resolve absolute path
+        abs_path = get_absolute_path(filepath)
+        if os.path.exists(abs_path):
+            try:
+                os.remove(abs_path)
+                print(f"[Storage] Successfully deleted local file: {abs_path}")
+            except Exception as e:
+                print(f"[Storage Warning] Failed to delete local file {abs_path}: {str(e)}")

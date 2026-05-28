@@ -14,5 +14,4 @@ qrcode[pil]
 reportlab
 Pillow
 email-validator
-werkzeug
-psycopg2-binary
+werkzeug

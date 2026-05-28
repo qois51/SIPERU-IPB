@@ -178,11 +178,24 @@ const BookingDetail = () => {
                   </div>
                 </div>
 
-                {/* Notes (rejection reason) */}
+                {/* Notes (dynamic color based on status) */}
                 {booking.notes && (
-                  <div style={{ background: '#fef2f2', borderRadius: '12px', padding: '16px', border: '1px solid #fecaca' }}>
-                    <p style={{ fontSize: '14px', fontWeight: 600, color: '#991b1b', marginBottom: '4px' }}>Catatan Admin:</p>
-                    <p style={{ fontSize: '14px', color: '#b91c1c' }}>{booking.notes}</p>
+                  <div style={{ 
+                    background: (booking.status === 'Approved' || booking.status === 'CheckedIn' || booking.status === 'Completed') ? '#f0fdf4' : booking.status === 'Rejected' ? '#fef2f2' : '#fefce8', 
+                    borderRadius: '12px', 
+                    padding: '16px', 
+                    border: `1px solid ${(booking.status === 'Approved' || booking.status === 'CheckedIn' || booking.status === 'Completed') ? '#bbf7d0' : booking.status === 'Rejected' ? '#fecaca' : '#fef08a'}` 
+                  }}>
+                    <p style={{ 
+                      fontSize: '14px', 
+                      fontWeight: 600, 
+                      color: (booking.status === 'Approved' || booking.status === 'CheckedIn' || booking.status === 'Completed') ? '#166534' : booking.status === 'Rejected' ? '#991b1b' : '#854d0e', 
+                      marginBottom: '4px' 
+                    }}>Catatan Admin:</p>
+                    <p style={{ 
+                      fontSize: '14px', 
+                      color: (booking.status === 'Approved' || booking.status === 'CheckedIn' || booking.status === 'Completed') ? '#15803d' : booking.status === 'Rejected' ? '#b91c1c' : '#ca8a04' 
+                    }}>{booking.notes}</p>
                   </div>
                 )}
               </div>
@@ -193,13 +206,14 @@ const BookingDetail = () => {
               {/* E-Pass Digital */}
               <div style={{ background: '#2f458d', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
                 <div style={{ padding: '24px 16px', textAlign: 'center' }}>
-                  <p style={{ fontSize: '13px', fontWeight: 700, color: 'white', marginBottom: '8px' }}>E-Pass Digital</p>
-                  <p style={{ color: '#fde047', fontWeight: 800, fontSize: '16px', marginBottom: '24px' }}>
+                  <p style={{ fontSize: '13px', fontWeight: 700, color: 'white', marginBottom: '8px' }}>E-Pass Digital</p>                  <p style={{ color: '#fde047', fontWeight: 800, fontSize: '16px', marginBottom: '24px' }}>
                     {booking.status === 'Approved' || booking.status === 'CheckedIn' 
                       ? booking.booking_code 
                       : booking.status === 'Completed' || booking.status === 'Expired'
                         ? `${booking.booking_code} — EXPIRED`
-                        : 'Menunggu Persetujuan'}
+                        : booking.status === 'Rejected'
+                          ? 'Ditolak'
+                          : 'Menunggu Persetujuan'}
                   </p>
                   
                   {/* QR Code */}
@@ -212,11 +226,16 @@ const BookingDetail = () => {
                         <span style={{ fontSize: 13, fontWeight: 700, color: '#dc2626' }}>EXPIRED</span>
                         <div style={{ fontSize: 11, color: '#9ca3af', marginTop: 4 }}>E-Pass tidak berlaku</div>
                       </div>
+                    ) : booking.status === 'Rejected' ? (
+                      <div style={{ textAlign: 'center' }}>
+                        <span style={{ fontSize: 15, fontWeight: 800, color: '#dc2626', display: 'block', marginBottom: '6px' }}>DITOLAK</span>
+                        <div style={{ fontSize: 11, color: '#9ca3af' }}>Pengajuan ditolak admin</div>
+                      </div>
                     ) : (
                       <span style={{ fontSize: '14px', fontWeight: 600, color: '#9ca3af', textAlign: 'center' }}>QR Code Belum Tersedia</span>
                     )}
                   </div>
-
+ 
                   {/* Info */}
                   <p style={{ fontSize: '15px', color: 'white', margin: '0 0 4px' }}>{booking.room_name}</p>
                   <p style={{ fontSize: '13px', color: '#bfdbfe', margin: '0 0 4px' }}>{booking.room_location || 'Gedung Rektorat, Lantai 4'}</p>
@@ -226,10 +245,18 @@ const BookingDetail = () => {
                   
                   {/* Status Badge */}
                   <div style={{ display: 'inline-block', padding: '6px 24px', borderRadius: '999px', fontSize: '14px', fontWeight: 600,
-                    background: booking.status === 'Approved' ? '#22c55e' : booking.status === 'CheckedIn' ? '#2563eb' : booking.status === 'Completed' || booking.status === 'Expired' ? '#dc2626' : '#eab308',
+                    background: booking.status === 'Approved' ? '#22c55e' : booking.status === 'CheckedIn' ? '#2563eb' : booking.status === 'Completed' || booking.status === 'Expired' || booking.status === 'Rejected' ? '#dc2626' : '#eab308',
                     color: 'white'
                   }}>
-                    {booking.status === 'Approved' ? 'Valid' : booking.status === 'CheckedIn' ? 'Sedang Digunakan' : booking.status === 'Completed' || booking.status === 'Expired' ? 'EXPIRED' : booking.status}
+                    {booking.status === 'Approved' 
+                      ? 'Valid' 
+                      : booking.status === 'CheckedIn' 
+                        ? 'Sedang Digunakan' 
+                        : booking.status === 'Completed' || booking.status === 'Expired' 
+                          ? 'EXPIRED' 
+                          : booking.status === 'Rejected'
+                            ? 'Ditolak'
+                            : 'Menunggu Persetujuan'}
                   </div>
                 </div>
               </div>
@@ -290,13 +317,17 @@ const BookingDetail = () => {
               <div style={{ background: 'white', borderRadius: '16px', padding: '16px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
                 <p style={{ fontSize: '11px', color: '#64748b', marginBottom: '12px' }}>PIC Ruangan</p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <div style={{ width: '48px', height: '48px', borderRadius: '8px', background: '#1e3a8a', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <User size={24} />
+                  <div style={{ width: '48px', height: '48px', borderRadius: '8px', background: '#1e3a8a', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                    {booking.room_pic_image_url ? (
+                      <img src={booking.room_pic_image_url} alt={booking.room_pic_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <User size={24} />
+                    )}
                   </div>
                   <div>
-                    <p style={{ fontSize: '14px', fontWeight: 800, color: '#111827', margin: '0 0 2px' }}>Dr. Ahmad Wijaya</p>
-                    <p style={{ fontSize: '11px', color: '#475569', margin: '0 0 4px', display: 'flex', alignItems: 'center', gap: '6px' }}><Mail size={12} /> ahmad@gmail.com</p>
-                    <p style={{ fontSize: '11px', color: '#475569', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}><Phone size={12} /> 08123456789</p>
+                    <p style={{ fontSize: '14px', fontWeight: 800, color: '#111827', margin: '0 0 2px' }}>{booking.room_pic_name || '-'}</p>
+                    {booking.room_pic_email && <p style={{ fontSize: '11px', color: '#475569', margin: '0 0 4px', display: 'flex', alignItems: 'center', gap: '6px' }}><Mail size={12} /> {booking.room_pic_email}</p>}
+                    {booking.room_pic_phone && <p style={{ fontSize: '11px', color: '#475569', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}><Phone size={12} /> {booking.room_pic_phone}</p>}
                   </div>
                 </div>
               </div>

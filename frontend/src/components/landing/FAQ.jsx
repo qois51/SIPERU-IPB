@@ -32,7 +32,7 @@ const FAQ = () => {
   };
 
   return (
-    <section className="faq-section" style={{ padding: '80px 0' }}>
+    <section id="faq" className="faq-section" style={{ padding: '80px 0' }}>
       <div className="container" style={{ maxWidth: '1400px', padding: '0 40px', display: 'grid', gridTemplateColumns: '1fr 1.3fr', gap: '60px' }}>
         
         {/* Left Column: Info & Contacts */}

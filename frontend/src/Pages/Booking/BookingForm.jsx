@@ -137,10 +137,24 @@ const BookingForm = () => {
   const [submitting, setSubmitting] = useState(false);
   const [savingDraft, setSavingDraft] = useState(false);
   const [error, setError] = useState('');
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [modalErrorMessage, setModalErrorMessage] = useState('');
   const [uploadFile, setUploadFile] = useState(null);
   const [selectedFacilities, setSelectedFacilities] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
+
+  const showPopUpError = (msg) => {
+    setModalErrorMessage(msg);
+    setShowErrorModal(true);
+  };
+
+  const onInvalid = (errors) => {
+    const messages = Object.values(errors).map(err => err.message);
+    if (messages.length > 0) {
+      showPopUpError("Beberapa informasi wajib belum terisi atau tidak sesuai:\n\n" + messages.map(m => `• ${m}`).join('\n'));
+    }
+  };
 
   const selectedDate = searchParams.get('date') || '';
   const startTime = searchParams.get('start') || '';
@@ -216,9 +230,9 @@ const BookingForm = () => {
   };
 
   const onSubmit = async (formData) => {
-    if (!selectedDate) { setError('Tanggal belum dipilih.'); return; }
-    if (!startTime || !endTime) { setError('Jam belum dipilih.'); return; }
-    if (!uploadFile) { setError('Dokumen Surat Izin/Pengantar wajib diunggah.'); return; }
+    if (!selectedDate) { showPopUpError('Tanggal booking belum dipilih. Harap tentukan tanggalnya terlebih dahulu.'); return; }
+    if (!startTime || !endTime) { showPopUpError('Waktu/Jam booking belum dipilih. Harap tentukan jam pemakaian terlebih dahulu.'); return; }
+    if (!uploadFile) { showPopUpError('Dokumen Surat Izin/Surat Pengantar wajib diunggah untuk mengajukan permohonan.'); return; }
     setSubmitting(true);
     setError('');
     try {
@@ -238,7 +252,7 @@ const BookingForm = () => {
       if (uploadFile && bookingId) await bookingService.uploadDocument(bookingId, uploadFile);
       navigate(`/booking/${bookingId}/success`);
     } catch (err) {
-      setError(err.message || 'Gagal membuat booking.');
+      showPopUpError(err.message || 'Gagal memproses peminjaman ruangan.');
     } finally {
       setSubmitting(false);
     }
@@ -246,8 +260,8 @@ const BookingForm = () => {
 
   const handleSaveDraft = async () => {
     const formData = getValues();
-    if (!formData.activity_name) { setError('Isi Nama Kegiatan untuk menyimpan draft.'); return; }
-    if (!selectedDate || !startTime || !endTime) { setError('Tanggal & jam belum dipilih.'); return; }
+    if (!formData.activity_name) { showPopUpError('Harap isi Nama Kegiatan terlebih dahulu untuk menyimpan draft.'); return; }
+    if (!selectedDate || !startTime || !endTime) { showPopUpError('Tanggal & jam booking wajib dipilih sebelum menyimpan draft.'); return; }
     setSavingDraft(true);
     setError('');
     try {
@@ -274,7 +288,7 @@ const BookingForm = () => {
       }
       navigate('/dashboard');
     } catch (err) {
-      setError(err.message || 'Gagal menyimpan draft.');
+      showPopUpError(err.message || 'Gagal menyimpan draft peminjaman.');
     } finally {
       setSavingDraft(false);
     }
@@ -336,7 +350,7 @@ const BookingForm = () => {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '24px', alignItems: 'start' }}>
 
             {/* ═══ MAIN FORM ═══ */}
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(onSubmit, onInvalid)}>
               <div style={{
                 background: 'white', borderRadius: '16px',
                 padding: '28px', boxShadow: '0 1px 4px rgba(0,0,0,0.07)',
@@ -578,6 +592,53 @@ const BookingForm = () => {
       </div>
 
       <Footer />
+
+      {/* Error Modal Popup */}
+      {showErrorModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(8px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 9999, transition: 'all 0.3s ease',
+        }}>
+          <div style={{
+            background: 'white', borderRadius: '16px', padding: '32px',
+            maxWidth: '480px', width: '90%', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.15), 0 10px 10px -5px rgba(0,0,0,0.04)',
+            border: '1px solid #fee2e2', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center',
+          }}>
+            <div style={{
+              width: '56px', height: '56px', borderRadius: '50%', background: '#fee2e2',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ef4444', marginBottom: '20px'
+            }}>
+              <AlertCircle size={32} />
+            </div>
+            <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#111827', marginBottom: '12px' }}>
+              Form Belum Lengkap
+            </h3>
+            <div style={{ 
+              fontSize: '13px', color: '#4b5563', lineHeight: 1.6, marginBottom: '28px',
+              textAlign: 'left', background: '#fef2f2', padding: '16px', borderRadius: '8px',
+              border: '1px solid #fecaca', whiteSpace: 'pre-wrap', width: '100%', boxSizing: 'border-box',
+              maxHeight: '240px', overflowY: 'auto'
+            }}>
+              {modalErrorMessage}
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowErrorModal(false)}
+              style={{
+                width: '100%', padding: '12px 24px', background: '#ef4444', color: 'white',
+                border: 'none', borderRadius: '10px', fontWeight: 700, fontSize: '14px',
+                cursor: 'pointer', transition: 'background 0.15s', boxShadow: '0 4px 6px -1px rgba(239, 68, 68, 0.2)'
+              }}
+              onMouseOver={e => e.currentTarget.style.background = '#dc2626'}
+              onMouseOut={e => e.currentTarget.style.background = '#ef4444'}
+            >
+              Mengerti & Perbaiki
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

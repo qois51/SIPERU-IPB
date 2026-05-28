@@ -69,6 +69,10 @@ class Booking(Base):
             "room_name": self.room_data.name if self.room_data else None,
             "room_location": self.room_data.location if self.room_data else None,
             "room_price": self.room_data.price if self.room_data else None,
+            "room_pic_name": self.room_data.pic_name if self.room_data else None,
+            "room_pic_email": self.room_data.pic_email if self.room_data else None,
+            "room_pic_phone": self.room_data.pic_phone if self.room_data else None,
+            "room_pic_image_url": self.room_data.pic_image_url if self.room_data else None,
             "user_name": self.user.username if self.user else None,
             # Data Peminjam
             "nama_peminjam": self.nama_peminjam,
