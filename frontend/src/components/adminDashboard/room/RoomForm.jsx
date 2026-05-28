@@ -14,6 +14,11 @@ const formatRupiah = (value) => {
 const RoomForm = ({ room, onBack, onSuccess, onZoomImage }) => {
   const DEFAULT_IMAGE = '/loginAsset/ruanganTerdaftar.png';
   const DEFAULT_PIC_IMAGE = ''; // Empty for placeholder icon
+
+  // Retrieve current logged-in admin data to auto-populate PIC fields
+  const activeUserStr = localStorage.getItem('user');
+  const activeUser = activeUserStr ? JSON.parse(activeUserStr) : {};
+
   const [formData, setFormData] = useState({
     name: '',
     location: '',
@@ -21,11 +26,11 @@ const RoomForm = ({ room, onBack, onSuccess, onZoomImage }) => {
     price: '',
     operational_hours: '',
     facilities: '',
-    pic_name: '',
-    pic_email: '',
-    pic_phone: '',
+    pic_name: room ? '' : (activeUser.full_name || activeUser.username || ''),
+    pic_email: room ? '' : (activeUser.email || ''),
+    pic_phone: room ? '' : (activeUser.phone || ''),
     image_url: [], // Changed to array for multiple images
-    pic_image_url: DEFAULT_PIC_IMAGE,
+    pic_image_url: room ? DEFAULT_PIC_IMAGE : (activeUser.profile_image || DEFAULT_PIC_IMAGE),
     op_start_day: 'Senin',
     op_end_day: 'Jumat',
     op_start: '08:00',

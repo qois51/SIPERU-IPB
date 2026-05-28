@@ -7,7 +7,7 @@ from app.models.booking_model import Booking
 from app.models.user_model import User
 from app.schemas.booking_schema import BookingSchema
 from app.services import booking_service
-from app.services.upload_service import save_uploaded_file
+from app.services.upload_service import save_uploaded_file, delete_uploaded_file
 from app.services.pdf_service import generate_epass_pdf
 from app.utils.auth_middleware import get_current_user
 from pydantic import BaseModel
@@ -161,6 +161,12 @@ async def delete_booking(id: int, db: AsyncSession = Depends(get_db)):
     booking = result.scalars().first()
     if not booking:
         return error_response("Booking tidak ditemukan.", 404)
+
+    # Clean up uploaded supporting document and QR code
+    if booking.surat_file:
+        delete_uploaded_file(booking.surat_file)
+    if booking.qr_code:
+        delete_uploaded_file(booking.qr_code)
 
     await db.delete(booking)
     await db.commit()

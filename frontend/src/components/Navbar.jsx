@@ -329,7 +329,7 @@ const Navbar = () => {
                       onMouseOver={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
                       onMouseOut={(e) => { e.currentTarget.style.background = 'transparent'; }}
                     >
-                      <LogOut size={18} color="#ef4444" /> Keluar Aplikasi
+                      <LogOut size={18} color="#ef4444" /> Logout
                     </div>
                   </div>
                 </div>
