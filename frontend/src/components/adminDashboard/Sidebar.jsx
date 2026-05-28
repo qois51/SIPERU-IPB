@@ -32,7 +32,9 @@ const Sidebar = ({ isOpen, activeMenu, onMenuChange }) => {
           <SidebarItem icon={ScanLine} label="Scan E-Pass" active={activeMenu === 'scanner'} />
         </div>
         <SidebarItem icon={Calendar} label="Kalender" />
-        <SidebarItem icon={FileBarChart} label="Laporan" />
+        <div onClick={() => onMenuChange('laporan')}>
+          <SidebarItem icon={FileBarChart} label="Laporan" active={activeMenu === 'laporan'} />
+        </div>
       </nav>
     </aside>
   );
