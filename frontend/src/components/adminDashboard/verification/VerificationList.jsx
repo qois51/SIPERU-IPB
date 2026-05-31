@@ -27,7 +27,9 @@ const VerificationList = ({ onViewDetail }) => {
 
   return (
     <div className="verification-list">
-      <h3 style={{ marginBottom: '24px', fontSize: '20px' }}>Daftar Pengajuan Peminjaman</h3>
+      <div className="admin-page-header">
+        <h2 className="admin-page-title">VERIFIKASI PEMINJAMAN</h2>
+      </div>
       <div className="table-container">
         <table className="custom-table">
           <thead>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Link, useNavigate } from 'react-router-dom';
+import api from '../../services/api';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { MapPin, Users, User, ChevronRight, Banknote } from 'lucide-react';
 
 // Modular Components
@@ -8,14 +8,20 @@ import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import CatalogSidebar from '../../components/catalog/CatalogSidebar';
 import CatalogControls from '../../components/catalog/CatalogControls';
+import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 const CatalogPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Filter & Search States
-  const [searchQuery, setSearchQuery] = useState('');
+  const getInitialSearchQuery = () => {
+    const params = new URLSearchParams(location.search);
+    return params.get('q') || '';
+  };
+  const [searchQuery, setSearchQuery] = useState(getInitialSearchQuery());
   const [sortBy, setSortBy] = useState('new');
   const [selectedLocation, setSelectedLocation] = useState('');
   const [minCap, setMinCap] = useState('');
@@ -43,12 +49,11 @@ const CatalogPage = () => {
     // Scroll to top upon navigation
     window.scrollTo(0, 0);
 
-    const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
-
-    axios.get(`${API_BASE}/rooms/`)
+    api.get(`/rooms/`)
       .then(res => {
-        if (res.data && res.data.length > 0) {
-          setRooms(res.data);
+        const data = res.data?.data || res.data || [];
+        if (data && data.length > 0) {
+          setRooms(data);
         } else {
           setRooms(fallbackRooms);
         }
@@ -60,6 +65,15 @@ const CatalogPage = () => {
         setLoading(false);
       });
   }, []);
+
+  // Listen to URL search parameter changes
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const q = params.get('q');
+    if (q !== null) {
+      setSearchQuery(q);
+    }
+  }, [location.search]);
 
   // Extract unique locations dynamically for the sidebar select dropdown
   const uniqueLocations = Array.from(new Set(rooms.map(r => r.location).filter(Boolean)));
@@ -159,7 +173,7 @@ const CatalogPage = () => {
       <Navbar />
 
       {/* Main Layout Container */}
-      <div className="container" style={{ maxWidth: '1400px', padding: '0 40px', width: '100%', flexGrow: 1, marginBottom: '80px' }}>
+      <div style={{ padding: '0 24px', width: '100%', flexGrow: 1, marginBottom: '80px' }}>
         
         {/* Breadcrumb Navigation */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: 700, margin: '16px 0 32px', color: '#000' }}>
@@ -208,9 +222,7 @@ const CatalogPage = () => {
           {/* Right Panel: Room Cards Grid */}
           <div>
             {loading ? (
-              <div style={{ textAlign: 'center', padding: '60px 0', fontSize: '16px', fontWeight: 600 }}>
-                Memuat katalog ruangan...
-              </div>
+              <LoadingSpinner text="Memuat katalog ruangan..." />
             ) : sortedRooms.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '80px 0', background: 'white', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
                 <h3 style={{ fontSize: '18px', color: '#334155', margin: '0 0 8px' }}>Tidak ada ruangan yang sesuai filter</h3>

@@ -112,11 +112,11 @@ function App() {
             }
           />
 
-          {/* Rute terproteksi — hanya admin, satpam, karyawan */}
+          {/* Rute terproteksi — hanya admin, satpam, dosen, pic */}
           <Route
             path="/admin"
             element={
-              <ProtectedRoute allowedRoles={['admin', 'satpam', 'karyawan']} redirectTo="/">
+              <ProtectedRoute allowedRoles={['admin', 'satpam', 'dosen', 'pic']} redirectTo="/">
                 <AdminDashboard />
               </ProtectedRoute>
             }

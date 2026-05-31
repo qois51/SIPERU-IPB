@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../../services/api';
 import { ArrowLeft, Save, User, Mail, CreditCard, Shield, Key, Image as ImageIcon, X } from 'lucide-react';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
 const UserForm = ({ user, onBack, onSuccess, onZoomImage }) => {
   const [formData, setFormData] = useState({
@@ -15,6 +13,14 @@ const UserForm = ({ user, onBack, onSuccess, onZoomImage }) => {
     profile_image: null
   });
   const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+
+  const showToastMsg = (message, type = 'success') => {
+    setToast({ show: true, message, type });
+    setTimeout(() => {
+      setToast(prev => ({ ...prev, show: false }));
+    }, 3000);
+  };
 
   useEffect(() => {
     if (user) {
@@ -31,7 +37,7 @@ const UserForm = ({ user, onBack, onSuccess, onZoomImage }) => {
     
     // Validate email
     if (!formData.email.includes('@')) {
-      alert('Email tidak valid');
+      showToastMsg('Email tidak valid!', 'error');
       setLoading(false);
       return;
     }
@@ -41,19 +47,22 @@ const UserForm = ({ user, onBack, onSuccess, onZoomImage }) => {
       if (!payload.password) delete payload.password; // Don't send empty password
 
       if (user) {
-        await axios.put(`${API_URL}/users/${user.id}`, payload);
+        await api.put(`/users/${user.id}`, payload);
       } else {
         if (!formData.password) {
-          alert('Password wajib diisi untuk user baru');
+          showToastMsg('Password wajib diisi untuk user baru!', 'error');
           setLoading(false);
           return;
         }
-        await axios.post(`${API_URL}/users/`, payload);
+        await api.post(`/users/`, payload);
       }
-      onSuccess();
+      showToastMsg('Data pengguna berhasil disimpan!', 'success');
+      setTimeout(() => {
+        onSuccess();
+      }, 1500);
     } catch (err) {
       console.error(err);
-      alert(err.response?.data?.message || 'Gagal menyimpan data user');
+      showToastMsg(err.message || 'Gagal menyimpan data user', 'error');
     } finally {
       setLoading(false);
     }
@@ -63,7 +72,7 @@ const UserForm = ({ user, onBack, onSuccess, onZoomImage }) => {
     const file = e.target.files[0];
     if (file) {
       if (file.size > 2 * 1024 * 1024) {
-        alert('Ukuran file terlalu besar (Maks 2MB)');
+        showToastMsg('Ukuran file terlalu besar (Maks 2MB)', 'error');
         return;
       }
       const reader = new FileReader();
@@ -82,7 +91,7 @@ const UserForm = ({ user, onBack, onSuccess, onZoomImage }) => {
 
       <div className="form-header">
         <h2 style={{ fontSize: '28px', fontWeight: 800, margin: 0 }}>{user ? 'Edit Data Pengguna' : 'Tambah Pengguna Baru'}</h2>
-        <p style={{ opacity: 0.7, margin: '8px 0 32px' }}>Lengkapi data identitas mahasiswa atau karyawan di bawah ini.</p>
+        <p style={{ opacity: 0.7, margin: '8px 0 32px' }}>Lengkapi data identitas pengguna di bawah ini.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="premium-form">
@@ -187,8 +196,9 @@ const UserForm = ({ user, onBack, onSuccess, onZoomImage }) => {
                       required
                     >
                       <option value="mahasiswa">Mahasiswa</option>
-                      <option value="karyawan">Karyawan</option>
+                      <option value="dosen">Dosen</option>
                       <option value="satpam">Satpam</option>
+                      <option value="pic">PIC Ruangan</option>
                       <option value="admin">Administrator</option>
                     </select>
                   </div>
@@ -232,6 +242,43 @@ const UserForm = ({ user, onBack, onSuccess, onZoomImage }) => {
           </button>
         </div>
       </form>
+
+      {/* Premium Toast Notification */}
+      {toast.show && (
+        <div
+          style={{
+            position: 'fixed',
+            top: '24px',
+            right: '24px',
+            background: toast.type === 'success' ? '#dcfce7' : '#fee2e2',
+            border: toast.type === 'success' ? '1px solid #bbf7d0' : '1px solid #fecaca',
+            color: toast.type === 'success' ? '#156534' : '#991b1b',
+            borderRadius: '12px',
+            padding: '16px 24px',
+            boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.05)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            zIndex: 9999,
+            animation: 'slideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            fontWeight: 600,
+            fontSize: '15px'
+          }}
+        >
+          <style>{`
+            @keyframes slideIn {
+              from { transform: translateY(-20px); opacity: 0; }
+              to { transform: translateY(0); opacity: 1; }
+            }
+          `}</style>
+          {toast.type === 'success' ? (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          ) : (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          )}
+          <span>{toast.message}</span>
+        </div>
+      )}
     </div>
   );
 };

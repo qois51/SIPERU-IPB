@@ -13,6 +13,8 @@ class User(Base):
     nim_nip = Column(String(20))
     email = Column(String(100))
     profile_image = Column(Text)
+    phone = Column(String(20))
+    bio = Column(Text)
 
     def set_password(self, password: str):
         salt = bcrypt.gensalt()
@@ -39,5 +41,7 @@ class User(Base):
             "full_name": self.full_name,
             "nim_nip": self.nim_nip,
             "email": self.email,
-            "profile_image": self.profile_image
+            "profile_image": self.profile_image,
+            "phone": self.phone,
+            "bio": self.bio
         }

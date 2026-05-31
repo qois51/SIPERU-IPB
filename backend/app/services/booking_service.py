@@ -21,7 +21,7 @@ async def check_room_availability(db: AsyncSession, room_id: int, date, start_ti
     query = select(Booking).filter(
         Booking.room_id == room_id,
         Booking.date == date,
-        Booking.status.in_(['Pending', 'Approved']),
+        Booking.status.in_(['Pending', 'Approved', 'CheckedIn']),
         Booking.start_time < end_time,
         Booking.end_time > start_time,
     )
@@ -264,7 +264,7 @@ async def get_room_availability(db: AsyncSession, room_id: int, date_str: str):
         select(Booking).filter(
             Booking.room_id == room_id,
             Booking.date == date_obj,
-            Booking.status.in_(['Pending', 'Approved']),
+            Booking.status.in_(['Pending', 'Approved', 'CheckedIn']),
         ).order_by(Booking.start_time.asc())
     )
     bookings = bookings_result.scalars().all()

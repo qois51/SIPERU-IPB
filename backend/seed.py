@@ -10,7 +10,9 @@ async def seed_users():
         users_data = [
             {"username": "admin", "password": "admin123", "role": "admin", "full_name": "Administrator Utama", "nim_nip": "198001012005011001", "email": "admin@sipberu.ac.id"},
             {"username": "mahasiswa", "password": "mahasiswa123", "role": "mahasiswa", "full_name": "Yoga Christofer", "nim_nip": "5311420026", "email": "yoga@students.sipberu.ac.id"},
-            {"username": "satpam", "password": "satpam123", "role": "satpam", "full_name": "Budi Santoso", "nim_nip": "197505122010011005", "email": "budi@staff.sipberu.ac.id"}
+            {"username": "satpam", "password": "satpam123", "role": "satpam", "full_name": "Budi Santoso", "nim_nip": "197505122010011005", "email": "budi@staff.sipberu.ac.id"},
+            {"username": "dosen", "password": "dosen123", "role": "dosen", "full_name": "Dr. Ir. Anas Miftah", "nim_nip": "197808242003121002", "email": "anas@lecturer.sipberu.ac.id"},
+            {"username": "pic", "password": "pic123", "role": "pic", "full_name": "Hendra Wijaya (PIC)", "nim_nip": "198503152011011003", "email": "hendra@staff.sipberu.ac.id"}
         ]
 
         for data in users_data:

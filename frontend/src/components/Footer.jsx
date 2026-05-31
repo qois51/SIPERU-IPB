@@ -67,7 +67,7 @@ const Footer = () => {
 
   return (
     <footer style={{ background: '#263C92', color: 'white' }}>
-      <div className="footer-grid" style={{ padding: '60px 80px' }}>
+      <div className="footer-grid" style={{ padding: '60px 24px' }}>
         {/* Brand */}
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
@@ -104,9 +104,9 @@ const Footer = () => {
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             <NavItem text="Beranda" to="/" />
             <NavItem text="Katalog Ruangan" to="/katalog" />
-            <NavItem text="Alur Peminjaman" href="/#faq" />
-            <NavItem text="Syarat & Ketentuan" href="/#faq" />
-            <NavItem text="FAQ" href="/#faq" />
+            <NavItem text="Alur Peminjaman" to="/#steps" />
+            <NavItem text="Syarat & Ketentuan" to="/#rules" />
+            <NavItem text="FAQ" to="/#faq" />
           </ul>
         </div>
 
@@ -115,10 +115,10 @@ const Footer = () => {
           <h4 style={{ marginBottom: '24px', fontSize: '18px' }}>Akun</h4>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             <NavItem text="Login" to="/login" />
-            <NavItem text="E-Pass Saya" to="/login" />
+            <NavItem text="E-Pass Saya" to="/dashboard" />
             <NavItem text="Dashboard" to="/admin" />
-            <NavItem text="Riwayat Peminjaman" to="/login" />
-            <NavItem text="Status Pengajuan" to="/login" />
+            <NavItem text="Riwayat Peminjaman" to="/dashboard" />
+            <NavItem text="Status Pengajuan" to="/dashboard" />
           </ul>
         </div>
 
@@ -135,7 +135,7 @@ const Footer = () => {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '13px', marginBottom: '16px' }}>
             <Mail size={20} color="#fbbf24" />
-            <a href="mailto:sipinjam@kampus.ac.id" style={{ color: 'white', textDecoration: 'none' }}>sipinjam@kampus.ac.id</a>
+            <a href="mailto:sipinjam@kampus.ac.id" style={{ color: 'white', textDecoration: 'none' }}>sipberu@kampus.ac.id</a>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '13px', marginBottom: '24px' }}>
             <Globe size={20} color="#fbbf24" />

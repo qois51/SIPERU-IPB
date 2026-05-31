@@ -4,6 +4,7 @@ from sqlalchemy.future import select
 from database import get_db
 from app.models.room_model import Room
 from app.schemas.room_schema import RoomSchema
+from app.utils.auth_middleware import role_required
 from typing import List, Optional
 
 room_router = APIRouter()
@@ -23,7 +24,11 @@ async def get_room(id: int, db: AsyncSession = Depends(get_db)):
     return room.to_dict()
 
 @room_router.post('/', status_code=status.HTTP_201_CREATED)
-async def create_room(data: RoomSchema, db: AsyncSession = Depends(get_db)):
+async def create_room(
+    data: RoomSchema, 
+    current_user: dict = Depends(role_required(['admin', 'dosen', 'pic'])), 
+    db: AsyncSession = Depends(get_db)
+):
     new_room = Room(
         name=data.name,
         location=data.location,
@@ -43,7 +48,12 @@ async def create_room(data: RoomSchema, db: AsyncSession = Depends(get_db)):
     return new_room.to_dict()
 
 @room_router.put('/{id}')
-async def update_room(id: int, data: RoomSchema, db: AsyncSession = Depends(get_db)):
+async def update_room(
+    id: int, 
+    data: RoomSchema, 
+    current_user: dict = Depends(role_required(['admin', 'dosen', 'pic'])), 
+    db: AsyncSession = Depends(get_db)
+):
     result = await db.execute(select(Room).filter_by(id=id))
     room = result.scalars().first()
     if not room:
@@ -66,7 +76,11 @@ async def update_room(id: int, data: RoomSchema, db: AsyncSession = Depends(get_
     return room.to_dict()
 
 @room_router.delete('/{id}')
-async def delete_room(id: int, db: AsyncSession = Depends(get_db)):
+async def delete_room(
+    id: int, 
+    current_user: dict = Depends(role_required(['admin', 'dosen', 'pic'])), 
+    db: AsyncSession = Depends(get_db)
+):
     result = await db.execute(select(Room).filter_by(id=id))
     room = result.scalars().first()
     if not room:

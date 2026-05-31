@@ -267,6 +267,22 @@ const DateTimePicker = ({ roomId, onSelectionChange }) => {
               const past = isSlotInPast(slot);
               const selected = selectedSlots.includes(slot);
               const isDisabled = booked || past;
+
+              let bg = '#eff6ff';
+              let border = '1px solid #93c5fd';
+              let color = '#1e3a8a';
+
+              if (selected) {
+                bg = '#1e3a8a';
+                border = '2px solid #1e3a8a';
+                color = 'white';
+              } else if (isDisabled) {
+                // Tidak tersedia (Grey)
+                bg = '#e5e7eb';
+                border = '1px solid #d1d5db';
+                color = '#9ca3af';
+              }
+
               return (
                 <button
                   key={slot}
@@ -275,9 +291,9 @@ const DateTimePicker = ({ roomId, onSelectionChange }) => {
                   style={{
                     padding: '10px',
                     borderRadius: '8px',
-                    border: selected ? '2px solid #1e3a8a' : isDisabled ? '1px solid #d1d5db' : '1px solid #93c5fd',
-                    background: selected ? '#1e3a8a' : isDisabled ? '#e5e7eb' : '#eff6ff',
-                    color: selected ? 'white' : isDisabled ? '#6b7280' : '#1e3a8a',
+                    border: border,
+                    background: bg,
+                    color: color,
                     fontWeight: 700,
                     fontSize: '13px',
                     cursor: isDisabled ? 'default' : 'pointer',
@@ -301,8 +317,8 @@ const DateTimePicker = ({ roomId, onSelectionChange }) => {
               Dipilih
             </span>
             <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ width: '14px', height: '14px', background: '#e5e7eb', borderRadius: '3px', display: 'inline-block' }}></span>
-              Sudah terpesan
+              <span style={{ width: '14px', height: '14px', background: '#e5e7eb', border: '1px solid #d1d5db', borderRadius: '3px', display: 'inline-block' }}></span>
+              Tidak tersedia
             </span>
           </div>
 

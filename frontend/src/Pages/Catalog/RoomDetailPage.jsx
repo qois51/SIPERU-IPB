@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ChevronRight, MapPin, Users, User, AlertCircle, X } from 'lucide-react';
-import axios from 'axios';
+import api from '../../services/api';
 
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
@@ -28,19 +28,17 @@ const RoomDetailPage = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
 
-    const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
-
     // Fetch the specific room
-    axios.get(`${API_BASE}/rooms/${id}`)
+    api.get(`/rooms/${id}`)
       .then(res => {
-        setRoom(res.data);
+        setRoom(res.data?.data || res.data);
         setLoading(false);
       })
       .catch(() => setLoading(false));
 
     // Fetch all rooms for "Ruangan Lain" section
-    axios.get(`${API_BASE}/rooms/`)
-      .then(res => setAllRooms(res.data))
+    api.get(`/rooms/`)
+      .then(res => setAllRooms(res.data?.data || res.data || []))
       .catch(() => {});
   }, [id]);
 
@@ -116,7 +114,7 @@ const RoomDetailPage = () => {
     <div style={{ background: '#fff', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Navbar />
 
-      <div className="container" style={{ maxWidth: '1400px', padding: '0 40px', width: '100%', flexGrow: 1, marginBottom: '80px' }}>
+      <div style={{ padding: '0 24px', width: '100%', flexGrow: 1, marginBottom: '80px' }}>
 
         {/* Breadcrumb */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: 700, margin: '20px 0 32px', color: '#000' }}>

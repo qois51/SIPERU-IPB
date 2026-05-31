@@ -24,7 +24,7 @@ const useAuth = () => {
       const { role: userRole } = data;
 
       // Redirect based on role
-      if (userRole === 'admin' || userRole === 'satpam' || userRole === 'karyawan') {
+      if (userRole === 'admin' || userRole === 'satpam' || userRole === 'dosen' || userRole === 'pic') {
         navigate('/admin');
       } else {
         navigate('/dashboard');

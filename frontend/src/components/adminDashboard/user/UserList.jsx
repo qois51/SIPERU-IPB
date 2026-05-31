@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import adminService from '../../../services/adminService';
 import { User, Edit2, Trash2, Search } from 'lucide-react';
+import LoadingSpinner from '../../common/LoadingSpinner';
 
 const ROLE_FILTERS = ['Semua', 'mahasiswa', 'dosen', 'satpam', 'admin'];
 
@@ -9,6 +10,8 @@ const UserList = ({ onAddUser, onEditUser, onZoomImage }) => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeRole, setActiveRole] = useState('Semua');
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -27,14 +30,22 @@ const UserList = ({ onAddUser, onEditUser, onZoomImage }) => {
     fetchUsers();
   }, []);
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Apakah Anda yakin ingin menghapus user ini?')) {
-      try {
-        alert('Fitur hapus belum diimplementasikan di service admin.');
-      } catch (err) {
-        console.error(err);
-        alert('Gagal menghapus user');
-      }
+  const confirmDelete = (id) => {
+    setUserToDelete(id);
+    setShowDeleteModal(true);
+  };
+
+  const executeDelete = async () => {
+    if (!userToDelete) return;
+    try {
+      await adminService.deleteUser(userToDelete);
+      fetchUsers();
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.detail || 'Gagal menghapus user');
+    } finally {
+      setShowDeleteModal(false);
+      setUserToDelete(null);
     }
   };
 
@@ -50,14 +61,14 @@ const UserList = ({ onAddUser, onEditUser, onZoomImage }) => {
   const countByRole = (role) =>
     role === 'Semua' ? users.length : users.filter(u => u.role === role).length;
 
-  if (loading) return <div>Memuat data user...</div>;
+  if (loading) return <LoadingSpinner text="Memuat data pengguna..." />;
 
   return (
     <div className="user-list-container">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+      <div className="admin-page-header">
         <div>
-          <h2 style={{ margin: 0 }}>Kelola Pengguna</h2>
-          <p style={{ opacity: 0.6, fontSize: '14px' }}>Manajemen data mahasiswa, dosen, satpam, dan admin.</p>
+          <h2 className="admin-page-title">KELOLA PENGGUNA</h2>
+          <p style={{ opacity: 0.6, fontSize: '14px', marginTop: '8px' }}>Manajemen data mahasiswa, dosen, satpam, dan admin.</p>
         </div>
         <button className="btn-primary" onClick={onAddUser} style={{ width: 'auto', padding: '10px 24px' }}>
           + Tambah User Baru
@@ -166,7 +177,7 @@ const UserList = ({ onAddUser, onEditUser, onZoomImage }) => {
                     <button className="btn-action edit" onClick={() => onEditUser(u)} title="Edit User">
                       <Edit2 size={16} />
                     </button>
-                    <button className="btn-action delete" onClick={() => handleDelete(u.id)} title="Hapus User">
+                    <button className="btn-action delete" onClick={() => confirmDelete(u.id)} title="Hapus User">
                       <Trash2 size={16} />
                     </button>
                   </div>
@@ -176,6 +187,25 @@ const UserList = ({ onAddUser, onEditUser, onZoomImage }) => {
           </tbody>
         </table>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ background: 'white', padding: '32px', borderRadius: '16px', width: '400px', maxWidth: '90%', textAlign: 'center', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}>
+            <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+              <Trash2 size={32} color="#dc2626" />
+            </div>
+            <h3 style={{ margin: '0 0 12px', fontSize: '20px', fontWeight: 800 }}>Hapus Pengguna?</h3>
+            <p style={{ color: '#6b7280', margin: '0 0 32px', fontSize: '15px', lineHeight: '1.5' }}>
+              Tindakan ini tidak dapat dibatalkan. Semua data terkait pengguna ini akan dihapus secara permanen.
+            </p>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+              <button onClick={() => setShowDeleteModal(false)} style={{ padding: '12px 24px', borderRadius: '10px', border: '1px solid #e5e7eb', background: 'white', cursor: 'pointer', fontWeight: 700, flex: 1, color: '#374151' }}>Batal</button>
+              <button onClick={executeDelete} style={{ padding: '12px 24px', borderRadius: '10px', border: 'none', background: '#dc2626', color: 'white', cursor: 'pointer', fontWeight: 700, flex: 1 }}>Ya, Hapus</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

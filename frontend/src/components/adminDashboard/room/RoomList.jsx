@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import adminService from '../../../services/adminService';
+import LoadingSpinner from '../../common/LoadingSpinner';
 
 const RoomList = ({ onViewDetail, onAddRoom, onZoomImage }) => {
   const [rooms, setRooms] = useState([]);
@@ -20,12 +21,12 @@ const RoomList = ({ onViewDetail, onAddRoom, onZoomImage }) => {
     fetchRooms();
   }, []);
 
-  if (loading) return <div>Loading data ruangan...</div>;
+  if (loading) return <LoadingSpinner text="Memuat data ruangan..." />;
 
   return (
     <div className="room-list-container">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
-        <h2 style={{ margin: 0 }}>Kelola Ruangan</h2>
+      <div className="admin-page-header">
+        <h2 className="admin-page-title">KELOLA RUANGAN</h2>
         <button className="btn-primary" onClick={onAddRoom} style={{ width: 'auto', padding: '10px 24px' }}>
           + Tambah Ruangan Baru
         </button>

@@ -1,9 +1,29 @@
+/* Standard Admin Page Headers */
+.admin-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.admin-page-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  color: #1e293b;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
 .dashboard-stats-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
   margin-bottom: 40px;
 }
+
+.dashboard-main { min-width: 0; }
+.sidebar.collapsed { min-width: 0; }
 
 .dashboard-stat-card {
   padding: 30px;

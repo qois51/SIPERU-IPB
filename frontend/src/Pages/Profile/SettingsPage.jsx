@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Lock, Bell, Shield, ChevronRight, Check } from 'lucide-react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import api from '../../services/api';
 
 const SettingsPage = () => {
   const [activeTab, setActiveTab] = useState('password');
@@ -9,21 +10,65 @@ const SettingsPage = () => {
   // Password State
   const [passData, setPassData] = useState({ old: '', new: '', confirm: '' });
   const [passStatus, setPassStatus] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   // Notif State
-  const [notifPrefs, setNotifPrefs] = useState({ email: true, push: true, promo: false });
+  const [notifPrefs, setNotifPrefs] = useState(() => {
+    try {
+      const saved = localStorage.getItem('notif_prefs');
+      return saved ? JSON.parse(saved) : { email: true, push: true, promo: false };
+    } catch {
+      return { email: true, push: true, promo: false };
+    }
+  });
 
-  const handlePasswordSubmit = (e) => {
+  const handleNotifChange = (key, value) => {
+    const updated = { ...notifPrefs, [key]: value };
+    setNotifPrefs(updated);
+    localStorage.setItem('notif_prefs', JSON.stringify(updated));
+  };
+
+  const handlePasswordSubmit = async (e) => {
     e.preventDefault();
+    setPassStatus('');
+    setErrorMessage('');
+
     if (passData.new !== passData.confirm) {
       setPassStatus('error');
+      setErrorMessage('Konfirmasi password baru tidak cocok!');
       return;
     }
-    setPassStatus('success');
-    setTimeout(() => {
-      setPassStatus('');
+
+    if (passData.new.length < 6) {
+      setPassStatus('error');
+      setErrorMessage('Password baru minimal harus 6 karakter!');
+      return;
+    }
+
+    const userStr = localStorage.getItem('user');
+    const user = userStr ? JSON.parse(userStr) : null;
+
+    if (!user || !user.id) {
+      setPassStatus('error');
+      setErrorMessage('Sesi telah berakhir. Silakan login kembali.');
+      return;
+    }
+
+    try {
+      setPassStatus('loading');
+      
+      // Request update to the FastAPI backend endpoint PUT /api/users/{id}
+      await api.put(`/users/${user.id}`, {
+        password: passData.new
+      });
+
+      setPassStatus('success');
       setPassData({ old: '', new: '', confirm: '' });
-    }, 3000);
+    } catch (err) {
+      console.error(err);
+      setPassStatus('error');
+      setErrorMessage(err.message || 'Gagal memperbarui password. Silakan coba lagi.');
+    }
   };
 
   return (
@@ -92,10 +137,17 @@ const SettingsPage = () => {
                     <input type="password" value={passData.confirm} onChange={e => setPassData({...passData, confirm: e.target.value})} required style={{ width: '100%', padding: '12px 16px', borderRadius: '10px', border: '1px solid #cbd5e1', outline: 'none' }} />
                   </div>
 
-                  {passStatus === 'error' && <div style={{ color: '#ef4444', fontSize: '14px', marginBottom: '16px', fontWeight: 500 }}>Konfirmasi password tidak cocok!</div>}
+                  {passStatus === 'error' && <div style={{ color: '#ef4444', fontSize: '14px', marginBottom: '16px', fontWeight: 500 }}>{errorMessage}</div>}
                   {passStatus === 'success' && <div style={{ color: '#10b981', fontSize: '14px', marginBottom: '16px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}><Check size={18} /> Password berhasil diperbarui!</div>}
 
-                  <button type="submit" className="btn-primary" style={{ padding: '12px 24px', borderRadius: '10px', width: '100%' }}>Simpan Password Baru</button>
+                  <button 
+                    type="submit" 
+                    className="btn-primary" 
+                    disabled={passStatus === 'loading'}
+                    style={{ padding: '12px 24px', borderRadius: '10px', width: '100%', opacity: passStatus === 'loading' ? 0.7 : 1, cursor: passStatus === 'loading' ? 'not-allowed' : 'pointer' }}
+                  >
+                    {passStatus === 'loading' ? 'Menyimpan...' : 'Simpan Password Baru'}
+                  </button>
                 </form>
               </div>
             )}
@@ -112,7 +164,7 @@ const SettingsPage = () => {
                       <p style={{ fontSize: '14px', color: '#64748b', margin: 0 }}>Terima update status peminjaman via email.</p>
                     </div>
                     <label style={{ position: 'relative', display: 'inline-block', width: '48px', height: '26px' }}>
-                      <input type="checkbox" checked={notifPrefs.email} onChange={e => setNotifPrefs({...notifPrefs, email: e.target.checked})} style={{ opacity: 0, width: 0, height: 0 }} />
+                      <input type="checkbox" checked={notifPrefs.email} onChange={e => handleNotifChange('email', e.target.checked)} style={{ opacity: 0, width: 0, height: 0 }} />
                       <span style={{ position: 'absolute', cursor: 'pointer', top: 0, left: 0, right: 0, bottom: 0, background: notifPrefs.email ? '#3b82f6' : '#cbd5e1', transition: '.4s', borderRadius: '34px' }}></span>
                       <span style={{ position: 'absolute', content: '""', height: '20px', width: '20px', left: notifPrefs.email ? '24px' : '4px', bottom: '3px', background: 'white', transition: '.4s', borderRadius: '50%' }}></span>
                     </label>
@@ -124,7 +176,7 @@ const SettingsPage = () => {
                       <p style={{ fontSize: '14px', color: '#64748b', margin: 0 }}>Tampilkan notifikasi di browser Anda saat aplikasi terbuka.</p>
                     </div>
                     <label style={{ position: 'relative', display: 'inline-block', width: '48px', height: '26px' }}>
-                      <input type="checkbox" checked={notifPrefs.push} onChange={e => setNotifPrefs({...notifPrefs, push: e.target.checked})} style={{ opacity: 0, width: 0, height: 0 }} />
+                      <input type="checkbox" checked={notifPrefs.push} onChange={e => handleNotifChange('push', e.target.checked)} style={{ opacity: 0, width: 0, height: 0 }} />
                       <span style={{ position: 'absolute', cursor: 'pointer', top: 0, left: 0, right: 0, bottom: 0, background: notifPrefs.push ? '#3b82f6' : '#cbd5e1', transition: '.4s', borderRadius: '34px' }}></span>
                       <span style={{ position: 'absolute', content: '""', height: '20px', width: '20px', left: notifPrefs.push ? '24px' : '4px', bottom: '3px', background: 'white', transition: '.4s', borderRadius: '50%' }}></span>
                     </label>
@@ -136,7 +188,7 @@ const SettingsPage = () => {
                       <p style={{ fontSize: '14px', color: '#64748b', margin: 0 }}>Dapatkan informasi mengenai fitur baru dan pengumuman.</p>
                     </div>
                     <label style={{ position: 'relative', display: 'inline-block', width: '48px', height: '26px' }}>
-                      <input type="checkbox" checked={notifPrefs.promo} onChange={e => setNotifPrefs({...notifPrefs, promo: e.target.checked})} style={{ opacity: 0, width: 0, height: 0 }} />
+                      <input type="checkbox" checked={notifPrefs.promo} onChange={e => handleNotifChange('promo', e.target.checked)} style={{ opacity: 0, width: 0, height: 0 }} />
                       <span style={{ position: 'absolute', cursor: 'pointer', top: 0, left: 0, right: 0, bottom: 0, background: notifPrefs.promo ? '#3b82f6' : '#cbd5e1', transition: '.4s', borderRadius: '34px' }}></span>
                       <span style={{ position: 'absolute', content: '""', height: '20px', width: '20px', left: notifPrefs.promo ? '24px' : '4px', bottom: '3px', background: 'white', transition: '.4s', borderRadius: '50%' }}></span>
                     </label>

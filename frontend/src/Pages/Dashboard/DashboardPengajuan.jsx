@@ -33,8 +33,8 @@ const DashboardPengajuan = () => {
 
   const pagination = usePagination(1, perPage);
 
-  const fetchData = async () => {
-    setLoading(true);
+  const fetchData = async (isRetry = false) => {
+    if (!isRetry) setLoading(true);
     setError('');
     try {
       // Fetch bookings
@@ -51,10 +51,21 @@ const DashboardPengajuan = () => {
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       const statsRes = await bookingService.getDashboardStats(user.id);
       setStats(statsRes.data?.stats || null);
+      
+      // Clear error on successful fetch
+      setError('');
     } catch (err) {
       setError(err.message);
+      
+      // Auto-retry after 4 seconds if it's a server connection error
+      if (err.message.includes('terhubung ke server') || err.message.includes('Network Error')) {
+        console.warn("Koneksi gagal, menjadwalkan percobaan ulang otomatis dalam 4 detik...");
+        setTimeout(() => {
+          fetchData(true);
+        }, 4000);
+      }
     } finally {
-      setLoading(false);
+      if (!isRetry) setLoading(false);
     }
   };
 
