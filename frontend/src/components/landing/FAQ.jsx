@@ -34,7 +34,7 @@ const FAQ = () => {
   return (
     <section id="faq" className="faq-section" style={{ padding: '80px 0' }}>
       <div className="container" style={{ maxWidth: '1400px', padding: '0 40px', display: 'grid', gridTemplateColumns: '1fr 1.3fr', gap: '60px' }}>
-        
+
         {/* Left Column: Info & Contacts */}
         <div className="faq-info">
           <div style={{ display: 'inline-block', background: '#e2e8f0', padding: '6px 16px', borderRadius: '20px', fontSize: '14px', fontWeight: 800, color: '#1e3a8a', marginBottom: '20px' }}>
@@ -43,7 +43,7 @@ const FAQ = () => {
           <h2 style={{ fontSize: '36px', fontWeight: 800, margin: '0 0 16px', lineHeight: '1.2', color: '#000' }}>
             Pertanyaan yang Sering Ditanyakan
           </h2>
-          
+
           {/* Colored Accent Bars */}
           <div style={{ display: 'flex', gap: '8px', marginBottom: '40px' }}>
             <div style={{ width: '24px', height: '4px', backgroundColor: '#fbbf24', borderRadius: '2px' }}></div>
@@ -63,7 +63,7 @@ const FAQ = () => {
             <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
               <Mail size={20} color="#1e3a8a" style={{ flexShrink: 0, marginTop: '2px' }} />
               <span style={{ fontSize: '13px', fontWeight: 600, color: '#000', lineHeight: '1.4' }}>
-                sipinjam@kampus.ac.id
+                sipberu@kampus.ac.id
               </span>
             </div>
 
@@ -88,23 +88,23 @@ const FAQ = () => {
           {faqs.map((item, idx) => {
             const isOpen = activeIndex === idx;
             return (
-              <div 
-                key={idx} 
-                style={{ 
-                  border: '1px solid #1e3a8a', 
-                  borderRadius: '6px', 
+              <div
+                key={idx}
+                style={{
+                  border: '1px solid #1e3a8a',
+                  borderRadius: '6px',
                   background: 'white',
                   overflow: 'hidden',
                   transition: 'all 0.3s ease'
                 }}
               >
-                <div 
+                <div
                   onClick={() => toggleAccordion(idx)}
-                  style={{ 
-                    padding: '16px 20px', 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
-                    alignItems: 'center', 
+                  style={{
+                    padding: '16px 20px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
                     cursor: 'pointer',
                     background: isOpen ? '#f8fafc' : 'white'
                   }}
@@ -116,7 +116,7 @@ const FAQ = () => {
                     <ChevronDown size={20} color="#1e3a8a" style={{ flexShrink: 0, strokeWidth: 2.5 }} />
                   )}
                 </div>
-                
+
                 {isOpen && (
                   <div style={{ padding: '0 20px 16px', borderTop: '1px solid #f1f5f9', marginTop: '8px', paddingTop: '12px' }}>
                     <p style={{ margin: 0, fontSize: '14px', color: '#475569', lineHeight: '1.6' }}>

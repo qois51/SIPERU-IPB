@@ -29,11 +29,14 @@ class ResetPasswordRequest(BaseModel):
 
 @auth_router.post('/login')
 async def login(data: LoginRequest, db: AsyncSession = Depends(get_db)):
-    username = data.username
+    username = data.username.strip()
     password = data.password
     selected_role = data.role.strip() if data.role else ""
 
-    result = await db.execute(select(User).filter_by(username=username))
+    from sqlalchemy import func
+    result = await db.execute(select(User).filter(
+        (User.username == username) | (func.lower(User.email) == func.lower(username))
+    ))
     user = result.scalars().first()
 
     if not user or not user.check_password(password):

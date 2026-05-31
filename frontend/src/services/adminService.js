@@ -71,6 +71,19 @@ const adminService = {
     return response.data;
   },
 
+  createUser: async (userData) => {
+    const response = await api.post('/users/', userData);
+    return response.data;
+  },
+
+  /**
+   * Delete a user
+   */
+  deleteUser: async (userId) => {
+    const response = await api.delete(`/users/${userId}`);
+    return response.data;
+  },
+
   /**
    * Update a room
    */
@@ -100,6 +113,19 @@ const adminService = {
    */
   getCalendarEvents: async (year, month) => {
     const response = await api.get('/bookings/calendar/events', { params: { year, month } });
+    return response.data;
+  },
+
+  /**
+   * HelpCenter API Calls
+   */
+  getHelpRequests: async () => {
+    const response = await api.get('/help/');
+    return response.data;
+  },
+
+  replyHelpRequest: async (requestId, replyMessage) => {
+    const response = await api.post(`/help/${requestId}/reply`, { reply_message: replyMessage });
     return response.data;
   },
 };

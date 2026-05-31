@@ -22,6 +22,29 @@ const Navbar = () => {
   const [notifications, setNotifications] = useState([]);
   const notifRef = useRef(null);
 
+  const [navSearch, setNavSearch] = useState('');
+
+  // Pre-fill the search input if there's a 'q' parameter in the URL
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const q = params.get('q');
+    if (q) {
+      setNavSearch(q);
+    } else {
+      setNavSearch('');
+    }
+  }, [location.search]);
+
+  const handleSearchKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      if (navSearch.trim()) {
+        navigate(`/katalog?q=${encodeURIComponent(navSearch.trim())}`);
+      } else {
+        navigate('/katalog');
+      }
+    }
+  };
+
   const isActive = (path) => {
     if (path === '/') return currentPath === '/';
     return currentPath === path || currentPath.startsWith(path + '/');
@@ -52,7 +75,7 @@ const Navbar = () => {
     const fetchNotifications = async () => {
       try {
         let fetchedNotifs = [];
-        if (role === 'admin' || role === 'satpam' || role === 'karyawan') {
+        if (role === 'admin' || role === 'satpam' || role === 'dosen' || role === 'pic') {
           const res = await bookingService.getAllBookings({ status: 'Pending', perPage: 5 });
           if (res?.data?.bookings) fetchedNotifs = res.data.bookings;
         } else {
@@ -129,10 +152,10 @@ const Navbar = () => {
       <ul style={{ margin: 0, padding: 0, display: 'flex', alignItems: 'center', gap: '40px', listStyle: 'none' }}>
         <li><Link to="/" style={navLinkStyle('/')}>Beranda</Link></li>
         <li><Link to="/katalog" style={navLinkStyle('/katalog')}>Katalog Ruangan</Link></li>
-        {isLoggedIn && (role === 'admin' || role === 'satpam' || role === 'karyawan') && (
+        {isLoggedIn && (role === 'admin' || role === 'satpam' || role === 'dosen' || role === 'pic') && (
           <li><Link to="/admin" style={navLinkStyle('/admin')}>Dashboard</Link></li>
         )}
-        {isLoggedIn && (role === 'mahasiswa' || role === 'dosen') && (
+        {isLoggedIn && (role === 'mahasiswa') && (
           <li><Link to="/dashboard" style={navLinkStyle('/dashboard')}>Dashboard</Link></li>
         )}
         <li>
@@ -144,7 +167,35 @@ const Navbar = () => {
 
       {/* Right Actions */}
       <div className="nav-actions" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-        <Search size={22} style={{ cursor: 'pointer', color: 'white' }} />
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+          <input 
+            type="text" 
+            placeholder="Cari ruangan..." 
+            value={navSearch}
+            onChange={(e) => setNavSearch(e.target.value)}
+            onKeyDown={handleSearchKeyDown}
+            style={{ 
+              background: 'rgba(255, 255, 255, 0.15)', 
+              border: 'none', 
+              borderRadius: '20px', 
+              padding: '8px 16px 8px 36px', 
+              color: 'white', 
+              fontSize: '13px', 
+              outline: 'none', 
+              width: '160px',
+              transition: 'width 0.3s, background 0.3s',
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.width = '220px';
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.25)';
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.width = '160px';
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)';
+            }}
+          />
+          <Search size={16} color="white" style={{ position: 'absolute', left: '12px', pointerEvents: 'none' }} />
+        </div>
 
         {isLoggedIn ? (
           <>

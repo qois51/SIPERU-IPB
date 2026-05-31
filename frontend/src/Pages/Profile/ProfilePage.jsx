@@ -1,28 +1,75 @@
 import React, { useState } from 'react';
 import { User, Mail, Hash, Phone, Edit2, Shield, Camera } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import api from '../../services/api';
 
 const ProfilePage = () => {
+  const navigate = useNavigate();
   const userStr = localStorage.getItem('user');
   const user = userStr ? JSON.parse(userStr) : {};
   const role = localStorage.getItem('role') || 'mahasiswa';
 
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
   const [formData, setFormData] = useState({
     fullName: user.full_name || user.username || '',
     email: user.email || '',
-    phone: user.phone || '081234567890', // placeholder if not in db
-    bio: 'Mahasiswa aktif Institut Pertanian Bogor.'
+    phone: user.phone || '081234567890',
+    bio: user.bio || 'Mahasiswa aktif Institut Pertanian Bogor.'
   });
 
-  const handleSave = (e) => {
-    e.preventDefault();
-    // Simulate save
+  const showToastMsg = (message, type = 'success') => {
+    setToast({ show: true, message, type });
     setTimeout(() => {
+      setToast(prev => ({ ...prev, show: false }));
+    }, 3000);
+  };
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    if (!user || !user.id) {
+      showToastMsg('Sesi telah berakhir. Silakan login kembali.', 'error');
+      setTimeout(() => navigate('/login'), 1500);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const res = await api.put(`/users/${user.id}`, {
+        full_name: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        bio: formData.bio
+      });
+
+      const updatedUser = {
+        ...user,
+        full_name: res.data.full_name,
+        email: res.data.email,
+        username: res.data.username,
+        nim_nip: res.data.nim_nip,
+        profile_image: res.data.profile_image,
+        phone: res.data.phone,
+        bio: res.data.bio
+      };
+
+      localStorage.setItem('user', JSON.stringify(updatedUser));
       setIsEditing(false);
-      alert('Profil berhasil diperbarui!');
-    }, 800);
+      showToastMsg('Profil berhasil diperbarui!', 'success');
+      
+      // Delay reload to let user see the beautiful premium toast
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+    } catch (err) {
+      console.error(err);
+      showToastMsg(err.message || 'Gagal memperbarui profil. Silakan coba lagi.', 'error');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -93,8 +140,22 @@ const ProfilePage = () => {
                     </div>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-                    <button type="button" onClick={() => setIsEditing(false)} style={{ padding: '10px 20px', background: 'transparent', border: '1px solid #cbd5e1', borderRadius: '8px', color: '#64748b', fontWeight: 600, cursor: 'pointer' }}>Batal</button>
-                    <button type="submit" className="btn-primary" style={{ padding: '10px 24px', borderRadius: '8px' }}>Simpan Perubahan</button>
+                    <button 
+                      type="button" 
+                      disabled={loading}
+                      onClick={() => setIsEditing(false)} 
+                      style={{ padding: '10px 20px', background: 'transparent', border: '1px solid #cbd5e1', borderRadius: '8px', color: '#64748b', fontWeight: 600, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}
+                    >
+                      Batal
+                    </button>
+                    <button 
+                      type="submit" 
+                      className="btn-primary" 
+                      disabled={loading}
+                      style={{ padding: '10px 24px', borderRadius: '8px', cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}
+                    >
+                      {loading ? 'Menyimpan...' : 'Simpan Perubahan'}
+                    </button>
                   </div>
                 </form>
               ) : (
@@ -145,6 +206,43 @@ const ProfilePage = () => {
           </div>
         </div>
       </div>
+
+      {/* Premium Toast Notification */}
+      {toast.show && (
+        <div
+          style={{
+            position: 'fixed',
+            top: '24px',
+            right: '24px',
+            background: toast.type === 'success' ? '#dcfce7' : '#fee2e2',
+            border: toast.type === 'success' ? '1px solid #bbf7d0' : '1px solid #fecaca',
+            color: toast.type === 'success' ? '#156534' : '#991b1b',
+            borderRadius: '12px',
+            padding: '16px 24px',
+            boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.05)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            zIndex: 9999,
+            animation: 'slideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            fontWeight: 600,
+            fontSize: '15px'
+          }}
+        >
+          <style>{`
+            @keyframes slideIn {
+              from { transform: translateY(-20px); opacity: 0; }
+              to { transform: translateY(0); opacity: 1; }
+            }
+          `}</style>
+          {toast.type === 'success' ? (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          ) : (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          )}
+          <span>{toast.message}</span>
+        </div>
+      )}
 
       <Footer />
     </div>

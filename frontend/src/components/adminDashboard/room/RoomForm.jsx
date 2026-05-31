@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Save, Home, MapPin, Users, Clock, Layers, User, Mail, Phone, Image as ImageIcon, X, Plus, Banknote } from 'lucide-react';
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+import api from '../../../services/api';
 
 const formatRupiah = (value) => {
   if (value === null || value === undefined) return '';
@@ -18,6 +16,15 @@ const RoomForm = ({ room, onBack, onSuccess, onZoomImage }) => {
   // Retrieve current logged-in admin data to auto-populate PIC fields
   const activeUserStr = localStorage.getItem('user');
   const activeUser = activeUserStr ? JSON.parse(activeUserStr) : {};
+
+  const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+
+  const showToastMsg = (message, type = 'success') => {
+    setToast({ show: true, message, type });
+    setTimeout(() => {
+      setToast(prev => ({ ...prev, show: false }));
+    }, 3000);
+  };
 
   const [formData, setFormData] = useState({
     name: '',
@@ -82,14 +89,17 @@ const RoomForm = ({ room, onBack, onSuccess, onZoomImage }) => {
       };
 
       if (room) {
-        await axios.put(`${API_URL}/rooms/${room.id}`, payload);
+        await api.put(`/rooms/${room.id}`, payload);
       } else {
-        await axios.post(`${API_URL}/rooms/`, payload);
+        await api.post(`/rooms/`, payload);
       }
-      onSuccess();
+      showToastMsg('Data ruangan berhasil disimpan!', 'success');
+      setTimeout(() => {
+        onSuccess();
+      }, 1500);
     } catch (err) {
       console.error(err);
-      alert('Gagal menyimpan data ruangan');
+      showToastMsg(err.message || 'Gagal menyimpan data ruangan', 'error');
     } finally {
       setLoading(false);
     }
@@ -371,6 +381,43 @@ const RoomForm = ({ room, onBack, onSuccess, onZoomImage }) => {
           </button>
         </div>
       </form>
+
+      {/* Premium Toast Notification */}
+      {toast.show && (
+        <div
+          style={{
+            position: 'fixed',
+            top: '24px',
+            right: '24px',
+            background: toast.type === 'success' ? '#dcfce7' : '#fee2e2',
+            border: toast.type === 'success' ? '1px solid #bbf7d0' : '1px solid #fecaca',
+            color: toast.type === 'success' ? '#156534' : '#991b1b',
+            borderRadius: '12px',
+            padding: '16px 24px',
+            boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.05)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            zIndex: 9999,
+            animation: 'slideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            fontWeight: 600,
+            fontSize: '15px'
+          }}
+        >
+          <style>{`
+            @keyframes slideIn {
+              from { transform: translateY(-20px); opacity: 0; }
+              to { transform: translateY(0); opacity: 1; }
+            }
+          `}</style>
+          {toast.type === 'success' ? (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          ) : (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          )}
+          <span>{toast.message}</span>
+        </div>
+      )}
     </div>
   );
 };

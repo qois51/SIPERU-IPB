@@ -8,6 +8,7 @@ from app.routes.protected_routes import protected_router
 from app.routes.room_routes import room_router
 from app.routes.booking_routes import booking_router
 from app.routes.user_routes import user_router
+from app.routes.help_routes import help_router
 
 app = FastAPI(
     title="Room Management API",
@@ -30,6 +31,7 @@ app.include_router(protected_router, prefix="/api/data", tags=["Protected"])
 app.include_router(room_router, prefix="/api/rooms", tags=["Rooms"])
 app.include_router(booking_router, prefix="/api/bookings", tags=["Bookings"])
 app.include_router(user_router, prefix="/api/users", tags=["Users"])
+app.include_router(help_router, prefix="/api/help", tags=["HelpCenter"])
 
 from sqlalchemy import text
 from database import engine as async_engine

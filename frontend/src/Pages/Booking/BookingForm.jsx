@@ -9,9 +9,7 @@ import Footer from '../../components/Footer';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 import bookingService from '../../services/bookingService';
 import { JENIS_KEGIATAN, FACILITY_OPTIONS } from '../../utils/constants';
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+import api from '../../services/api';
 
 const bookingSchema = yup.object({
   nama_peminjam: yup.string().required('Nama lengkapnya belum diisi ya.'),
@@ -172,7 +170,7 @@ const BookingForm = () => {
   useEffect(() => {
     const fetchRoom = async () => {
       try {
-        const res = await axios.get(`${API_URL}/rooms/${roomId}`);
+        const res = await api.get(`/rooms/${roomId}`);
         setRoom(res.data?.data || res.data);
       } catch {
         setError('Gagal memuat data ruangan.');
@@ -188,7 +186,7 @@ const BookingForm = () => {
     if (editId) {
       const fetchBooking = async () => {
         try {
-          const res = await axios.get(`${API_URL}/bookings/${editId}`);
+          const res = await api.get(`/bookings/${editId}`);
           const b = res.data?.data || res.data;
           if (b) {
             setValue('nama_peminjam', b.nama_peminjam || '');

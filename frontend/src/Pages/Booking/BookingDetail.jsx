@@ -118,7 +118,7 @@ const BookingDetail = () => {
                   {[
                     ['Nama Peminjam', booking.nama_peminjam],
                     ['NIM/NIP', booking.nim_nip],
-                    ['Program Studi/unit', booking.program_studi],
+                    ['Program Studi / Unit', booking.program_studi],
                     ['Email Aktif', booking.email],
                     ['Nomor HP Aktif', booking.nomor_hp],
                   ].map(([label, value]) => (
@@ -238,7 +238,7 @@ const BookingDetail = () => {
  
                   {/* Info */}
                   <p style={{ fontSize: '15px', color: 'white', margin: '0 0 4px' }}>{booking.room_name}</p>
-                  <p style={{ fontSize: '13px', color: '#bfdbfe', margin: '0 0 4px' }}>{booking.room_location || 'Gedung Rektorat, Lantai 4'}</p>
+                  <p style={{ fontSize: '13px', color: '#bfdbfe', margin: '0 0 4px' }}>{(booking.room_location || 'Gedung Rektorat, Lantai 4').replace(/\bfmipa\b/gi, 'FMIPA')}</p>
                   <p style={{ fontSize: '14px', color: 'white', margin: '0 0 4px' }}>{formatDateID(booking.date)}</p>
                   <p style={{ fontSize: '14px', color: 'white', margin: '0 0 4px' }}>{formatTimeRange(booking.start_time, booking.end_time)}</p>
                   <p style={{ fontSize: '14px', color: 'white', margin: '0 0 16px' }}>{booking.nama_peminjam}</p>
@@ -292,19 +292,23 @@ const BookingDetail = () => {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <div>
                     <p style={{ fontSize: '11px', color: '#64748b', margin: '0 0 2px' }}>Nama Ruangan</p>
-                    <p style={{ fontSize: '15px', fontWeight: 800, color: '#111827', margin: 0 }}>{booking.room_name}</p>
+                    <p style={{ fontSize: '15px', fontWeight: 700, color: '#111827', margin: 0 }}>{booking.room_name}</p>
                   </div>
                   <div>
                     <p style={{ fontSize: '11px', color: '#64748b', margin: '0 0 2px' }}>Lokasi</p>
-                    <p style={{ fontSize: '14px', fontWeight: 700, color: '#111827', margin: 0 }}>{booking.room_location || 'Gedung Rektorat, Lantai 4'}</p>
+                    <p style={{ fontSize: '15px', fontWeight: 700, color: '#111827', margin: 0 }}>{(booking.room_location || 'Gedung Rektorat, Lantai 4').replace(/\bfmipa\b/gi, 'FMIPA')}</p>
+                  </div>
+                  <div>
+                    <p style={{ fontSize: '11px', color: '#64748b', margin: '0 0 2px' }}>Tanggal</p>
+                    <p style={{ fontSize: '15px', fontWeight: 700, color: '#111827', margin: 0 }}>{formatDateID(booking.date)}</p>
                   </div>
                   <div>
                     <p style={{ fontSize: '11px', color: '#64748b', margin: '0 0 2px' }}>Jam</p>
-                    <p style={{ fontSize: '16px', fontWeight: 800, color: '#111827', margin: 0 }}>{formatTimeRange(booking.start_time, booking.end_time).replace('WIB', '').trim()}</p>
+                    <p style={{ fontSize: '15px', fontWeight: 700, color: '#111827', margin: 0 }}>{formatTimeRange(booking.start_time, booking.end_time)}</p>
                   </div>
                   <div>
                     <p style={{ fontSize: '11px', color: '#64748b', margin: '0 0 2px' }}>Harga</p>
-                    <p style={{ fontSize: '14px', fontWeight: 700, color: '#111827', margin: 0 }}>
+                    <p style={{ fontSize: '15px', fontWeight: 700, color: '#111827', margin: 0 }}>
                       {booking.room_price != null
                         ? `Rp ${booking.room_price.toLocaleString('id-ID')} / Sesi`
                         : 'Gratis'}

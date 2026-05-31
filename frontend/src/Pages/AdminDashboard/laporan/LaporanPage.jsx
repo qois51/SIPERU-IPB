@@ -289,13 +289,10 @@ const LaporanPage = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           {/* Title area */}
           <div>
-            <h2 className="text-slate-800" style={{ fontSize: '28px', fontWeight: 900, letterSpacing: '-0.02em', display: 'flex', alignItems: 'center', gap: '14px', margin: '0 0 8px 0', lineHeight: 1.2 }}>
-              <div style={{ padding: '10px', background: 'linear-gradient(135deg, #1d4ed8, #3730a3)', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 16px -4px rgba(29, 78, 216, 0.25)' }}>
-                <FileBarChart size={24} color="white" />
-              </div> 
-              Laporan & Analitik
-            </h2>
-            <p className="text-slate-500" style={{ fontSize: '13px', fontWeight: 500, lineHeight: 1.6, maxWidth: '640px', margin: 0 }}>
+            <div className="admin-page-header" style={{ marginBottom: '8px' }}>
+              <h2 className="admin-page-title">LAPORAN & ANALITIK</h2>
+            </div>
+            <p style={{ fontSize: '13px', fontWeight: 500, lineHeight: 1.6, maxWidth: '640px', margin: 0, color: '#94a3b8' }}>
               Himpunan performa operasional, statistik tingkat okupansi ruangan, instansi teraktif, serta dokumen riwayat resmi untuk Institut Pertanian Bogor.
             </p>
           </div>
@@ -492,7 +489,7 @@ const LaporanPage = () => {
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', marginBottom: '24px', gap: '12px', flexWrap: 'wrap' }}>
                 <div>
                   <h4 style={{ fontSize: '16px', fontWeight: 900, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px', margin: '0 0 4px 0' }}>
-                    📊 Intensitas Pemanfaatan Ruang
+                    Intensitas Pemanfaatan Ruang
                   </h4>
                   <p style={{ fontSize: '12px', fontWeight: 500, color: '#94a3b8', margin: 0 }}>Daftar ruangan paling dicari dan jam okupansi.</p>
                 </div>
@@ -551,7 +548,7 @@ const LaporanPage = () => {
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', marginBottom: '24px', gap: '12px', flexWrap: 'wrap' }}>
                 <div>
                   <h4 style={{ fontSize: '16px', fontWeight: 900, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px', margin: '0 0 4px 0' }}>
-                    🎓 Departemen / Prodi Teraktif
+                    Departemen / Prodi Teraktif
                   </h4>
                   <p style={{ fontSize: '12px', fontWeight: 500, color: '#94a3b8', margin: 0 }}>Distribusi pemesanan berdasarkan institusi pemohon.</p>
                 </div>
@@ -617,7 +614,7 @@ const LaporanPage = () => {
             <div className="lp-panel" style={{ background: 'white', padding: '28px', borderRadius: '20px', border: '1px solid #f1f5f9', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
               <div style={{ borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', marginBottom: '20px' }}>
                 <h4 style={{ fontSize: '16px', fontWeight: 900, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px', margin: '0 0 4px 0' }}>
-                  🏛️ Organisasi / Unit Kegiatan Peminjam
+                  Organisasi / Unit Kegiatan Peminjam
                 </h4>
                 <p style={{ fontSize: '12px', fontWeight: 500, color: '#94a3b8', margin: 0 }}>Frekuensi peminjaman berdasarkan entitas organisasi pemohon.</p>
               </div>
@@ -667,7 +664,7 @@ const LaporanPage = () => {
             <div className="lp-panel" style={{ background: 'white', padding: '28px', borderRadius: '20px', border: '1px solid #f1f5f9', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
               <div style={{ borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', marginBottom: '20px' }}>
                 <h4 style={{ fontSize: '16px', fontWeight: 900, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px', margin: '0 0 4px 0' }}>
-                  📌 Status Operasional
+                  Status Operasional
                 </h4>
                 <p style={{ fontSize: '12px', fontWeight: 500, color: '#94a3b8', margin: 0 }}>Klasifikasi status peminjaman secara administratif.</p>
               </div>
@@ -718,7 +715,7 @@ const LaporanPage = () => {
             <div style={{ padding: '24px 28px', borderBottom: '1px solid #f1f5f9', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '16px' }}>
               <div>
                 <h4 style={{ fontSize: '16px', fontWeight: 900, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px', margin: '0 0 4px 0' }}>
-                  📋 Rincian Riwayat Reservasi
+                  Rincian Riwayat Reservasi
                 </h4>
                 <p style={{ fontSize: '12px', fontWeight: 500, color: '#94a3b8', margin: 0 }}>Daftar menyeluruh seluruh berkas reservasi aktif pada rentang waktu ini.</p>
               </div>
@@ -898,7 +895,7 @@ const LaporanPage = () => {
                 Dokumen Resmi A4
               </span>
               <h3 style={{ fontSize: '22px', fontWeight: 900, letterSpacing: '-0.02em', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '10px', lineHeight: 1.3, margin: '0 0 10px 0' }}>
-                📂 Unduh Laporan Penggunaan Resmi
+                Unduh Laporan Penggunaan Resmi
               </h3>
               <p style={{ color: '#94a3b8', fontSize: '12px', fontWeight: 600, maxWidth: '560px', lineHeight: 1.7, margin: 0 }}>
                 Ekspor berkas rekapitulasi formal peminjaman ruangan berstandar akademik tinggi, lengkap dengan visualisasi intensitas ruang, kontribusi program studi teraktif, persetujuan administrasi resmi, dan lembar pengesahan tanda tangan.

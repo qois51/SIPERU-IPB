@@ -121,7 +121,7 @@ async def check_out_booking(data: CodeRequest, db: AsyncSession = Depends(get_db
 @booking_router.get('/reports/stats')
 async def get_reports_stats(
     period: str = Query('1month'),
-    current_user: dict = Depends(role_required(['admin', 'karyawan'])),
+    current_user: dict = Depends(role_required(['admin', 'dosen', 'pic'])),
     db: AsyncSession = Depends(get_db)
 ):
     result = await booking_service.get_reports_stats(db, period=period)

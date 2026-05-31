@@ -1,11 +1,18 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { MapPin, Users, Clock, ArrowLeft, Mail, Phone, User as UserIcon, Banknote } from 'lucide-react';
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+import api from '../../../services/api';
 
 const RoomDetail = ({ room, onBack, onEdit, onDeleteSuccess, onZoomImage }) => {
   if (!room) return null;
+
+  const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+
+  const showToastMsg = (message, type = 'success') => {
+    setToast({ show: true, message, type });
+    setTimeout(() => {
+      setToast(prev => ({ ...prev, show: false }));
+    }, 3000);
+  };
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price);
@@ -17,26 +24,29 @@ const RoomDetail = ({ room, onBack, onEdit, onDeleteSuccess, onZoomImage }) => {
     ? rawImg 
     : (typeof rawImg === 'string' ? rawImg.split('|') : ['/loginAsset/ruanganTerdaftar.png']);
 
-  const [mainImage, setMainImage] = React.useState(imageUrls[0]);
-  const [bookings, setBookings] = React.useState([]);
+  const [mainImage, setMainImage] = useState(imageUrls[0]);
+  const [bookings, setBookings] = useState([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setMainImage(imageUrls[0]);
     // Fetch some upcoming bookings for this room to show to admin
     const today = new Date().toISOString().split('T')[0];
-    axios.get(`${API_URL}/bookings/room/${room.id}?date=${today}`)
-      .then(res => setBookings(res.data))
+    api.get(`/bookings/room/${room.id}?date=${today}`)
+      .then(res => setBookings(res.data?.data || res.data || []))
       .catch(err => console.error(err));
   }, [room.id]);
 
   const handleDelete = async () => {
     if (window.confirm('Apakah Anda yakin ingin menghapus ruangan ini?')) {
       try {
-        await axios.delete(`${API_URL}/rooms/${room.id}`);
-        onDeleteSuccess();
+        await api.delete(`/rooms/${room.id}`);
+        showToastMsg('Ruangan berhasil dihapus!', 'success');
+        setTimeout(() => {
+          onDeleteSuccess();
+        }, 1500);
       } catch (err) {
         console.error(err);
-        alert('Gagal menghapus ruangan');
+        showToastMsg(err.message || 'Gagal menghapus ruangan', 'error');
       }
     }
   };
@@ -165,6 +175,43 @@ const RoomDetail = ({ room, onBack, onEdit, onDeleteSuccess, onZoomImage }) => {
          <button className="btn-edit-room" onClick={onEdit}>Edit Data Ruangan</button>
          <button className="btn-delete-room" onClick={handleDelete}>Hapus Ruangan</button>
       </div>
+
+      {/* Premium Toast Notification */}
+      {toast.show && (
+        <div
+          style={{
+            position: 'fixed',
+            top: '24px',
+            right: '24px',
+            background: toast.type === 'success' ? '#dcfce7' : '#fee2e2',
+            border: toast.type === 'success' ? '1px solid #bbf7d0' : '1px solid #fecaca',
+            color: toast.type === 'success' ? '#156534' : '#991b1b',
+            borderRadius: '12px',
+            padding: '16px 24px',
+            boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.05)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            zIndex: 9999,
+            animation: 'slideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            fontWeight: 600,
+            fontSize: '15px'
+          }}
+        >
+          <style>{`
+            @keyframes slideIn {
+              from { transform: translateY(-20px); opacity: 0; }
+              to { transform: translateY(0); opacity: 1; }
+            }
+          `}</style>
+          {toast.type === 'success' ? (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          ) : (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          )}
+          <span>{toast.message}</span>
+        </div>
+      )}
     </div>
   );
 };

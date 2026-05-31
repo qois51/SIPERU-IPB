@@ -11,11 +11,27 @@ import UserPage from './user/UserPage';
 import EPassScanner from './scanner/EPassScanner';
 import LaporanPage from './laporan/LaporanPage';
 import CalendarPage from './calendar/CalendarPage';
+import HelpCenterPage from './helpcenter/HelpCenterPage';
 
 const AdminDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
+  const role = localStorage.getItem('role') || 'admin';
+  const allowedViews = {
+    admin: ['beranda', 'verifikasi', 'ruangan', 'user', 'scanner', 'kalender', 'laporan', 'helpcenter'],
+    satpam: ['beranda', 'scanner', 'kalender'],
+    pic: ['beranda', 'verifikasi', 'ruangan', 'kalender', 'laporan'],
+    dosen: ['beranda', 'verifikasi', 'ruangan', 'kalender', 'laporan'],
+  };
+  const allowedForRole = allowedViews[role] || allowedViews['admin'];
   const activeView = searchParams.get('view') || 'beranda';
+
+  // Force redirect if user tries to manually navigate to an unauthorized view
+  useEffect(() => {
+    if (!allowedForRole.includes(activeView)) {
+      setSearchParams({ view: 'beranda' });
+    }
+  }, [activeView, allowedForRole, setSearchParams]);
   
   const [dashboardData, setDashboardData] = useState({ stats: null, upcoming: [] });
   const [loading, setLoading] = useState(true);
@@ -51,7 +67,9 @@ const AdminDashboard = () => {
         return (
           <>
             <section className="overview-section">
-              <h3 style={{ marginBottom: '24px' }}>Overview</h3>
+              <div className="admin-page-header">
+                <h2 className="admin-page-title">BERANDA OVERVIEW</h2>
+              </div>
               <StatCards stats={dashboardData.stats} />
             </section>
             <ActivityList activities={dashboardData.upcoming} />
@@ -69,6 +87,8 @@ const AdminDashboard = () => {
         return <CalendarPage />;
       case 'laporan':
         return <LaporanPage />;
+      case 'helpcenter':
+        return <HelpCenterPage />;
       default:
         return <div>Halaman tidak ditemukan</div>;
     }

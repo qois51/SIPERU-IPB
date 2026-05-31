@@ -436,12 +436,9 @@ const CalendarPage = () => {
       <div className="cal-animate-fade-up" style={{ marginBottom: '28px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div>
-            <h2 style={{ fontSize: '28px', fontWeight: 900, letterSpacing: '-0.02em', display: 'flex', alignItems: 'center', gap: '14px', margin: '0 0 8px 0', lineHeight: 1.2, color: '#1e293b' }}>
-              <div style={{ padding: '10px', background: 'linear-gradient(135deg, #1d4ed8, #3730a3)', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 16px -4px rgba(29, 78, 216, 0.25)' }}>
-                <CalendarIcon size={24} color="white" />
-              </div>
-              Kalender Peminjaman
-            </h2>
+            <div className="admin-page-header" style={{ marginBottom: '8px' }}>
+              <h2 className="admin-page-title">KALENDER PEMINJAMAN</h2>
+            </div>
             <p style={{ fontSize: '13px', fontWeight: 500, lineHeight: 1.6, maxWidth: '640px', margin: 0, color: '#94a3b8' }}>
               Visualisasi jadwal seluruh peminjaman ruangan dalam format kalender. Klik tanggal untuk melihat detail event.
             </p>

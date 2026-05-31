@@ -41,7 +41,7 @@ const Rules = () => {
   ];
 
   return (
-    <section className="rules-section">
+    <section id="rules" className="rules-section">
       <div className="container" style={{ maxWidth: '1400px', padding: '0 40px' }}>
         <div className="section-heading" style={{ marginBottom: '56px' }}>
           <h2 style={{ fontSize: '36px' }}>Ketentuan Peminjaman Ruangan</h2>

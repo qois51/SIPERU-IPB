@@ -247,10 +247,18 @@ const Header = ({ toggleSidebar, onMenuChange }) => {
               </div>
               
               <div className="dropdown-items" style={{ padding: '8px' }}>
-                <div className="dropdown-item" style={{ padding: '10px 12px', display: 'flex', alignItems: 'center', gap: '10px', borderRadius: '8px', cursor: 'pointer' }}>
+                <div 
+                  className="dropdown-item" 
+                  onClick={() => { navigate('/profil'); setShowDropdown(false); }}
+                  style={{ padding: '10px 12px', display: 'flex', alignItems: 'center', gap: '10px', borderRadius: '8px', cursor: 'pointer' }}
+                >
                   <User size={18} /> Profil Saya
                 </div>
-                <div className="dropdown-item" style={{ padding: '10px 12px', display: 'flex', alignItems: 'center', gap: '10px', borderRadius: '8px', cursor: 'pointer' }}>
+                <div 
+                  className="dropdown-item" 
+                  onClick={() => { navigate('/pengaturan'); setShowDropdown(false); }}
+                  style={{ padding: '10px 12px', display: 'flex', alignItems: 'center', gap: '10px', borderRadius: '8px', cursor: 'pointer' }}
+                >
                   <Settings size={18} /> Pengaturan
                 </div>
                 <hr style={{ margin: '8px 0', border: 'none', borderTop: '1px solid #f1f5f9' }} />
