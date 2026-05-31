@@ -259,7 +259,7 @@ const Header = ({ toggleSidebar, onMenuChange }) => {
                   onClick={handleLogout}
                   style={{ padding: '10px 12px', display: 'flex', alignItems: 'center', gap: '10px', borderRadius: '8px', cursor: 'pointer', color: '#ef4444' }}
                 >
-                  <LogOut size={18} /> Keluar Aplikasi
+                  <LogOut size={18} /> Logout
                 </div>
               </div>
             </div>

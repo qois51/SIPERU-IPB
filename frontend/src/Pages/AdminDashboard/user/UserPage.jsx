@@ -1,44 +1,76 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import UserList from '../../../components/adminDashboard/user/UserList';
 import UserForm from '../../../components/adminDashboard/user/UserForm';
+import adminService from '../../../services/adminService';
+import LoadingSpinner from '../../../components/common/LoadingSpinner';
 import { X } from 'lucide-react';
 
 const UserPage = () => {
-  const [view, setView] = useState('list'); // 'list', 'add', 'edit'
+  const [searchParams, setSearchParams] = useSearchParams();
+  const sub = searchParams.get('sub') || 'list';
+  const id = searchParams.get('id');
+
   const [selectedUser, setSelectedUser] = useState(null);
+  const [loadingUser, setLoadingUser] = useState(false);
   const [modalImage, setModalImage] = useState(null);
+
+  useEffect(() => {
+    if (sub === 'edit' && id) {
+      if (!selectedUser || selectedUser.id !== parseInt(id)) {
+        const fetchUser = async () => {
+          setLoadingUser(true);
+          try {
+            const res = await adminService.getUserById(id);
+            setSelectedUser(res.data || res);
+          } catch (err) {
+            console.error('Failed to fetch user detail:', err);
+          } finally {
+            setLoadingUser(false);
+          }
+        };
+        fetchUser();
+      }
+    } else {
+      setSelectedUser(null);
+    }
+  }, [sub, id, selectedUser]);
 
   const handleOpenModal = (img) => setModalImage(img);
   const handleCloseModal = () => setModalImage(null);
 
   const handleAddUser = () => {
     setSelectedUser(null);
-    setView('add');
+    setSearchParams({ view: 'user', sub: 'add' });
   };
 
   const handleEditUser = (user) => {
     setSelectedUser(user);
-    setView('edit');
+    setSearchParams({ view: 'user', sub: 'edit', id: user.id.toString() });
   };
 
   const handleBackToList = () => {
-    setView('list');
+    setSearchParams({ view: 'user' });
     setSelectedUser(null);
   };
 
   const handleSuccess = () => {
-    setView('list');
+    setSearchParams({ view: 'user' });
     setSelectedUser(null);
   };
 
+  if (sub === 'edit' && loadingUser && !selectedUser) {
+    return <LoadingSpinner text="Memuat data pengguna..." />;
+  }
+
   const renderContent = () => {
-    switch (view) {
+    switch (sub) {
       case 'list':
         return <UserList onAddUser={handleAddUser} onEditUser={handleEditUser} onZoomImage={handleOpenModal} />;
       case 'add':
         return <UserForm onBack={handleBackToList} onSuccess={handleSuccess} onZoomImage={handleOpenModal} />;
       case 'edit':
-        return <UserForm user={selectedUser} onBack={handleBackToList} onSuccess={handleSuccess} onZoomImage={handleOpenModal} />;
+        return selectedUser && <UserForm user={selectedUser} onBack={handleBackToList} onSuccess={handleSuccess} onZoomImage={handleOpenModal} />;
       default:
         return <UserList onAddUser={handleAddUser} onEditUser={handleEditUser} onZoomImage={handleOpenModal} />;
     }

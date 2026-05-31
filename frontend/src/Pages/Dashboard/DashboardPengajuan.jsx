@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Plus, Download, Eye, Inbox } from 'lucide-react';
+import { Search, Plus, Download, Eye, Inbox, AlertTriangle, Trash2 } from 'lucide-react';
 import html2pdf from 'html2pdf.js';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
@@ -26,6 +26,10 @@ const DashboardPengajuan = () => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [perPage, setPerPage] = useState(10);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [selectedBookingId, setSelectedBookingId] = useState(null);
+  const [cancelModalType, setCancelModalType] = useState('cancel'); // 'cancel' or 'delete'
+  const [isCancelling, setIsCancelling] = useState(false);
 
   const pagination = usePagination(1, perPage);
 
@@ -64,13 +68,26 @@ const DashboardPengajuan = () => {
     fetchData();
   };
 
-  const handleCancel = async (bookingId) => {
-    if (!confirm('Apakah Anda yakin ingin membatalkan booking ini?')) return;
+  const handleCancel = (booking) => {
+    setSelectedBookingId(booking.id);
+    setCancelModalType(booking.status === 'Draft' ? 'delete' : 'cancel');
+    setShowConfirmModal(true);
+  };
+
+  const confirmCancelAction = async () => {
+    if (!selectedBookingId) return;
+    const bookingId = selectedBookingId;
+    setShowConfirmModal(false);
+    setIsCancelling(true);
+
     try {
       await bookingService.cancelBooking(bookingId);
-      fetchData();
+      await fetchData();
     } catch (err) {
       setError(err.message);
+    } finally {
+      setIsCancelling(false);
+      setSelectedBookingId(null);
     }
   };
 
@@ -248,7 +265,6 @@ const DashboardPengajuan = () => {
                 <table style={{ width: '100%', fontSize: '13px', borderCollapse: 'collapse' }}>
                   <thead>
                     <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
-                      <th style={{ textAlign: 'left', padding: '16px 8px', color: '#111827', fontWeight: 800 }}>Kode Booking</th>
                       <th style={{ textAlign: 'left', padding: '16px 8px', color: '#111827', fontWeight: 800 }}>Nama Ruangan</th>
                       <th style={{ textAlign: 'left', padding: '16px 8px', color: '#111827', fontWeight: 800 }}>Tgl. Pengajuan</th>
                       <th style={{ textAlign: 'left', padding: '16px 8px', color: '#111827', fontWeight: 800 }}>Tgl. Peminjaman</th>
@@ -261,9 +277,6 @@ const DashboardPengajuan = () => {
                   <tbody>
                     {bookings.map((b) => (
                       <tr key={b.id} style={{ borderBottom: '1px solid #f9fafb' }}>
-                        <td style={{ padding: '16px 8px', fontWeight: 500, color: '#374151' }}>
-                          {['Approved', 'Completed'].includes(b.status) ? b.booking_code : '-'}
-                        </td>
                         <td style={{ padding: '16px 8px', color: '#374151' }}>{b.room_name}</td>
                         <td style={{ padding: '16px 8px', color: '#374151' }}>{b.created_at ? String(b.created_at).substring(0, 10).split('-').reverse().join('/') : '-'}</td>
                         <td style={{ padding: '16px 8px', color: '#374151' }}>{b.booking_date ? String(b.booking_date).substring(0, 10).split('-').reverse().join('/') : (b.date ? String(b.date).substring(0, 10).split('-').reverse().join('/') : '-')}</td>
@@ -289,7 +302,7 @@ const DashboardPengajuan = () => {
                             
                             {(b.status === 'Pending' || b.status === 'Draft') && (
                               <button
-                                onClick={() => handleCancel(b.id)}
+                                onClick={() => handleCancel(b)}
                                 style={{ padding: '6px 16px', fontSize: '12px', fontWeight: 700, background: '#ffe4e6', color: '#e11d48', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
                               >
                                 {b.status === 'Draft' ? 'Hapus' : 'Batalkan'}
@@ -356,6 +369,217 @@ const DashboardPengajuan = () => {
           user={JSON.parse(localStorage.getItem('user') || '{}')} 
         />
       </div>
+
+      {/* Premium confirmation modal */}
+      {showConfirmModal && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(15, 23, 42, 0.45)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: '20px',
+            animation: 'fadeIn 0.2s ease-out'
+          }}
+        >
+          {/* Style tag for animations */}
+          <style>{`
+            @keyframes fadeIn {
+              from { opacity: 0; }
+              to { opacity: 1; }
+            }
+            @keyframes scaleUp {
+              from { transform: scale(0.95); opacity: 0; }
+              to { transform: scale(1); opacity: 1; }
+            }
+          `}</style>
+
+          <div
+            style={{
+              background: 'rgba(255, 255, 255, 0.95)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              borderRadius: '16px',
+              padding: '32px 24px',
+              maxWidth: '420px',
+              width: '100%',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+              textAlign: 'center',
+              boxSizing: 'border-box',
+              animation: 'scaleUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)'
+            }}
+          >
+            {/* Icon Wrapper */}
+            <div
+              style={{
+                width: '64px',
+                height: '64px',
+                borderRadius: '50%',
+                background: cancelModalType === 'delete' ? '#fee2e2' : '#fef3c7',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 20px auto'
+              }}
+            >
+              {cancelModalType === 'delete' ? (
+                <Trash2 size={32} color="#ef4444" />
+              ) : (
+                <AlertTriangle size={32} color="#d97706" />
+              )}
+            </div>
+
+            {/* Title */}
+            <h3
+              style={{
+                fontSize: '20px',
+                fontWeight: 800,
+                color: '#111827',
+                margin: '0 0 12px 0',
+                fontFamily: 'system-ui, -apple-system, sans-serif'
+              }}
+            >
+              {cancelModalType === 'delete' ? 'Hapus Draft Peminjaman?' : 'Batalkan Peminjaman?'}
+            </h3>
+
+            {/* Description */}
+            <p
+              style={{
+                fontSize: '14px',
+                color: '#4b5563',
+                lineHeight: '1.6',
+                margin: '0 0 28px 0',
+                fontFamily: 'system-ui, -apple-system, sans-serif'
+              }}
+            >
+              {cancelModalType === 'delete'
+                ? 'Apakah Anda yakin ingin menghapus draft peminjaman ruangan ini? Seluruh data yang telah diisi akan dihapus secara permanen.'
+                : 'Apakah Anda yakin ingin membatalkan pengajuan peminjaman ruangan ini? Tindakan ini tidak dapat diurungkan.'}
+            </p>
+
+            {/* Action Buttons */}
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+              <button
+                onClick={() => {
+                  setShowConfirmModal(false);
+                  setSelectedBookingId(null);
+                }}
+                style={{
+                  flex: 1,
+                  padding: '12px 20px',
+                  fontSize: '14px',
+                  fontWeight: 700,
+                  background: '#f3f4f6',
+                  color: '#4b5563',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  transition: 'background 0.2s ease',
+                  outline: 'none'
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = '#e5e7eb'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
+              >
+                Kembali
+              </button>
+              <button
+                onClick={confirmCancelAction}
+                style={{
+                  flex: 1,
+                  padding: '12px 20px',
+                  fontSize: '14px',
+                  fontWeight: 700,
+                  background: cancelModalType === 'delete' ? '#ef4444' : '#d97706',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  transition: 'background 0.2s ease',
+                  outline: 'none',
+                  boxShadow: cancelModalType === 'delete' 
+                    ? '0 4px 6px -1px rgba(239, 68, 68, 0.2)' 
+                    : '0 4px 6px -1px rgba(217, 119, 6, 0.2)'
+                }}
+                onMouseEnter={(e) => { 
+                  e.currentTarget.style.background = cancelModalType === 'delete' ? '#dc2626' : '#b45309'; 
+                }}
+                onMouseLeave={(e) => { 
+                  e.currentTarget.style.background = cancelModalType === 'delete' ? '#ef4444' : '#d97706'; 
+                }}
+              >
+                {cancelModalType === 'delete' ? 'Ya, Hapus' : 'Ya, Batalkan'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Premium cancellation loading overlay */}
+      {isCancelling && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: 'rgba(15, 23, 42, 0.45)',
+            backdropFilter: 'blur(6px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 2000,
+            padding: '20px',
+            animation: 'fadeIn 0.2s ease-out'
+          }}
+        >
+          <div
+            style={{
+              background: 'white',
+              borderRadius: '16px',
+              padding: '32px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '16px',
+              boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)',
+              maxWidth: '320px',
+              width: '100%',
+              textAlign: 'center',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              boxSizing: 'border-box'
+            }}
+          >
+            <div className="cancellation-spinner" />
+            <style>{`
+              .cancellation-spinner {
+                width: 48px;
+                height: 48px;
+                border: 4px solid #f1f5f9;
+                border-top: 4px solid #1e3a8a;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+              }
+              @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+              }
+            `}</style>
+            <span style={{ fontSize: '16px', fontWeight: 800, color: '#1e293b' }}>
+              Memproses Pembatalan...
+            </span>
+            <span style={{ fontSize: '13px', color: '#64748b', lineHeight: '1.5' }}>
+              Mohon tunggu, sistem sedang menghapus data reservasi & berkas dari server.
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

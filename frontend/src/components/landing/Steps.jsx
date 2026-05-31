@@ -20,8 +20,8 @@ const Steps = () => {
         <div className="steps-grid" style={{ gap: '32px' }}>
           {steps.map(step => (
             <div key={step.id} className="step-card" style={{ padding: '48px 32px' }}>
-              <div className="step-number" style={{ width: '48px', height: '48px', fontSize: '20px', marginBottom: '24px' }}>{step.id}</div>
-              <step.icon size={48} color="#1e3a8a" style={{ marginBottom: '20px' }} />
+              <div className="step-number" style={{ width: '48px', height: '48px', fontSize: '20px', margin: '0 auto 24px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{step.id}</div>
+              <step.icon size={48} color="#1e3a8a" style={{ margin: '0 auto 20px', display: 'block' }} />
               <h4 style={{ fontSize: '22px', marginBottom: '12px', fontWeight: 800 }}>{step.title}</h4>
               <p style={{ fontSize: '15px', color: '#64748b', lineHeight: '1.5' }}>{step.desc}</p>
             </div>

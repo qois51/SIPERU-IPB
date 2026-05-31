@@ -16,9 +16,16 @@ const DateTimePicker = ({ roomId, onSelectionChange }) => {
   const today = new Date();
   const [viewYear, setViewYear] = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth());
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(today);
   const [selectedSlots, setSelectedSlots] = useState([]);
   const [bookedSlots, setBookedSlots] = useState([]);
+
+  // Sync selection with parent component instantly
+  useEffect(() => {
+    if (selectedDate && onSelectionChange) {
+      onSelectionChange({ date: formatDate(selectedDate), slots: selectedSlots });
+    }
+  }, [selectedDate, selectedSlots]);
 
   // Fetch booked slots for selected date
   useEffect(() => {
@@ -102,17 +109,12 @@ const DateTimePicker = ({ roomId, onSelectionChange }) => {
     if (cell.date < new Date(today.getFullYear(), today.getMonth(), today.getDate())) return;
     setSelectedDate(cell.date);
     setSelectedSlots([]);
-    if (onSelectionChange) onSelectionChange({ date: formatDate(cell.date), slots: [] });
   };
 
   const toggleSlot = (slot) => {
-    if (bookedSlots.includes(slot)) return;
+    if (bookedSlots.includes(slot) || isSlotInPast(slot)) return;
     setSelectedSlots(prev => {
-      const next = prev.includes(slot) ? prev.filter(s => s !== slot) : [...prev, slot];
-      if (onSelectionChange && selectedDate) {
-        onSelectionChange({ date: formatDate(selectedDate), slots: next });
-      }
-      return next;
+      return prev.includes(slot) ? prev.filter(s => s !== slot) : [...prev, slot];
     });
   };
 
@@ -126,6 +128,45 @@ const DateTimePicker = ({ roomId, onSelectionChange }) => {
 
   const isSelected = (cell) => {
     return selectedDate && cell.date.toDateString() === selectedDate.toDateString();
+  };
+
+  const isSlotInPast = (slot) => {
+    if (!selectedDate) return false;
+    
+    // Get current date/time in Asia/Jakarta (WIB / GMT+7)
+    const now = new Date();
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Jakarta',
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: false
+    });
+    
+    const parts = formatter.formatToParts(now);
+    const jkt = {};
+    parts.forEach(p => { jkt[p.type] = p.value; });
+    
+    const jktYear = parseInt(jkt.year, 10);
+    const jktMonth = parseInt(jkt.month, 10) - 1;
+    const jktDay = parseInt(jkt.day, 10);
+    const jktHour = parseInt(jkt.hour, 10);
+    
+    // Check if selectedDate matches the current date in Jakarta
+    const isTodayInJakarta = 
+      selectedDate.getFullYear() === jktYear &&
+      selectedDate.getMonth() === jktMonth &&
+      selectedDate.getDate() === jktDay;
+      
+    if (!isTodayInJakarta) return false;
+    
+    // Parse slot start hour (e.g. '07:00-08:00' -> '07')
+    const startHourStr = slot.split('-')[0].split(':')[0];
+    const slotStartHour = parseInt(startHourStr, 10);
+    
+    return jktHour >= slotStartHour;
   };
 
   // Compute merged slot display label
@@ -223,21 +264,23 @@ const DateTimePicker = ({ roomId, onSelectionChange }) => {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
             {ALL_SLOTS.map(slot => {
               const booked = bookedSlots.includes(slot);
+              const past = isSlotInPast(slot);
               const selected = selectedSlots.includes(slot);
+              const isDisabled = booked || past;
               return (
                 <button
                   key={slot}
                   onClick={() => toggleSlot(slot)}
-                  disabled={booked}
+                  disabled={isDisabled}
                   style={{
                     padding: '10px',
                     borderRadius: '8px',
-                    border: selected ? '2px solid #1e3a8a' : booked ? '1px solid #d1d5db' : '1px solid #93c5fd',
-                    background: selected ? '#1e3a8a' : booked ? '#e5e7eb' : '#eff6ff',
-                    color: selected ? 'white' : booked ? '#6b7280' : '#1e3a8a',
+                    border: selected ? '2px solid #1e3a8a' : isDisabled ? '1px solid #d1d5db' : '1px solid #93c5fd',
+                    background: selected ? '#1e3a8a' : isDisabled ? '#e5e7eb' : '#eff6ff',
+                    color: selected ? 'white' : isDisabled ? '#6b7280' : '#1e3a8a',
                     fontWeight: 700,
                     fontSize: '13px',
-                    cursor: booked ? 'default' : 'pointer',
+                    cursor: isDisabled ? 'default' : 'pointer',
                     transition: 'all 0.15s'
                   }}
                 >

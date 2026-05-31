@@ -90,9 +90,19 @@ async def run_migrations_online() -> None:
     """Run migrations in 'online' mode."""
 
     # Buat engine async menggunakan URL dari settings (.env)
+    import ssl
+    connect_args = {}
+    if "supabase" in settings.db_host or "pooler" in settings.db_host:
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+        connect_args["ssl"] = ctx
+        connect_args["statement_cache_size"] = 0
+
     connectable = create_async_engine(
         settings.database_url,
         poolclass=pool.NullPool,
+        connect_args=connect_args,
     )
 
     async with connectable.connect() as connection:

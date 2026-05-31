@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import adminService from '../../services/adminService';
 import Sidebar from '../../components/adminDashboard/Sidebar';
 import Header from '../../components/adminDashboard/Header';
@@ -8,10 +9,14 @@ import VerificationPage from './verification/VerificationPage';
 import RoomPage from './room/RoomPage';
 import UserPage from './user/UserPage';
 import EPassScanner from './scanner/EPassScanner';
+import LaporanPage from './laporan/LaporanPage';
+import CalendarPage from './calendar/CalendarPage';
 
 const AdminDashboard = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [activeView, setActiveView] = useState('beranda'); // 'beranda', 'verifikasi', 'ruangan', 'user'
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeView = searchParams.get('view') || 'beranda';
+  
   const [dashboardData, setDashboardData] = useState({ stats: null, upcoming: [] });
   const [loading, setLoading] = useState(true);
 
@@ -33,6 +38,10 @@ const AdminDashboard = () => {
     };
     fetchStats();
   }, []);
+
+  const handleMenuChange = (view) => {
+    setSearchParams({ view });
+  };
 
   const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
@@ -56,6 +65,10 @@ const AdminDashboard = () => {
         return <UserPage />;
       case 'scanner':
         return <EPassScanner />;
+      case 'kalender':
+        return <CalendarPage />;
+      case 'laporan':
+        return <LaporanPage />;
       default:
         return <div>Halaman tidak ditemukan</div>;
     }
@@ -63,9 +76,9 @@ const AdminDashboard = () => {
 
   return (
     <div className="dashboard-container">
-      <Sidebar isOpen={isSidebarOpen} activeMenu={activeView} onMenuChange={(view) => setActiveView(view)} />
+      <Sidebar isOpen={isSidebarOpen} activeMenu={activeView} onMenuChange={handleMenuChange} />
       <div className={`dashboard-main ${!isSidebarOpen ? 'full' : ''}`}>
-        <Header toggleSidebar={toggleSidebar} onMenuChange={(view) => setActiveView(view)} />
+        <Header toggleSidebar={toggleSidebar} onMenuChange={handleMenuChange} />
         <main className="dashboard-content">
           {renderContent()}
         </main>

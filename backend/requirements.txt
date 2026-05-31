@@ -14,4 +14,4 @@ qrcode[pil]
 reportlab
 Pillow
 email-validator
-werkzeug
+werkzeug
