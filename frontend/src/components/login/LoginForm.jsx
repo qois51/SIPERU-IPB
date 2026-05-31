@@ -95,7 +95,7 @@ const LoginForm = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.post('http://127.0.0.1:8000/api/help/', helpData);
+      await axios.post(`${API_URL}/help/`, helpData);
       setHelpSuccess(true);
       setTimeout(() => {
         setShowHelpModal(false);
