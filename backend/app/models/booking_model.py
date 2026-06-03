@@ -1,7 +1,8 @@
 from database import Base
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, Date, DateTime
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime
+from typing import Optional, List
 import random
 import string
 
@@ -11,98 +12,144 @@ def generate_booking_code():
     rand = ''.join(random.choices(string.digits, k=4))
     return f"BK-{year}-{rand}"
 
-class Booking(Base):
-    __tablename__ = 'bookings'
+class Peminjaman(Base):
+    __tablename__ = 'peminjaman'
 
-    id = Column(Integer, primary_key=True)
-    booking_code = Column(String(20), unique=True, nullable=True)  # BK-2026-1234
+    id_booking: Mapped[int] = mapped_column(Integer, primary_key=True)
+    waktu_mulai: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    waktu_selesai: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    keperluan: Mapped[str] = mapped_column(Text, nullable=False)
+    status: Mapped[str] = mapped_column(String(20), default='Pending') # Pending, Approved, Rejected, CheckedIn, Completed, Expired
+    path_file_bukti: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    id_epass: Mapped[Optional[str]] = mapped_column(String(50), unique=True, nullable=True)
 
-    # Foreign keys
-    room_id = Column(Integer, ForeignKey('rooms.id'), nullable=False)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    id_mahasiswa: Mapped[int] = mapped_column(ForeignKey('mahasiswa.id_user'), nullable=False)
+    id_ruangan: Mapped[int] = mapped_column(ForeignKey('ruangan.id_ruangan'), nullable=False)
 
-    # --- Data Peminjam ---
-    nama_peminjam = Column(String(100), nullable=True)
-    nim_nip = Column(String(30), nullable=True)
-    program_studi = Column(String(100), nullable=True)
-    email = Column(String(100), nullable=True)
-    nomor_hp = Column(String(20), nullable=True)
+    # Optional columns to support existing UI services
+    qr_code: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
+    notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    # --- Data Kegiatan ---
-    activity_name = Column(String(200), nullable=False)
-    jenis_kegiatan = Column(String(100), nullable=True)
-    organization = Column(String(200), nullable=True, default='-')
-    participants = Column(Integer, default=1)
-    purpose = Column(String(500), nullable=True, default='')
-    deskripsi_kegiatan = Column(Text, nullable=True)
+    # Relationships
+    # lazy="selectin" diperlukan agar async SQLAlchemy tidak error MissingGreenlet
+    # saat to_dict() mengakses field relasi di luar context await
+    mahasiswa: Mapped["Mahasiswa"] = relationship("Mahasiswa", back_populates="peminjamans", lazy="selectin")
+    ruangan: Mapped["Ruangan"] = relationship("Ruangan", back_populates="peminjamans", lazy="selectin")
+    facilities: Mapped[List["BookingFacility"]] = relationship("BookingFacility", back_populates="peminjaman", cascade="all, delete-orphan", lazy="selectin")
 
-    # --- Booking Schedule ---
-    date = Column(Date, nullable=False)
-    start_time = Column(String(10), nullable=False)  # Format HH:MM
-    end_time = Column(String(10), nullable=False)     # Format HH:MM
+    # Compatibility properties for legacy routes and services
+    @property
+    def id(self) -> int:
+        return self.id_booking
 
-    # --- Status & Documents ---
-    status = Column(String(20), default='Pending')  # Pending, Approved, Rejected, CheckedIn, Completed, Expired
-    surat_file = Column(String(500), nullable=True)  # Path ke file upload
-    document_url = Column(Text, nullable=True)       # Legacy: Base64 or URL
-    qr_code = Column(String(500), nullable=True)     # Path ke QR image
-    notes = Column(Text, nullable=True)               # Admin notes (alasan reject, dll)
+    @property
+    def booking_code(self) -> str:
+        return self.id_epass or ""
 
-    # --- Timestamps ---
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    checked_in_at = Column(DateTime, nullable=True)
-    checked_out_at = Column(DateTime, nullable=True)
-    expired_at = Column(DateTime, nullable=True)
+    @property
+    def room_id(self) -> int:
+        return self.id_ruangan
 
-    # --- Relationships ---
-    room_data = relationship('Room', back_populates='room_bookings', lazy="selectin")
-    user = relationship('User', lazy="selectin")
-    facilities = relationship('BookingFacility', back_populates='booking', lazy="selectin", cascade='all, delete-orphan')
+    @property
+    def user_id(self) -> int:
+        return self.id_mahasiswa
+
+    @property
+    def room_data(self) -> "Ruangan":
+        return self.ruangan
+
+    @property
+    def nama_peminjam(self) -> str:
+        return self.mahasiswa.nama if self.mahasiswa else ""
+
+    @property
+    def nim_nip(self) -> str:
+        return self.mahasiswa.nim if self.mahasiswa else ""
+
+    @property
+    def program_studi(self) -> str:
+        return "Umum"
+
+    @property
+    def email(self) -> str:
+        return self.mahasiswa.email if self.mahasiswa else ""
+
+    @property
+    def nomor_hp(self) -> str:
+        return self.mahasiswa.no_telepon if self.mahasiswa else ""
+
+    @property
+    def activity_name(self) -> str:
+        return self.keperluan
+
+    @property
+    def jenis_kegiatan(self) -> str:
+        return "Kegiatan"
+
+    @property
+    def organization(self) -> str:
+        return "Individu"
+
+    @property
+    def participants(self) -> int:
+        return 1
+
+    @property
+    def date(self) -> datetime.date:
+        return self.waktu_mulai.date() if self.waktu_mulai else datetime.utcnow().date()
+
+    @property
+    def start_time(self) -> str:
+        return self.waktu_mulai.strftime('%H:%M') if self.waktu_mulai else "09:00"
+
+    @property
+    def end_time(self) -> str:
+        return self.waktu_selesai.strftime('%H:%M') if self.waktu_selesai else "10:00"
+
+    @property
+    def surat_file(self) -> str:
+        return self.path_file_bukti or ""
 
     def to_dict(self):
         return {
-            "id": self.id,
-            "booking_code": self.booking_code,
-            "room_id": self.room_id,
-            "user_id": self.user_id,
-            "room_name": self.room_data.name if self.room_data else None,
-            "room_location": self.room_data.location if self.room_data else None,
-            "room_price": self.room_data.price if self.room_data else None,
-            "room_pic_name": self.room_data.pic_name if self.room_data else None,
-            "room_pic_email": self.room_data.pic_email if self.room_data else None,
-            "room_pic_phone": self.room_data.pic_phone if self.room_data else None,
-            "room_pic_image_url": self.room_data.pic_image_url if self.room_data else None,
-            "user_name": self.user.username if self.user else None,
-            # Data Peminjam
-            "nama_peminjam": self.nama_peminjam,
-            "nim_nip": self.nim_nip,
-            "program_studi": self.program_studi,
-            "email": self.email,
-            "nomor_hp": self.nomor_hp,
-            # Data Kegiatan
-            "activity_name": self.activity_name,
-            "jenis_kegiatan": self.jenis_kegiatan,
-            "organization": self.organization,
-            "participants": self.participants,
-            "purpose": self.purpose,
-            "deskripsi_kegiatan": self.deskripsi_kegiatan,
-            # Schedule
-            "date": self.date.strftime('%Y-%m-%d') if self.date else None,
-            "start_time": self.start_time,
-            "end_time": self.end_time,
-            # Status & Documents
+            "id_booking": self.id_booking,
+            "waktu_mulai": self.waktu_mulai.isoformat() if self.waktu_mulai else None,
+            "waktu_selesai": self.waktu_selesai.isoformat() if self.waktu_selesai else None,
+            "keperluan": self.keperluan,
             "status": self.status,
-            "surat_file": self.surat_file,
-            "document_url": self.document_url,
+            "path_file_bukti": self.path_file_bukti,
+            "id_epass": self.id_epass,
+            "id_mahasiswa": self.id_mahasiswa,
+            "id_ruangan": self.id_ruangan,
             "qr_code": self.qr_code,
             "notes": self.notes,
-            # Facilities
+            # Fallback mappings for existing frontend compatibility
+            "id": self.id_booking,
+            "booking_code": self.id_epass,
+            "room_id": self.id_ruangan,
+            "user_id": self.id_mahasiswa,
+            "room_name": self.ruangan.nama_ruangan if self.ruangan else None,
+            "room_location": self.ruangan.location if self.ruangan else None,
+            "room_price": self.ruangan.biaya_peminjaman if self.ruangan else None,
+            "room_pic_name": self.ruangan.pic.nama if self.ruangan and self.ruangan.pic else None,
+            "room_pic_email": self.ruangan.pic.email if self.ruangan and self.ruangan.pic else None,
+            "room_pic_phone": self.ruangan.pic.no_telepon if self.ruangan and self.ruangan.pic else None,
+            "user_name": self.mahasiswa.nama if self.mahasiswa else None,
+            "nama_peminjam": self.mahasiswa.nama if self.mahasiswa else None,
+            "nim_nip": self.mahasiswa.nim if self.mahasiswa else None,
+            "email": self.mahasiswa.email if self.mahasiswa else None,
+            "nomor_hp": self.mahasiswa.no_telepon if self.mahasiswa else None,
+            "activity_name": self.keperluan,
+            "purpose": self.keperluan,
+            "date": self.waktu_mulai.strftime('%Y-%m-%d') if self.waktu_mulai else None,
+            "start_time": self.waktu_mulai.strftime('%H:%M') if self.waktu_mulai else None,
+            "end_time": self.waktu_selesai.strftime('%H:%M') if self.waktu_selesai else None,
+            "surat_file": self.path_file_bukti,
             "facilities": [f.facility_name for f in self.facilities] if self.facilities else [],
-            # Timestamps
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
-            "checked_in_at": self.checked_in_at.isoformat() if self.checked_in_at else None,
-            "checked_out_at": self.checked_out_at.isoformat() if self.checked_out_at else None,
-            "expired_at": self.expired_at.isoformat() if self.expired_at else None,
         }
+
+Booking = Peminjaman

@@ -1,121 +1,98 @@
 """
-QR Code Service
-Generates QR codes for approved bookings containing E-Pass information.
+QRService (OOP) — Generates QR codes for approved bookings.
 """
 import os
-import qrcode
 from io import BytesIO
 
-UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'uploads')
-QR_FOLDER = os.path.join(UPLOAD_FOLDER, 'qr')
+import qrcode
+
+UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "uploads")
+QR_FOLDER = os.path.join(UPLOAD_FOLDER, "qr")
 
 
-def _ensure_qr_dir():
-    os.makedirs(QR_FOLDER, exist_ok=True)
+class QRService:
+    """Handles QR code generation for booking E-Passes."""
 
+    def _ensure_qr_dir(self):
+        os.makedirs(QR_FOLDER, exist_ok=True)
 
-def generate_qr_for_booking(booking):
-    """
-    Generate a QR code image for an approved booking.
-    
-    QR content includes:
-    - booking_code
-    - nama peminjam
-    - room name
-    - tanggal
-    - jam
-    
-    Returns: relative path to saved QR image, or None on error.
-    """
-    try:
-        _ensure_qr_dir()
+    def _format_date(self, d) -> str:
+        if not d:
+            return "N/A"
+        if hasattr(d, "strftime"):
+            return d.strftime("%d/%m/%Y")
+        return str(d)
 
-        # Safe date helper
-        def format_date(d):
-            if not d:
-                return 'N/A'
-            if hasattr(d, 'strftime'):
-                return d.strftime('%d/%m/%Y')
-            return str(d)
-
-        # Build QR content
-        room_name = booking.room_data.name if booking.room_data else "N/A"
-        peminjam_name = booking.nama_peminjam or (booking.user.username if booking.user else "N/A")
-        qr_content = (
+    def _build_qr_content(self, booking) -> str:
+        """Build the text content embedded in the QR code."""
+        room_name = booking.ruangan.nama_ruangan if booking.ruangan else "N/A"
+        # Fix: use .mahasiswa instead of .user (old broken reference)
+        peminjam_name = (
+            booking.mahasiswa.nama if booking.mahasiswa else "N/A"
+        )
+        return (
             f"SIPERU E-Pass\n"
             f"Kode: {booking.booking_code}\n"
             f"Peminjam: {peminjam_name}\n"
             f"Ruangan: {room_name}\n"
-            f"Tanggal: {format_date(booking.date)}\n"
+            f"Tanggal: {self._format_date(booking.date)}\n"
             f"Jam: {booking.start_time} - {booking.end_time}\n"
             f"Status: {booking.status}"
         )
 
-        # Generate QR image
+    def _make_qr_image(self, content: str, box_size: int = 10, border: int = 4):
+        """Generate a QR code PIL image from text content."""
         qr = qrcode.QRCode(
             version=1,
             error_correction=qrcode.constants.ERROR_CORRECT_M,
-            box_size=10,
-            border=4,
+            box_size=box_size,
+            border=border,
         )
-        qr.add_data(qr_content)
+        qr.add_data(content)
         qr.make(fit=True)
+        return qr.make_image(fill_color="black", back_color="white")
 
-        img = qr.make_image(fill_color="black", back_color="white")
+    def generate_qr_for_booking(self, booking) -> str | None:
+        """Generate and save a QR code image for an approved booking.
 
-        # Get image bytes
-        buffer = BytesIO()
-        img.save(buffer, format='PNG')
-        img_bytes = buffer.getvalue()
+        Returns the relative (or Supabase) path to the saved QR image, or None on error.
+        """
+        try:
+            self._ensure_qr_dir()
+            content = self._build_qr_content(booking)
+            img = self._make_qr_image(content)
 
-        # Save to Supabase 'qrcode' bucket with local fallback
-        from app.services.upload_service import save_qrcode_file
-        ok, res_path = save_qrcode_file(booking.booking_code, img_bytes)
-        if ok:
-            return res_path
+            buf = BytesIO()
+            img.save(buf, format="PNG")
+            img_bytes = buf.getvalue()
 
-        return None
-    except Exception as e:
-        print(f"Error generating QR code: {e}")
-        return None
+            from app.services.upload_service import UploadService
+            upload_svc = UploadService()
+            ok, res_path = upload_svc.save_qrcode_file(booking.booking_code, img_bytes)
+            return res_path if ok else None
+        except Exception as e:
+            print(f"[QRService] Error generating QR code: {e}")
+            return None
+
+    def get_qr_image_bytes(self, booking) -> BytesIO:
+        """Generate a QR code and return its bytes (for embedding in PDF)."""
+        content = self._build_qr_content(booking)
+        img = self._make_qr_image(content, box_size=8, border=3)
+
+        buf = BytesIO()
+        img.save(buf, format="PNG")
+        buf.seek(0)
+        return buf
 
 
-def get_qr_image_bytes(booking):
-    """
-    Generate QR code and return as bytes (for embedding in PDF).
-    """
-    room_name = booking.room_data.name if booking.room_data else "N/A"
-    
-    # Safe date helper
-    def format_date(d):
-        if not d:
-            return 'N/A'
-        if hasattr(d, 'strftime'):
-            return d.strftime('%d/%m/%Y')
-        return str(d)
+# ---------------------------------------------------------------------------
+# Backward-compatibility shims (module-level functions for any callers that
+# haven't been migrated yet)
+# ---------------------------------------------------------------------------
 
-    peminjam_name = booking.nama_peminjam or (booking.user.username if booking.user else "N/A")
-    qr_content = (
-        f"SIPERU E-Pass\n"
-        f"Kode: {booking.booking_code}\n"
-        f"Peminjam: {peminjam_name}\n"
-        f"Ruangan: {room_name}\n"
-        f"Tanggal: {format_date(booking.date)}\n"
-        f"Jam: {booking.start_time} - {booking.end_time}"
-    )
+def generate_qr_for_booking(booking) -> str | None:
+    return QRService().generate_qr_for_booking(booking)
 
-    qr = qrcode.QRCode(
-        version=1,
-        error_correction=qrcode.constants.ERROR_CORRECT_M,
-        box_size=8,
-        border=3,
-    )
-    qr.add_data(qr_content)
-    qr.make(fit=True)
 
-    img = qr.make_image(fill_color="black", back_color="white")
-
-    buffer = BytesIO()
-    img.save(buffer, format='PNG')
-    buffer.seek(0)
-    return buffer
+def get_qr_image_bytes(booking) -> BytesIO:
+    return QRService().get_qr_image_bytes(booking)

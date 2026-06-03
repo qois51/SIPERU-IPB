@@ -2,121 +2,189 @@ import asyncio
 import sys
 import argparse
 import random
-from datetime import date, timedelta
+import string
+from datetime import date, datetime, timedelta
 from sqlalchemy.future import select
 from sqlalchemy import delete
 from database import AsyncSessionLocal
-from app.models import User, Room, Booking
+from app.models import User, Mahasiswa, PICRuangan, PenjagaRuangan, Ruangan, Peminjaman
 
 async def seed_users(db):
     print("\n--- Menyelaraskan data pengguna default ---")
+    
+    # We define each user type with its specific class and properties
     users_data = [
-        {"username": "admin", "password": "admin123", "role": "admin", "full_name": "Administrator Utama", "nim_nip": "198001012005011001", "email": "admin@sipberu.ac.id"},
-        {"username": "mahasiswa", "password": "mahasiswa123", "role": "mahasiswa", "full_name": "Yoga Christofer", "nim_nip": "5311420026", "email": "yoga@students.sipberu.ac.id"},
-        {"username": "satpam", "password": "satpam123", "role": "satpam", "full_name": "Budi Santoso", "nim_nip": "197505122010011005", "email": "budi@staff.sipberu.ac.id"},
-        {"username": "dosen", "password": "dosen123", "role": "dosen", "full_name": "Dr. Ir. Anas Miftah", "nim_nip": "197808242003121002", "email": "anas@lecturer.sipberu.ac.id"},
-        {"username": "pic", "password": "pic123", "role": "pic", "full_name": "Hendra Wijaya (PIC)", "nim_nip": "198503152011011003", "email": "hendra@staff.sipberu.ac.id"}
+        {
+            "class": User,
+            "data": {
+                "nama": "admin", 
+                "email": "admin@sipberu.ac.id", 
+                "password": "admin123", 
+                "type": "user",
+                "no_telepon": "08123456789"
+            }
+        },
+        {
+            "class": Mahasiswa,
+            "data": {
+                "nama": "mahasiswa", 
+                "email": "yoga@students.sipberu.ac.id", 
+                "password": "mahasiswa123", 
+                "type": "mahasiswa",
+                "nim": "5311420026",
+                "no_telepon": "08123456780"
+            }
+        },
+        {
+            "class": PenjagaRuangan,
+            "data": {
+                "nama": "satpam", 
+                "email": "budi@staff.sipberu.ac.id", 
+                "password": "satpam123", 
+                "type": "penjaga_ruangan",
+                "nip": "197505122010011005",
+                "unit_kerja": "Bagian Keamanan",
+                "no_telepon": "08123456781"
+            }
+        },
+        {
+            "class": User,
+            "data": {
+                "nama": "dosen", 
+                "email": "anas@lecturer.sipberu.ac.id", 
+                "password": "dosen123", 
+                "type": "user",
+                "no_telepon": "08123456782"
+            }
+        },
+        {
+            "class": PICRuangan,
+            "data": {
+                "nama": "pic", 
+                "email": "hendra@staff.sipberu.ac.id", 
+                "password": "pic123", 
+                "type": "pic_ruangan",
+                "nip": "198503152011011003",
+                "unit_kerja": "Bagian Sarana Prasarana",
+                "jabatan": "Kepala Subbagian",
+                "no_telepon": "08123456783"
+            }
+        }
     ]
 
-    for data in users_data:
-        stmt = select(User).where(User.username == data['username'])
+    for item in users_data:
+        model_cls = item["class"]
+        data = item["data"]
+        
+        # Check if user already exists
+        stmt = select(User).where(User.email == data['email'])
         result = await db.execute(stmt)
         user = result.scalars().first()
         
         if user:
-            print(f"Mengupdate password/data untuk user: {data['username']}")
-            user.role = data['role']
-            user.full_name = data['full_name']
-            user.nim_nip = data['nim_nip']
-            user.email = data['email']
+            print(f"Mengupdate data untuk user: {data['nama']} ({data['type']})")
+            user.nama = data['nama']
+            user.no_telepon = data['no_telepon']
             user.set_password(data['password'])
+            
+            # If subclass properties need updating
+            if isinstance(user, Mahasiswa) and 'nim' in data:
+                user.nim = data['nim']
+            elif isinstance(user, PICRuangan):
+                if 'nip' in data: user.nip = data['nip']
+                if 'unit_kerja' in data: user.unit_kerja = data['unit_kerja']
+                if 'jabatan' in data: user.jabatan = data['jabatan']
+            elif isinstance(user, PenjagaRuangan):
+                if 'nip' in data: user.nip = data['nip']
+                if 'unit_kerja' in data: user.unit_kerja = data['unit_kerja']
         else:
-            print(f"Membuat user baru: {data['username']}")
-            user = User(
-                username=data['username'], 
-                role=data['role'],
-                full_name=data['full_name'],
-                nim_nip=data['nim_nip'],
-                email=data['email']
-            )
-            user.set_password(data['password'])
-            db.add(user)
-    print("User seeding selesai.")
+            print(f"Membuat user baru: {data['nama']} ({data['type']})")
+            raw_password = data.pop('password')
+            user_obj = model_cls(**data)
+            user_obj.set_password(raw_password)
+            db.add(user_obj)
+            
+    print("Seeding user selesai.")
 
 async def seed_rooms(db):
     print("\n--- Menyelaraskan data ruangan default ---")
+    
+    # Get PIC user first to link as foreign key
+    pic_result = await db.execute(select(PICRuangan))
+    pic = pic_result.scalars().first()
+    if not pic:
+        print("Peringatan: PIC tidak ditemukan. Lewati seeding ruangan.")
+        return
+        
     rooms_data = [
         {
-            "name": "Ruangan Seminar D",
+            "nama_ruangan": "Ruangan Seminar D",
             "location": "Gedung Rektorat, Lantai 4",
-            "capacity": 30,
-            "price": 150000,
+            "kapasitas": 30,
+            "biaya_peminjaman": 150000,
             "operational_hours": "Senin-Jumat, 07.00-21.00 WIB",
-            "facilities": "AC,Sound System,Proyektor",
-            "pic_name": "Dr. Ahmad Wijaya",
-            "pic_email": "Ahmad@gmail.com",
-            "pic_phone": "08123456789",
+            "fasilitas": "AC,Sound System,Proyektor",
+            "id_pic": pic.id_user,
             "image_url": "/loginAsset/ruanganTerdaftar.png",
             "pic_image_url": ""
         },
         {
-            "name": "Lab Komputer 1",
+            "nama_ruangan": "Lab Komputer 1",
             "location": "Gedung Fakultas Teknik, Lantai 2",
-            "capacity": 40,
-            "price": 200000,
+            "kapasitas": 40,
+            "biaya_peminjaman": 200000,
             "operational_hours": "Senin-Sabtu, 08.00-18.00 WIB",
-            "facilities": "AC,PC High End,Internet 1Gbps",
-            "pic_name": "Irfan Hakim",
-            "pic_email": "irfan@gmail.com",
-            "pic_phone": "087712345678",
+            "fasilitas": "AC,PC High End,Internet 1Gbps",
+            "id_pic": pic.id_user,
             "image_url": "/loginAsset/ruanganTerdaftar.png",
             "pic_image_url": ""
         },
         {
-            "name": "Auditorium Utama",
+            "nama_ruangan": "Auditorium Utama",
             "location": "Gedung Serbaguna, Lantai 1",
-            "capacity": 500,
-            "price": 1000000,
+            "kapasitas": 500,
+            "biaya_peminjaman": 1000000,
             "operational_hours": "Setiap Hari, 08.00-22.00 WIB",
-            "facilities": "AC,Sound System,Panggung,Lighting",
-            "pic_name": "Siti Aminah",
-            "pic_email": "siti@gmail.com",
-            "pic_phone": "081299998888",
+            "fasilitas": "AC,Sound System,Panggung,Lighting",
+            "id_pic": pic.id_user,
             "image_url": "/loginAsset/ruanganTerdaftar.png",
             "pic_image_url": ""
         }
     ]
 
     for r_data in rooms_data:
-        stmt = select(Room).where(Room.name == r_data['name'])
+        stmt = select(Ruangan).where(Ruangan.nama_ruangan == r_data['nama_ruangan'])
         result = await db.execute(stmt)
         room = result.scalars().first()
+        
         if room:
-            print(f"Mengupdate data untuk ruangan: {r_data['name']}")
+            print(f"Mengupdate data untuk ruangan: {r_data['nama_ruangan']}")
             for k, v in r_data.items():
                 setattr(room, k, v)
         else:
-            print(f"Membuat ruangan baru: {r_data['name']}")
-            room = Room(**r_data)
-            db.add(room)
-    print("Room seeding selesai.")
+            print(f"Membuat ruangan baru: {r_data['nama_ruangan']}")
+            room_obj = Ruangan(**r_data)
+            db.add(room_obj)
+            
+    print("Seeding ruangan selesai.")
 
 async def seed_bookings(db):
-    print("\n--- Menyelaraskan data booking uji coba ---")
-    room_result = await db.execute(select(Room))
+    print("\n--- Menyelaraskan data peminjaman uji coba ---")
+    
+    room_result = await db.execute(select(Ruangan))
     room = room_result.scalars().first()
     
-    user_result = await db.execute(select(User).where(User.role == 'mahasiswa'))
-    user = user_result.scalars().first()
+    mahasiswa_result = await db.execute(select(Mahasiswa))
+    mahasiswa = mahasiswa_result.scalars().first()
     
-    if not room or not user:
-        print("Peringatan: Room atau User (role mahasiswa) tidak ditemukan. Lewati seeding bookings.")
+    if not room or not mahasiswa:
+        print("Peringatan: Ruangan atau Mahasiswa tidak ditemukan. Lewati seeding peminjaman.")
         return
 
-    print("Membersihkan data booking lama...")
-    await db.execute(delete(Booking))
+    print("Membersihkan data peminjaman lama...")
+    await db.execute(delete(Peminjaman))
 
-    print("Membuat 10 data booking uji coba baru...")
+    print("Membuat 10 data peminjaman uji coba baru...")
     activities = [
         ("Rapat Himpunan", "HIMA ILKOM"),
         ("Workshop UI/UX", "GDSC UNNES"),
@@ -143,21 +211,30 @@ async def seed_bookings(db):
         status = "Pending" if i < 4 else "Approved"
         booking_date = date.today() + timedelta(days=random.randint(0, 5))
         
-        b = Booking(
-            room_id=room.id,
-            user_id=user.id,
-            date=booking_date,
-            start_time=f"{9 + (i % 8):02d}:00",
-            end_time=f"{11 + (i % 8):02d}:00",
+        # Calculate waktu_mulai and waktu_selesai
+        start_hour = 9 + (i % 8)
+        end_hour = 11 + (i % 8)
+        waktu_mulai = datetime.combine(booking_date, datetime.min.time()) + timedelta(hours=start_hour)
+        waktu_selesai = datetime.combine(booking_date, datetime.min.time()) + timedelta(hours=end_hour)
+        
+        # Generate epass code
+        year = waktu_mulai.strftime('%Y')
+        rand = ''.join(random.choices(string.digits, k=4))
+        id_epass = f"BK-{year}-{rand}"
+        
+        b = Peminjaman(
+            id_ruangan=room.id_ruangan,
+            id_mahasiswa=mahasiswa.id_user,
+            waktu_mulai=waktu_mulai,
+            waktu_selesai=waktu_selesai,
+            keperluan=f"{activity_name} oleh {org}",
             status=status,
-            activity_name=activity_name,
-            organization=org,
-            participants=random.randint(10, 50),
-            purpose=f"Kegiatan rutin {activity_name} untuk meningkatkan kompetensi mahasiswa.",
-            document_url=pdf_samples[i % len(pdf_samples)]
+            path_file_bukti=pdf_samples[i % len(pdf_samples)],
+            id_epass=id_epass
         )
         db.add(b)
-    print("10 data booking uji coba berhasil dibuat.")
+        
+    print("10 data peminjaman uji coba berhasil dibuat.")
 
 async def main():
     parser = argparse.ArgumentParser(description="SIPERU-IPB Database Seeder")
@@ -167,11 +244,15 @@ async def main():
     async with AsyncSessionLocal() as db:
         try:
             await seed_users(db)
+            await db.commit() # Commit users first so pic is available for room seeding
+            
             await seed_rooms(db)
+            await db.commit()
+            
             if args.bookings:
                 await seed_bookings(db)
-            
-            await db.commit()
+                await db.commit()
+                
             print("\nSeeding selesai dengan sukses!")
         except Exception as e:
             await db.rollback()
