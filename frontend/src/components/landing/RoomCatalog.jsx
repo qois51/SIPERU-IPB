@@ -52,7 +52,7 @@ const RoomCatalog = () => {
           <p style={{ fontSize: '18px' }}>Beragam pilihan ruangan untuk seminar, rapat dan kepanitiaan</p>
         </div>
 
-        <div className="room-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '32px' }}>
+        <div className="room-grid">
           {displayRooms.map((room, idx) => (
             <div key={room.id || idx} style={{ background: 'white', borderRadius: '12px', border: '1px solid #1e3a8a', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
               <div style={{ height: '200px', width: '100%', overflow: 'hidden' }}>

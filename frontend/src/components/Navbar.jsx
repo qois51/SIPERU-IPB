@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Bell, UserCircle, User, Settings, LogOut } from 'lucide-react';
+import { Search, Bell, UserCircle, User, Settings, LogOut, Menu, X } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import bookingService from '../services/bookingService';
 
@@ -23,6 +23,7 @@ const Navbar = () => {
   const notifRef = useRef(null);
 
   const [navSearch, setNavSearch] = useState('');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Pre-fill the search input if there's a 'q' parameter in the URL
   useEffect(() => {
@@ -148,8 +149,8 @@ const Navbar = () => {
         </h2>
       </Link>
 
-      {/* Nav Links */}
-      <ul style={{ margin: 0, padding: 0, display: 'flex', alignItems: 'center', gap: '40px', listStyle: 'none' }}>
+      {/* Nav Links - Desktop */}
+      <ul className="nav-links-desktop" style={{ margin: 0, padding: 0, display: 'flex', alignItems: 'center', gap: '40px', listStyle: 'none' }}>
         <li><Link to="/" style={navLinkStyle('/')}>Beranda</Link></li>
         <li><Link to="/katalog" style={navLinkStyle('/katalog')}>Katalog Ruangan</Link></li>
         {isLoggedIn && (role === 'admin' || role === 'satpam' || role === 'dosen' || role === 'pic') && (
@@ -167,7 +168,7 @@ const Navbar = () => {
 
       {/* Right Actions */}
       <div className="nav-actions" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-        <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+        <div className="search-wrapper-desktop" style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
           <input 
             type="text" 
             placeholder="Cari ruangan..." 
@@ -218,7 +219,7 @@ const Navbar = () => {
 
               {/* Notifications Dropdown */}
               {showNotif && (
-                <div style={{
+                <div className="notif-dropdown-mobile-adjust" style={{
                   position: 'absolute', top: 'calc(100% + 16px)', right: '-60px',
                   background: 'white', borderRadius: '12px',
                   boxShadow: '0 10px 25px rgba(0,0,0,0.12)',
@@ -312,7 +313,7 @@ const Navbar = () => {
                 style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}
               >
                 {/* Name + role text */}
-                <div style={{ textAlign: 'right' }}>
+                <div className="nav-user-text" style={{ textAlign: 'right' }}>
                   <div style={{ fontWeight: 700, fontSize: '14px', color: 'white' }}>
                     {user?.full_name || user?.username || '-'}
                   </div>
@@ -358,7 +359,7 @@ const Navbar = () => {
                   {/* Menu items */}
                   <div style={{ padding: '8px' }}>
                     <div
-                      onClick={() => navigate('/profil')}
+                      onClick={() => { navigate('/profil'); setShowDropdown(false); }}
                       style={{ padding: '10px 12px', display: 'flex', alignItems: 'center', gap: '10px', borderRadius: '8px', cursor: 'pointer', color: '#1e293b', fontSize: '14px', fontWeight: 500 }}
                       onMouseOver={(e) => { e.currentTarget.style.background = '#f1f5f9'; }}
                       onMouseOut={(e) => { e.currentTarget.style.background = 'transparent'; }}
@@ -366,7 +367,7 @@ const Navbar = () => {
                       <User size={18} color="#475569" /> Profil Saya
                     </div>
                     <div
-                      onClick={() => navigate('/pengaturan')}
+                      onClick={() => { navigate('/pengaturan'); setShowDropdown(false); }}
                       style={{ padding: '10px 12px', display: 'flex', alignItems: 'center', gap: '10px', borderRadius: '8px', cursor: 'pointer', color: '#1e293b', fontSize: '14px', fontWeight: 500 }}
                       onMouseOver={(e) => { e.currentTarget.style.background = '#f1f5f9'; }}
                       onMouseOut={(e) => { e.currentTarget.style.background = 'transparent'; }}
@@ -375,7 +376,7 @@ const Navbar = () => {
                     </div>
                     <hr style={{ margin: '8px 0', border: 'none', borderTop: '1px solid #f1f5f9' }} />
                     <div
-                      onClick={handleLogout}
+                      onClick={() => { handleLogout(); setShowDropdown(false); }}
                       style={{ padding: '10px 12px', display: 'flex', alignItems: 'center', gap: '10px', borderRadius: '8px', cursor: 'pointer', color: '#ef4444', fontSize: '14px', fontWeight: 600 }}
                       onMouseOver={(e) => { e.currentTarget.style.background = '#fef2f2'; }}
                       onMouseOut={(e) => { e.currentTarget.style.background = 'transparent'; }}
@@ -390,13 +391,59 @@ const Navbar = () => {
         ) : (
           <>
             {/* Divider */}
-            <div style={{ width: '1px', height: '28px', background: 'rgba(255,255,255,0.3)' }} />
+            <div className="login-divider" style={{ width: '1px', height: '28px', background: 'rgba(255,255,255,0.3)' }} />
             <Link to="/login">
               <button className="btn-login-nav">Login</button>
             </Link>
           </>
         )}
+
+        {/* Mobile Burger Menu Button */}
+        <button 
+          className="mobile-menu-btn" 
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          style={{ display: 'none', background: 'none', border: 'none', color: 'white', cursor: 'pointer', padding: '4px' }}
+        >
+          {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
+        </button>
       </div>
+
+      {/* Mobile Drawer Overlay */}
+      {isMobileMenuOpen && (
+        <div className="mobile-nav-drawer-overlay" onClick={() => setIsMobileMenuOpen(false)}>
+          <div className="mobile-nav-drawer" onClick={(e) => e.stopPropagation()}>
+            <ul className="mobile-nav-links">
+              <li><Link to="/" onClick={() => setIsMobileMenuOpen(false)}>Beranda</Link></li>
+              <li><Link to="/katalog" onClick={() => setIsMobileMenuOpen(false)}>Katalog Ruangan</Link></li>
+              {isLoggedIn && (role === 'admin' || role === 'satpam' || role === 'dosen' || role === 'pic') && (
+                <li><Link to="/admin" onClick={() => setIsMobileMenuOpen(false)}>Dashboard</Link></li>
+              )}
+              {isLoggedIn && (role === 'mahasiswa') && (
+                <li><Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>Dashboard</Link></li>
+              )}
+              <li>
+                <a href="/#faq" onClick={() => setIsMobileMenuOpen(false)}>
+                  FAQ
+                </a>
+              </li>
+            </ul>
+
+            <div className="mobile-search-box">
+              <input 
+                type="text" 
+                placeholder="Cari ruangan..." 
+                value={navSearch}
+                onChange={(e) => setNavSearch(e.target.value)}
+                onKeyDown={(e) => {
+                  handleSearchKeyDown(e);
+                  if (e.key === 'Enter') setIsMobileMenuOpen(false);
+                }}
+              />
+              <Search size={16} color="#1e3a8a" />
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   );
 };

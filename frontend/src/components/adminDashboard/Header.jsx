@@ -88,8 +88,14 @@ const Header = ({ toggleSidebar, onMenuChange }) => {
 
   return (
     <header className="dashboard-header">
-      <div className="header-left">
+      <div className="header-left" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
         <Menu size={24} style={{ cursor: 'pointer' }} onClick={toggleSidebar} />
+        <div className="mobile-header-logo" style={{ display: 'none', alignItems: 'center', gap: '8px' }}>
+          <img src="/loginAsset/logologin.png" alt="Logo" style={{ width: '32px' }} />
+          <span style={{ fontWeight: 800, fontSize: '18px', color: '#1e3a8a' }}>
+            S<span style={{ color: '#fbbf24' }}>IPB</span>eru
+          </span>
+        </div>
       </div>
       
       <div className="header-right">

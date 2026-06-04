@@ -430,6 +430,39 @@ const CalendarPage = () => {
             min-height: 80px;
           }
         }
+        @media (max-width: 600px) {
+          .cal-day-cell {
+            min-height: 55px !important;
+            padding: 2px !important;
+          }
+          .cal-day-number {
+            width: 20px !important;
+            height: 20px !important;
+            font-size: 10px !important;
+            margin-bottom: 2px !important;
+          }
+          .cal-event-chip {
+            font-size: 8px !important;
+            padding: 1px 2px !important;
+            margin-bottom: 1px !important;
+            border-left-width: 2px !important;
+            gap: 2px !important;
+          }
+          .cal-event-chip span:first-child {
+            display: none !important;
+          }
+          .cal-event-chip span:last-child {
+            display: inline-block !important;
+          }
+          .cal-header-cell {
+            padding: 8px 2px !important;
+            font-size: 9px !important;
+          }
+          .cal-more-indicator {
+            font-size: 7px !important;
+            padding: 1px 2px !important;
+          }
+        }
       `}</style>
 
       {/* ===== HEADER ===== */}

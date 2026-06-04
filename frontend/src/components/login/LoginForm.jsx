@@ -111,6 +111,17 @@ const LoginForm = () => {
 
   return (
     <div className="login-right" style={{ position: 'relative' }}>
+      {/* Mobile Branding */}
+      <div className="login-mobile-brand" style={{ display: 'none', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
+        <img src="/loginAsset/logologin.png" alt="SIPBeru" style={{ width: '48px', height: 'auto' }} />
+        <div>
+          <h1 style={{ fontSize: '28px', fontWeight: 800, margin: 0, color: '#1e3a8a' }}>
+            S<span style={{ color: '#fbbf24' }}>IPB</span>eru
+          </h1>
+          <p style={{ fontSize: '12px', color: '#64748b', fontWeight: 600, margin: 0 }}>Sistem Peminjaman Ruangan</p>
+        </div>
+      </div>
+
       <h2 style={{ fontSize: '32px', fontWeight: 700, marginBottom: '8px' }}>Selamat Datang Kembali</h2>
       <div style={{ height: '4px', width: '60px', background: '#e5e7eb', marginBottom: '32px' }}></div>
 
@@ -189,7 +200,7 @@ const LoginForm = () => {
       {/* MODAL LUPA PASSWORD */}
       {showForgotModal && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ background: 'white', borderRadius: '16px', padding: '32px', width: '100%', maxWidth: '400px', position: 'relative' }}>
+          <div className="login-modal-content" style={{ background: 'white', borderRadius: '16px', padding: '32px', width: 'calc(100% - 32px)', maxWidth: '400px', position: 'relative' }}>
             <button onClick={() => setShowForgotModal(false)} style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', cursor: 'pointer' }}>
               <X size={20} color="#6b7280" />
             </button>
@@ -234,7 +245,7 @@ const LoginForm = () => {
       {/* MODAL HELP CENTER */}
       {showHelpModal && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ background: 'white', borderRadius: '16px', padding: '32px', width: '100%', maxWidth: '450px', position: 'relative' }}>
+          <div className="login-modal-content" style={{ background: 'white', borderRadius: '16px', padding: '32px', width: 'calc(100% - 32px)', maxWidth: '450px', position: 'relative' }}>
             <button onClick={() => setShowHelpModal(false)} style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', cursor: 'pointer' }}>
               <X size={20} color="#6b7280" />
             </button>
