@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from config import settings # Ambil pydantic settings kamu
 from database import Base   # Ambil Base metadata kamu
-import models
+from app.models import User, Room, Booking, BookingFacility, HelpRequest
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

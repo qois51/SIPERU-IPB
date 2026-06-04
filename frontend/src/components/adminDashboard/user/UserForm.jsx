@@ -10,6 +10,7 @@ const UserForm = ({ user, onBack, onSuccess, onZoomImage }) => {
     full_name: '',
     nim_nip: '',
     email: '',
+    no_telepon: '',
     profile_image: null
   });
   const [loading, setLoading] = useState(false);
@@ -45,9 +46,11 @@ const UserForm = ({ user, onBack, onSuccess, onZoomImage }) => {
     try {
       const payload = { ...formData };
       if (!payload.password) delete payload.password; // Don't send empty password
+      // Alias phone field
+      if (payload.no_telepon) payload.phone = payload.no_telepon;
 
       if (user) {
-        await api.put(`/users/${user.id}`, payload);
+        await api.put(`/users/${user.id_user || user.id}`, payload);
       } else {
         if (!formData.password) {
           showToastMsg('Password wajib diisi untuk user baru!', 'error');
@@ -62,7 +65,13 @@ const UserForm = ({ user, onBack, onSuccess, onZoomImage }) => {
       }, 1500);
     } catch (err) {
       console.error(err);
-      showToastMsg(err.message || 'Gagal menyimpan data user', 'error');
+      // Tampilkan pesan error dari backend jika ada
+      const backendMsg =
+        err.response?.data?.detail ||
+        err.response?.data?.message ||
+        err.message ||
+        'Gagal menyimpan data user';
+      showToastMsg(backendMsg, 'error');
     } finally {
       setLoading(false);
     }
@@ -201,6 +210,19 @@ const UserForm = ({ user, onBack, onSuccess, onZoomImage }) => {
                       <option value="pic">PIC Ruangan</option>
                       <option value="admin">Administrator</option>
                     </select>
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>No. Telepon</label>
+                  <div className="input-wrapper">
+                    <CreditCard className="input-icon" size={18} />
+                    <input 
+                      type="tel" 
+                      placeholder="Contoh: 08123456789"
+                      value={formData.no_telepon} 
+                      onChange={e => setFormData({...formData, no_telepon: e.target.value})} 
+                    />
                   </div>
                 </div>
 

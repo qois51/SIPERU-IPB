@@ -81,3 +81,21 @@
     padding: 40px;
   }
 }
+
+@media (max-width: 768px) {
+  .login-left {
+    display: none !important;
+  }
+  
+  .login-right {
+    padding: 40px 24px !important;
+  }
+  
+  .login-mobile-brand {
+    display: flex !important;
+  }
+
+  .login-modal-content {
+    padding: 24px 20px !important;
+  }
+}

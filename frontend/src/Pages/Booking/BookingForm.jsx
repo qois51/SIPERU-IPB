@@ -204,6 +204,14 @@ const BookingForm = () => {
         }
       };
       fetchBooking();
+    } else {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      if (user && Object.keys(user).length > 0) {
+        setValue('nama_peminjam', user.nama || '');
+        setValue('nim_nip', user.nim_nip || '');
+        setValue('email', user.email || '');
+        setValue('nomor_hp', user.no_telepon || user.phone || '');
+      }
     }
   }, [searchParams, setValue]);
 
@@ -214,12 +222,14 @@ const BookingForm = () => {
 
   const buildPayload = (formData) => {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
+    // Backend to_dict() returns id_user; fallback to id for compatibility
+    const userId = user.id_user || user.id || null;
     return {
       ...formData,
       organization: formData.program_studi || '-',
       purpose: formData.deskripsi_kegiatan,
       room_id: parseInt(roomId),
-      user_id: user.id,
+      user_id: userId,
       date: selectedDate,
       start_time: startTime,
       end_time: endTime,
@@ -250,7 +260,17 @@ const BookingForm = () => {
       if (uploadFile && bookingId) await bookingService.uploadDocument(bookingId, uploadFile);
       navigate(`/booking/${bookingId}/success`);
     } catch (err) {
-      showPopUpError(err.message || 'Gagal memproses peminjaman ruangan.');
+      console.error('Booking error:', err);
+      const detail = err.response?.data?.detail;
+      let msg;
+      if (Array.isArray(detail)) {
+        msg = detail.map(d => `\u2022 ${d.loc?.slice(-1)[0]} \u2014 ${d.msg}`).join('\n');
+      } else if (typeof detail === 'string') {
+        msg = detail;
+      } else {
+        msg = err.message || 'Gagal memproses peminjaman ruangan.';
+      }
+      showPopUpError(msg);
     } finally {
       setSubmitting(false);
     }
@@ -265,13 +285,14 @@ const BookingForm = () => {
     try {
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       const editId = searchParams.get('edit');
+      const userId = user.id_user || user.id || null;
       const payload = {
         ...formData,
         organization: formData.program_studi || '-',
         purpose: formData.deskripsi_kegiatan || 'Draft',
         participants: 1,
         room_id: parseInt(roomId), 
-        user_id: user.id,
+        user_id: userId,
         date: selectedDate, 
         start_time: startTime, 
         end_time: endTime,
@@ -286,7 +307,17 @@ const BookingForm = () => {
       }
       navigate('/dashboard');
     } catch (err) {
-      showPopUpError(err.message || 'Gagal menyimpan draft peminjaman.');
+      console.error('Draft error:', err);
+      const detail = err.response?.data?.detail;
+      let msg;
+      if (Array.isArray(detail)) {
+        msg = detail.map(d => `\u2022 ${d.loc?.slice(-1)[0]} \u2014 ${d.msg}`).join('\n');
+      } else if (typeof detail === 'string') {
+        msg = detail;
+      } else {
+        msg = err.message || 'Gagal menyimpan draft peminjaman.';
+      }
+      showPopUpError(msg);
     } finally {
       setSavingDraft(false);
     }

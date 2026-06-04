@@ -1,157 +1,61 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+"""
+user_routes.py — Thin wrapper; logic ada di UserController.
+"""
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
+from typing import List
+
 from database import get_db
-from app.models.user_model import User
-from app.schemas.user_schema import UserSchema
+from app.schemas.user_schema import UserSchema, UserCreateSchema
 from app.utils.auth_middleware import get_current_user, role_required
-from typing import List, Optional
-from pydantic import BaseModel, EmailStr
+from app.controllers.user_controller import UserController, UserCreate, UserUpdate
 
 user_router = APIRouter()
 
-class UserCreate(UserSchema):
-    password: str
 
-class UserUpdate(BaseModel):
-    username: Optional[str] = None
-    password: Optional[str] = None
-    role: Optional[str] = None
-    full_name: Optional[str] = None
-    nim_nip: Optional[str] = None
-    email: Optional[EmailStr] = None
-    profile_image: Optional[str] = None
-    phone: Optional[str] = None
-    bio: Optional[str] = None
-
-@user_router.get('/', response_model=List[UserSchema])
+# GET /api/users/ — returns list of dicts (bukan ORM object)
+# response_model dihapus karena return type adalah list[dict] dari .to_dict()
+@user_router.get("/")
 async def get_users(
-    current_user: dict = Depends(role_required(['admin'])), 
-    db: AsyncSession = Depends(get_db)
+    current_user: dict = Depends(role_required(["admin"])),
+    db: AsyncSession = Depends(get_db),
 ):
-    result = await db.execute(select(User))
-    users = result.scalars().all()
-    return users
+    return await UserController.get_all(db)
 
-@user_router.get('/{id}', response_model=UserSchema)
+
+@user_router.get("/{id}")
 async def get_user(
-    id: int, 
-    current_user: dict = Depends(get_current_user), 
-    db: AsyncSession = Depends(get_db)
+    id: int,
+    current_user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
-    db_user_stmt = await db.execute(select(User).filter_by(username=current_user.get("username")))
-    db_user = db_user_stmt.scalars().first()
-    if not db_user:
-        raise HTTPException(status_code=404, detail="User not found")
-        
-    # Non-admin can only fetch their own profile details
-    if db_user.role != 'admin' and db_user.id != id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Akses ditolak!")
+    return await UserController.get_by_id(id, current_user, db)
 
-    result = await db.execute(select(User).filter_by(id=id))
-    user = result.scalars().first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
 
-@user_router.post('/', response_model=UserSchema, status_code=status.HTTP_201_CREATED)
+# POST /api/users/ — response_model dihapus, return dict dari .to_dict()
+@user_router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_user(
-    data: UserCreate, 
-    current_user: dict = Depends(role_required(['admin'])), 
-    db: AsyncSession = Depends(get_db)
+    data: UserCreateSchema,
+    current_user: dict = Depends(role_required(["admin"])),
+    db: AsyncSession = Depends(get_db),
 ):
-    # Check if username exists
-    result = await db.execute(select(User).filter_by(username=data.username))
-    if result.scalars().first():
-        raise HTTPException(status_code=400, detail="Username already exists")
+    return await UserController.create(data, db)
 
-    new_user = User(
-        username=data.username,
-        role=data.role,
-        full_name=data.full_name,
-        nim_nip=data.nim_nip,
-        email=data.email,
-        profile_image=data.profile_image
-      )
-    new_user.set_password(data.password)
-    
-    db.add(new_user)
-    await db.commit()
-    await db.refresh(new_user)
-    return new_user
 
-@user_router.put('/{id}', response_model=UserSchema)
+@user_router.put("/{id}")
 async def update_user(
-    id: int, 
-    data: UserUpdate, 
-    current_user: dict = Depends(get_current_user), 
-    db: AsyncSession = Depends(get_db)
+    id: int,
+    data: UserUpdate,
+    current_user: dict = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
-    db_user_stmt = await db.execute(select(User).filter_by(username=current_user.get("username")))
-    db_user = db_user_stmt.scalars().first()
-    if not db_user:
-        raise HTTPException(status_code=404, detail="User not found")
+    return await UserController.update(id, data, current_user, db)
 
-    # Non-admin can only update their own record
-    if db_user.role != 'admin' and db_user.id != id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Akses ditolak!")
 
-    result = await db.execute(select(User).filter_by(id=id))
-    user = result.scalars().first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    if data.username and data.username != user.username:
-        if db_user.role != 'admin':
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Hanya admin yang dapat mengubah username.")
-        check_result = await db.execute(select(User).filter_by(username=data.username))
-        if check_result.scalars().first():
-            raise HTTPException(status_code=400, detail="Username already exists")
-        user.username = data.username
-
-    if data.password:
-        user.set_password(data.password)
-
-    if data.role is not None:
-        if db_user.role != 'admin':
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Hanya admin yang dapat mengubah role.")
-        user.role = data.role
-
-    if data.full_name is not None:
-        user.full_name = data.full_name
-
-    if data.nim_nip is not None:
-        if db_user.role != 'admin':
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Hanya admin yang dapat mengubah NIM/NIP.")
-        user.nim_nip = data.nim_nip
-
-    if data.email is not None:
-        user.email = data.email
-
-    if data.profile_image is not None:
-        user.profile_image = data.profile_image
-
-    if data.phone is not None:
-        user.phone = data.phone
-
-    if data.bio is not None:
-        user.bio = data.bio
-
-    await db.commit()
-    await db.refresh(user)
-    return user
-
-@user_router.delete('/{id}')
+@user_router.delete("/{id}")
 async def delete_user(
-    id: int, 
-    current_user: dict = Depends(role_required(['admin'])), 
-    db: AsyncSession = Depends(get_db)
+    id: int,
+    current_user: dict = Depends(role_required(["admin"])),
+    db: AsyncSession = Depends(get_db),
 ):
-    result = await db.execute(select(User).filter_by(id=id))
-    user = result.scalars().first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    await db.delete(user)
-    await db.commit()
-    return {"message": "User deleted successfully"}
+    return await UserController.delete(id, db)

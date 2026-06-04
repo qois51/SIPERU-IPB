@@ -114,8 +114,13 @@ const RoomDetail = ({ room, onBack, onEdit, onDeleteSuccess, onZoomImage }) => {
 
       <div className="facilities-section">
         <h3 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '16px' }}>Fasilitas yang tersedia</h3>
-        <div style={{ display: 'flex', gap: '12px' }}>
-          {room.facilities.map((f, i) => (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+          {(Array.isArray(room.facilities) 
+            ? room.facilities 
+            : (typeof room.facilities === 'string' && room.facilities.trim() 
+                ? room.facilities.split(',').map(f => f.trim()) 
+                : [])
+          ).map((f, i) => (
             <span key={i} className="facility-badge">{f}</span>
           ))}
         </div>
@@ -125,7 +130,7 @@ const RoomDetail = ({ room, onBack, onEdit, onDeleteSuccess, onZoomImage }) => {
         <div className="pic-card">
           <div className="pic-avatar" onClick={() => room.pic_image_url && onZoomImage(room.pic_image_url)} style={{ cursor: room.pic_image_url ? 'zoom-in' : 'default', overflow: 'hidden' }}>
             {room.pic_image_url ? (
-              <img src={room.pic_image_url} alt={room.pic_name} style={{ width: '100%', height: '100%', object_fit: 'cover' }} />
+              <img src={room.pic_image_url} alt={room.pic_name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             ) : (
               <UserIcon size={32} color="white" />
             )}
@@ -171,7 +176,7 @@ const RoomDetail = ({ room, onBack, onEdit, onDeleteSuccess, onZoomImage }) => {
         )}
       </div>
       
-      <div style={{ marginTop: '40px', display: 'flex', gap: '16px' }}>
+      <div className="room-actions-wrapper" style={{ marginTop: '40px', display: 'flex', gap: '16px' }}>
          <button className="btn-edit-room" onClick={onEdit}>Edit Data Ruangan</button>
          <button className="btn-delete-room" onClick={handleDelete}>Hapus Ruangan</button>
       </div>

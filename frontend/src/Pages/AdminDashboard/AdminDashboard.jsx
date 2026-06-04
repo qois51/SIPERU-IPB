@@ -14,7 +14,7 @@ import CalendarPage from './calendar/CalendarPage';
 import HelpCenterPage from './helpcenter/HelpCenterPage';
 
 const AdminDashboard = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 768);
   const [searchParams, setSearchParams] = useSearchParams();
   const role = localStorage.getItem('role') || 'admin';
   const allowedViews = {
@@ -25,6 +25,19 @@ const AdminDashboard = () => {
   };
   const allowedForRole = allowedViews[role] || allowedViews['admin'];
   const activeView = searchParams.get('view') || 'beranda';
+
+  // Manage sidebar response to screen resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 768) {
+        setIsSidebarOpen(true);
+      } else {
+        setIsSidebarOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Force redirect if user tries to manually navigate to an unauthorized view
   useEffect(() => {
@@ -97,6 +110,9 @@ const AdminDashboard = () => {
   return (
     <div className="dashboard-container">
       <Sidebar isOpen={isSidebarOpen} activeMenu={activeView} onMenuChange={handleMenuChange} />
+      {isSidebarOpen && (
+        <div className="sidebar-overlay" onClick={() => setIsSidebarOpen(false)} />
+      )}
       <div className={`dashboard-main ${!isSidebarOpen ? 'full' : ''}`}>
         <Header toggleSidebar={toggleSidebar} onMenuChange={handleMenuChange} />
         <main className="dashboard-content">

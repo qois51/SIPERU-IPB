@@ -33,7 +33,7 @@ const FAQ = () => {
 
   return (
     <section id="faq" className="faq-section" style={{ padding: '80px 0' }}>
-      <div className="container" style={{ maxWidth: '1400px', padding: '0 40px', display: 'grid', gridTemplateColumns: '1fr 1.3fr', gap: '60px' }}>
+      <div className="container faq-container">
 
         {/* Left Column: Info & Contacts */}
         <div className="faq-info">
@@ -52,7 +52,7 @@ const FAQ = () => {
           </div>
 
           {/* Contacts Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+          <div className="contacts-grid">
             <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
               <MapPin size={20} color="#1e3a8a" style={{ flexShrink: 0, marginTop: '2px' }} />
               <span style={{ fontSize: '13px', fontWeight: 600, color: '#000', lineHeight: '1.4' }}>

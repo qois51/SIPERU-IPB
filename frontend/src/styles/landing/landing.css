@@ -162,6 +162,15 @@
   padding: 40px 0;
 }
 
+.stats-grid-container {
+  max-width: 1400px;
+  padding: 0 40px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+  width: 100%;
+}
+
 .stat-item {
   display: flex;
   align-items: center;
@@ -280,3 +289,258 @@
   opacity: 0.8;
   font-size: 14px;
 }
+
+.room-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+.faq-container {
+  max-width: 1400px;
+  padding: 0 40px;
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 60px;
+}
+
+.contacts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+/* Media Queries for Responsiveness */
+
+@media (max-width: 1024px) {
+  .steps-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px !important;
+  }
+  
+  .room-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px !important;
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 40px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Navbar Mobile Layout */
+  .nav-links-desktop,
+  .search-wrapper-desktop,
+  .login-divider,
+  .nav-user-text {
+    display: none !important;
+  }
+
+  .mobile-menu-btn {
+    display: block !important;
+  }
+
+  .landing-navbar {
+    padding: 16px 20px !important;
+  }
+
+  .landing-navbar h2 {
+    font-size: 22px !important;
+  }
+
+  .landing-navbar img {
+    width: 36px !important;
+  }
+
+  .notif-dropdown-mobile-adjust {
+    right: -40px !important;
+    width: calc(100vw - 40px) !important;
+    max-width: 320px !important;
+  }
+
+  /* Mobile Drawer */
+  .mobile-nav-drawer-overlay {
+    position: fixed;
+    top: 68px; /* height of navbar */
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: flex-end;
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  .mobile-nav-drawer {
+    width: 280px;
+    height: 100%;
+    background: #1e3a8a;
+    padding: 30px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+    animation: slideInLeft 0.2s ease-out;
+  }
+
+  .mobile-nav-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .mobile-nav-links a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: 600;
+    transition: color 0.2s;
+  }
+
+  .mobile-nav-links a:hover {
+    color: #fbbf24;
+  }
+
+  .mobile-search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+
+  .mobile-search-box input {
+    width: 100%;
+    padding: 12px 16px 12px 40px;
+    background: white;
+    border: none;
+    border-radius: 24px;
+    font-size: 14px;
+    color: #1e293b;
+    outline: none;
+  }
+
+  .mobile-search-box svg {
+    position: absolute;
+    left: 14px;
+  }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideInLeft {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }
+
+  /* Homepage Grid Elements Mobile */
+  .steps-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .step-card {
+    padding: 32px 20px !important;
+  }
+
+  .rules-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .rule-item {
+    padding: 16px !important;
+  }
+
+  .room-grid {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+
+  .faq-section .container {
+    grid-template-columns: 1fr !important;
+    gap: 40px !important;
+    padding: 0 20px !important;
+  }
+
+  .faq-info {
+    text-align: center;
+  }
+
+  .faq-info h2 {
+    font-size: 28px !important;
+  }
+
+  .faq-info div {
+    justify-content: center !important;
+  }
+
+  .faq-info .contacts-grid {
+    grid-template-columns: 1fr !important;
+    text-align: left;
+    max-width: 320px;
+    margin: 0 auto;
+  }
+
+  .stats-bar .container {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+    padding: 0 24px !important;
+  }
+
+  .stat-item {
+    justify-content: center;
+  }
+
+  .faculties-section .container {
+    padding: 0 20px !important;
+  }
+
+  .faculties-section h2 {
+    font-size: 28px !important;
+  }
+
+  .faculties-section p {
+    font-size: 15px !important;
+  }
+
+  .cta-section h2 {
+    font-size: 26px !important;
+  }
+
+  .cta-section p {
+    font-size: 15px !important;
+  }
+
+  .cta-buttons {
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .cta-buttons a {
+    width: 100%;
+    max-width: 280px;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr !important;
+    gap: 40px !important;
+  }
+
+  .landing-footer {
+    padding: 40px 20px !important;
+  }
+}
+

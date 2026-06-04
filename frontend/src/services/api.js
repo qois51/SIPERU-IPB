@@ -58,4 +58,14 @@ api.interceptors.response.use(
   }
 );
 
+export class ReactFrontend {
+  /**
+   * Conceptual boundary class method matching the Class Diagram.
+   * Dispatches network requests via the central Axios instance.
+   */
+  static async fetchAPI(endpoint, options = {}) {
+    return api({ url: endpoint, ...options });
+  }
+}
+
 export default api;

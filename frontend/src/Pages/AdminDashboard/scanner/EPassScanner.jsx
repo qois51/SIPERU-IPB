@@ -23,22 +23,20 @@ const STATUS = {
 
 /* ─── Digit box components (defined outside to prevent re-mount) ─── */
 const StaticBox = ({ ch }) => (
-  <div style={{ width: 48, height: 56, border: '2px solid #e5e7eb', borderRadius: 10, background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 800, color: '#9ca3af', fontFamily: 'monospace' }}>
+  <div className="static-digit-box">
     {ch}
   </div>
 );
 
 const Dash = () => (
-  <span style={{ fontSize: 22, color: '#d1d5db', fontWeight: 300, alignSelf: 'center' }}>–</span>
+  <span className="dash-separator">–</span>
 );
 
 const DigitInput = ({ refEl, value, onChange, onKeyDown }) => (
   <input
     ref={refEl} type="text" inputMode="numeric" maxLength={1} value={value}
     onChange={onChange} onKeyDown={onKeyDown}
-    onFocus={e => { e.target.style.borderColor = '#1e3a8a'; e.target.style.boxShadow = '0 0 0 3px rgba(30,58,138,0.12)'; }}
-    onBlur={e => { e.target.style.borderColor = '#e5e7eb'; e.target.style.boxShadow = 'none'; }}
-    style={{ width: 48, height: 56, border: '2px solid #e5e7eb', borderRadius: 10, textAlign: 'center', fontSize: 20, fontWeight: 800, fontFamily: 'monospace', color: '#1e293b', outline: 'none', background: 'white', transition: 'border-color 0.15s, box-shadow 0.15s' }}
+    className="digit-input-box"
   />
 );
 
@@ -79,12 +77,12 @@ const OtpInput = ({ onVerify, loading }) => {
     <div>
       <label style={{ display: 'block', fontSize: 13, fontWeight: 700, color: '#374151', marginBottom: 20 }}>Kode Booking</label>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 20, flexWrap: 'wrap' }}>
-        <div style={{ display: 'flex', gap: 4 }}>
+      <div className="digit-box-container">
+        <div className="digit-box-group">
           <StaticBox ch="B" /><StaticBox ch="K" />
         </div>
         <Dash />
-        <div style={{ display: 'flex', gap: 4 }}>
+        <div className="digit-box-group">
           {yr.map((v, i) => (
             <DigitInput key={i} refEl={yR[i]} value={v}
               onChange={e => change(yR, yr, setYr, cR, i, e.target.value)}
@@ -92,7 +90,7 @@ const OtpInput = ({ onVerify, loading }) => {
           ))}
         </div>
         <Dash />
-        <div style={{ display: 'flex', gap: 4 }}>
+        <div className="digit-box-group">
           {cd.map((v, i) => (
             <DigitInput key={i} refEl={cR[i]} value={v}
               onChange={e => change(cR, cd, setCd, null, i, e.target.value)}
@@ -165,7 +163,7 @@ const ResultCard = ({ result, onReset, onCheckIn, onCheckOut, actionLoading }) =
 
       {/* Detail */}
       <div style={{ background: 'white', borderRadius: 14, padding: 20, boxShadow: '0 2px 12px rgba(0,0,0,0.06)', border: '1px solid #f1f5f9', marginBottom: 16 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px 20px' }}>
+        <div className="result-details-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px 20px' }}>
           {[
             [User,      'Peminjam',  b.nama_peminjam || b.user_name],
             [Hash,      'NIM/NIP',   b.nim_nip || '-'],
@@ -250,6 +248,78 @@ const EPassScanner = () => {
     #qr-reader__scan_region img { display:none!important; }
     #qr-reader__dashboard { display:none!important; }
     #qr-reader video { border-radius:10px!important; width:100%!important; }
+    
+    .digit-box-container {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 20px;
+      flex-wrap: nowrap !important;
+      justify-content: center;
+    }
+    .digit-box-group {
+      display: flex;
+      gap: 4px;
+    }
+    .digit-input-box, .static-digit-box {
+      width: 48px;
+      height: 56px;
+      font-size: 20px;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      text-align: center;
+      font-weight: 800;
+      font-family: monospace;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .static-digit-box {
+      background: #f8fafc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #9ca3af;
+      font-size: 18px;
+    }
+    .digit-input-box {
+      color: #1e293b;
+      background: white;
+    }
+    .digit-input-box:focus {
+      border-color: #1e3a8a;
+      box-shadow: 0 0 0 3px rgba(30,58,138,0.12);
+    }
+    .dash-separator {
+      font-size: 22px;
+      color: #d1d5db;
+      font-weight: 300;
+      align-self: center;
+    }
+
+    @media (max-width: 600px) {
+      .digit-box-container {
+        gap: 3px;
+      }
+      .digit-box-group {
+        gap: 2px;
+      }
+      .digit-input-box, .static-digit-box {
+        width: 26px !important;
+        height: 38px !important;
+        font-size: 13px !important;
+        border-width: 1.5px !important;
+      }
+      .static-digit-box {
+        font-size: 13px !important;
+      }
+      .dash-separator {
+        font-size: 14px !important;
+      }
+      .result-details-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+      }
+    }
   `;
 
   const stopCam = async () => {

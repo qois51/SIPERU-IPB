@@ -1,63 +1,54 @@
 from pydantic import BaseModel, Field, field_validator
-from typing import Optional, List
+from typing import Optional, List, Any
 from datetime import date, datetime
-import re
+
 
 class BookingSchema(BaseModel):
+    id_booking: Optional[int] = None
+    waktu_mulai: Optional[datetime] = None
+    waktu_selesai: Optional[datetime] = None
+    keperluan: Optional[str] = None
+    status: Optional[str] = "Pending"
+    path_file_bukti: Optional[str] = None
+    id_epass: Optional[str] = None
+    id_mahasiswa: Optional[int] = None
+    id_ruangan: Optional[int] = None
+
+    # Fallback/alias fields untuk kompatibilitas frontend
     id: Optional[int] = None
     booking_code: Optional[str] = None
-
-    # Foreign keys
-    room_id: int
-    user_id: int
-
-    # Data Peminjam
-    nama_peminjam: Optional[str] = Field(None, max_length=100)
-    nim_nip: Optional[str] = Field(None, max_length=30)
-    program_studi: Optional[str] = Field(None, max_length=100)
+    room_id: Optional[int] = None
+    user_id: Optional[int] = None
+    nama_peminjam: Optional[str] = None
+    nim_nip: Optional[str] = None
+    program_studi: Optional[str] = None
     email: Optional[str] = None
     nomor_hp: Optional[str] = None
-
-    # Data Kegiatan
-    activity_name: str = Field(..., min_length=3, max_length=200)
-    jenis_kegiatan: Optional[str] = Field(None, max_length=100)
-    organization: Optional[str] = Field("-", max_length=200)
+    activity_name: Optional[str] = None
+    jenis_kegiatan: Optional[str] = None
+    organization: Optional[str] = "-"
     participants: Optional[int] = 1
-    purpose: Optional[str] = Field("", max_length=500)
+    purpose: Optional[str] = None
     deskripsi_kegiatan: Optional[str] = None
-
-    # Schedule
-    date: date
-    start_time: str
-    end_time: str
-
-    # Status & Documents
-    status: Optional[str] = "Pending"
+    # date menerima str ("YYYY-MM-DD") ATAU date object dari frontend
+    date: Optional[Any] = None
+    start_time: Optional[str] = None
+    end_time: Optional[str] = None
     surat_file: Optional[str] = None
     document_url: Optional[str] = None
     qr_code: Optional[str] = None
     notes: Optional[str] = None
-
-    # Facilities (list of facility names)
     facilities: Optional[List[str]] = []
-
-    # Timestamps
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
-    @field_validator('email')
-    def validate_email(cls, v):
-        if v and not v.endswith('@apps.ipb.ac.id'):
-            raise ValueError('Harap gunakan email @apps.ipb.ac.id')
-        return v
-
-    @field_validator('nomor_hp')
+    @field_validator("nomor_hp")
     def validate_nomor_hp(cls, v):
         if v:
-            if not (10 <= len(v) <= 20):
-                raise ValueError('Nomor HP harus antara 10 sampai 20 karakter')
-            if not v.startswith('08'):
-                raise ValueError('Nomor HP harus diawali 08')
+            # Hapus spasi dan tanda hubung untuk validasi panjang
+            cleaned = v.replace(" ", "").replace("-", "")
+            if not (10 <= len(cleaned) <= 20):
+                raise ValueError("Nomor HP harus antara 10 sampai 20 digit")
         return v
 
     class Config:

@@ -10,7 +10,7 @@ const Stats = () => {
 
   return (
     <section className="stats-bar">
-      <div className="container" style={{ maxWidth: '1400px', padding: '0 40px', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '32px', width: '100%' }}>
+      <div className="container stats-grid-container">
         {statItems.map((item, idx) => (
           <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
             <div style={{ width: '60px', height: '60px', flexShrink: 0 }}>
