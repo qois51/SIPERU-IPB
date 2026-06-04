@@ -78,6 +78,7 @@ class Ruangan(Base):
             "name": self.nama_ruangan,
             "capacity": self.kapasitas,
             "price": self.biaya_peminjaman,
+            "facilities": [f.strip() for f in self.fasilitas.split(',')] if self.fasilitas else [],
             "pic_name": self.pic.nama if self.pic else "",
             "pic_email": self.pic.email if self.pic else "",
             "pic_phone": self.pic.no_telepon if self.pic else ""

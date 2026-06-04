@@ -120,17 +120,22 @@
 
 /* Sidebar Backdrop overlay on mobile */
 .sidebar-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  z-index: 1040;
-  backdrop-filter: blur(4px);
+  display: none;
 }
 
 @media (max-width: 768px) {
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1040;
+    backdrop-filter: blur(4px);
+  }
+
   /* Sidebar melayang di atas konten */
   .sidebar {
     position: fixed;

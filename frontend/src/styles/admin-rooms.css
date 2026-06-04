@@ -243,3 +243,53 @@
 .lightbox-close:hover {
   transform: scale(1.1);
 }
+
+/* Media Queries for Room Management Responsiveness */
+@media (max-width: 768px) {
+  .room-info-card {
+    padding: 20px !important;
+    gap: 16px !important;
+  }
+  
+  .info-value {
+    font-size: 16px !important;
+  }
+
+  .info-item {
+    gap: 12px !important;
+  }
+
+  .info-icon-box {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  .pic-card {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+    padding: 20px !important;
+  }
+
+  .main-image-container {
+    height: 240px !important;
+  }
+
+  .room-actions-wrapper {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+
+  .room-actions-wrapper button {
+    width: 100% !important;
+  }
+  
+  .lightbox-content {
+    max-width: 95% !important;
+  }
+
+  .lightbox-close {
+    top: -40px !important;
+    right: 0 !important;
+  }
+}
