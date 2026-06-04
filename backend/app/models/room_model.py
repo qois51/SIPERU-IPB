@@ -13,18 +13,18 @@ class Ruangan(Base):
     biaya_peminjaman: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     id_pic: Mapped[int] = mapped_column(ForeignKey('pic_ruangan.id_user'), nullable=False)
     
-    # Optional / Helper columns to support current UI views
+
     location: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
     operational_hours: Mapped[Optional[str]] = mapped_column(String(100), nullable=True)
     image_url: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     pic_image_url: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
-    # Relationships
-    # lazy="selectin" agar async tidak error saat to_dict() mengakses self.pic
+
+
     pic: Mapped["PICRuangan"] = relationship("PICRuangan", back_populates="ruangans", lazy="selectin")
     peminjamans: Mapped[List["Peminjaman"]] = relationship("Peminjaman", back_populates="ruangan", cascade="all, delete-orphan", lazy="selectin")
 
-    # Compatibility properties for legacy routes and services
+
     @property
     def id(self) -> int:
         return self.id_ruangan
@@ -73,7 +73,7 @@ class Ruangan(Base):
             "operational_hours": self.operational_hours or "",
             "image_url": self.image_url.split('|') if self.image_url else [],
             "pic_image_url": self.pic_image_url or "",
-            # Keep fallback fields to not break frontend immediately if it reads them
+
             "id": self.id_ruangan,
             "name": self.nama_ruangan,
             "capacity": self.kapasitas,

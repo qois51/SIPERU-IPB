@@ -1,10 +1,4 @@
-"""
-booking_routes.py — Thin wrapper; logic ada di BookingController.
 
-PENTING: Route spesifik (verify-code, check-in, check-out, dashboard/stats,
-reports/stats, calendar/events) HARUS didefinisikan SEBELUM /{id} agar
-FastAPI tidak salah cocokkan path-nya.
-"""
 from fastapi import APIRouter, Depends, Query, UploadFile, File, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional
@@ -30,9 +24,9 @@ class StatusRequest(BaseModel):
     status: str
 
 
-# ===========================================================================
-#  SPECIFIC ROUTES — harus SEBELUM /{id}
-# ===========================================================================
+
+
+
 
 @booking_router.get("/my-bookings")
 async def get_my_bookings(
@@ -115,9 +109,9 @@ async def get_user_bookings(
     )
 
 
-# ===========================================================================
-#  COLLECTION ROUTES
-# ===========================================================================
+
+
+
 
 @booking_router.get("/")
 async def get_all_bookings(
@@ -135,9 +129,9 @@ async def create_booking(data: BookingSchema, db: AsyncSession = Depends(get_db)
     return await BookingController.create(data, db)
 
 
-# ===========================================================================
-#  ITEM ROUTES — /{id} HARUS PALING AKHIR
-# ===========================================================================
+
+
+
 
 @booking_router.get("/{id}")
 async def get_booking(id: int, db: AsyncSession = Depends(get_db)):

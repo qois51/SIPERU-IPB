@@ -7,7 +7,7 @@ import {
 import { Html5Qrcode } from 'html5-qrcode';
 import api from '../../../services/api';
 
-/* ─── helpers ─── */
+
 const fmtDate = (d) => d ? new Date(d).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) : '-';
 const fmtTime = (t) => t ? String(t).slice(0, 5) : '-';
 
@@ -21,7 +21,7 @@ const STATUS = {
   Draft:     { color: '#6b7280', bg: '#f9fafb', border: '#e5e7eb', Icon: AlertTriangle,  label: 'Draft' },
 };
 
-/* ─── Digit box components (defined outside to prevent re-mount) ─── */
+
 const StaticBox = ({ ch }) => (
   <div className="static-digit-box">
     {ch}
@@ -40,7 +40,7 @@ const DigitInput = ({ refEl, value, onChange, onKeyDown }) => (
   />
 );
 
-/* ─── OTP Input ─── */
+
 const OtpInput = ({ onVerify, loading }) => {
   const [yr, setYr] = useState(['', '', '', '']);
   const [cd, setCd] = useState(['', '', '', '']);
@@ -55,7 +55,7 @@ const OtpInput = ({ onVerify, loading }) => {
     if (c) {
       if (i < 3) refs[i + 1].current?.focus();
       else if (nextG) nextG[0].current?.focus();
-      // last box of last group: just move focus, no auto-submit
+      
     }
   };
 
@@ -67,7 +67,7 @@ const OtpInput = ({ onVerify, loading }) => {
     if (e.key === 'Enter') {
       if (i < 3) refs[i + 1].current?.focus();
       else if (nextG) nextG[0].current?.focus();
-      // Enter on last box: do NOT auto-submit, user must click Verifikasi
+      
     }
   };
 
@@ -126,7 +126,7 @@ const OtpInput = ({ onVerify, loading }) => {
   );
 };
 
-/* ─── Result Card ─── */
+
 const ResultCard = ({ result, onReset, onCheckIn, onCheckOut, actionLoading }) => {
   if (result.error) return (
     <div style={{ background: 'white', borderRadius: 16, padding: 32, boxShadow: '0 2px 12px rgba(0,0,0,0.07)', border: '1px solid #fecdd3', textAlign: 'center' }}>
@@ -147,7 +147,7 @@ const ResultCard = ({ result, onReset, onCheckIn, onCheckOut, actionLoading }) =
 
   return (
     <div>
-      {/* Status strip */}
+      {}
       <div style={{ background: s.bg, border: `1px solid ${s.border}`, borderRadius: 14, padding: '16px 20px', marginBottom: 16, display: 'flex', alignItems: 'center', gap: 14 }}>
         <div style={{ width: 44, height: 44, borderRadius: 12, background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', border: `1px solid ${s.border}`, flexShrink: 0 }}>
           <Icon size={22} color={s.color} />
@@ -161,7 +161,7 @@ const ResultCard = ({ result, onReset, onCheckIn, onCheckOut, actionLoading }) =
         </span>
       </div>
 
-      {/* Detail */}
+      {}
       <div style={{ background: 'white', borderRadius: 14, padding: 20, boxShadow: '0 2px 12px rgba(0,0,0,0.06)', border: '1px solid #f1f5f9', marginBottom: 16 }}>
         <div className="result-details-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px 20px' }}>
           {[
@@ -191,7 +191,7 @@ const ResultCard = ({ result, onReset, onCheckIn, onCheckOut, actionLoading }) =
         )}
       </div>
 
-      {/* Action buttons based on status */}
+      {}
       {b.status === 'Approved' && (
         <button onClick={() => onCheckIn(b.booking_code)} disabled={actionLoading}
           style={{ width: '100%', padding: 14, background: '#16a34a', color: 'white', border: 'none', borderRadius: 12, fontWeight: 700, fontSize: 15, cursor: actionLoading ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginBottom: 10, opacity: actionLoading ? 0.7 : 1 }}>
@@ -231,7 +231,7 @@ const ResultCard = ({ result, onReset, onCheckIn, onCheckOut, actionLoading }) =
   );
 };
 
-/* ─── Main ─── */
+
 const EPassScanner = () => {
   const [mode,          setMode]         = useState('scan');
   const [camOn,         setCamOn]        = useState(false);
@@ -358,7 +358,7 @@ const EPassScanner = () => {
     }
   };
 
-  // Start/stop based on camOn AND mode=scan
+  
   useEffect(() => {
     if (mode === 'scan' && camOn) {
       startCam();
@@ -367,7 +367,7 @@ const EPassScanner = () => {
     }
   }, [mode, camOn]);
 
-  // Stop on unmount
+  
   useEffect(() => { return () => { stopCam(); }; }, []);
 
   const toggleCam = () => setCamOn(prev => !prev);
@@ -420,7 +420,7 @@ const EPassScanner = () => {
     <div style={{ maxWidth: 720, margin: '0 auto' }}>
       <style>{css}</style>
 
-      {/* Header */}
+      {}
       <div style={{ marginBottom: 24 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <div style={{ width: 46, height: 46, borderRadius: 13, background: '#1e3a8a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -438,7 +438,7 @@ const EPassScanner = () => {
       ) : (
         <div style={{ background: 'white', borderRadius: 18, boxShadow: '0 2px 16px rgba(0,0,0,0.07)', border: '1px solid #f1f5f9', overflow: 'hidden' }}>
 
-          {/* Tab bar */}
+          {}
           <div style={{ display: 'flex', borderBottom: '1px solid #f1f5f9' }}>
             {[
               { key: 'scan',   label: 'Scan QR Code', Icon: Camera },
@@ -460,11 +460,11 @@ const EPassScanner = () => {
             ))}
           </div>
 
-          {/* Content */}
+          {}
           <div style={{ padding: 24 }}>
             {mode === 'scan' ? (
               <div>
-                {/* Camera status bar */}
+                {}
                 {camOn && camActive ? (
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, padding: '10px 14px', background: '#f0fdf4', borderRadius: 10, border: '1px solid #bbf7d0' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -494,7 +494,7 @@ const EPassScanner = () => {
                   </div>
                 )}
 
-                {/* Camera viewport */}
+                {}
                 <div style={{ borderRadius: 12, overflow: 'hidden', background: '#0f172a', position: 'relative', minHeight: 260 }}>
                   <div id="qr-reader" style={{ width: '100%' }} />
                   {(!camOn || !camActive) && !camError && (

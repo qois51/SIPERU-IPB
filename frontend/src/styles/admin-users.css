@@ -1,4 +1,4 @@
-/* User Management Styles */
+
 .user-list-container {
   background: white;
   border-radius: 16px;
@@ -9,7 +9,7 @@
   border: 1px solid #f1f5f9;
 }
 
-/* Force table to fit within container */
+
 .user-list-container .table-container {
   overflow-x: auto;
   border-radius: 10px;
@@ -22,7 +22,7 @@
   border-collapse: collapse;
 }
 
-/* Column width distribution */
+
 .user-list-container .custom-table th:nth-child(1),
 .user-list-container .custom-table td:nth-child(1) { width: 28%; }
 .user-list-container .custom-table th:nth-child(2),

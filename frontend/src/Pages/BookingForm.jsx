@@ -1,4 +1,4 @@
-/*---- Punya Agoy ----*/
+
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -6,8 +6,8 @@ import { useNavigate } from 'react-router-dom';
 const BookingForm = () => {
   const navigate = useNavigate();
   const handleSubmit = (e) => {
-    e.preventDefault(); // Biar gk reload halaman
-    navigate('/upload'); // Pindah halaman ke /upload
+    e.preventDefault(); 
+    navigate('/upload'); 
   };
   const [formData, setFormData] = useState({
     fakultas: '',
@@ -48,7 +48,7 @@ const BookingForm = () => {
                   <option value="FMIPA">FMIPA</option>
                   <option value="FEM">FEM</option>
                 </select>
-                {/* Segitiga Pojok Kanan */}
+                {}
                 <div className="absolute right-4 pointer-events-none">
                   <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path>
@@ -74,7 +74,7 @@ const BookingForm = () => {
             </div>
           </section>
 
-          {/* Section 2: Identitas Peminjam */}
+          {}
           <section className="space-y-6">
             <h2 className="text-2xl font-bold mb-6 border-b border-white/20 pb-2">Identitas Peminjam</h2>
             

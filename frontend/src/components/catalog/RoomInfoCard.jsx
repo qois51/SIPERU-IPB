@@ -19,7 +19,7 @@ const RoomInfoCard = ({ room }) => {
         {room.name}
       </h1>
 
-      {/* Info Box */}
+      {}
       <div style={{ border: '1px solid #1e3a8a', borderRadius: '12px', overflow: 'hidden' }}>
         <div style={{ padding: '18px 22px', borderBottom: '1px solid #d1dff9', display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
           <MapPin size={20} color="#1e3a8a" style={{ marginTop: '2px', flexShrink: 0 }} />
@@ -51,7 +51,7 @@ const RoomInfoCard = ({ room }) => {
         </div>
       </div>
 
-      {/* Facilities */}
+      {}
       {facilities.length > 0 && (
         <div>
           <p style={{ fontSize: '17px', fontWeight: 700, color: '#000', margin: '0 0 12px' }}>Fasilitas yang tersedia</p>
@@ -75,7 +75,7 @@ const RoomInfoCard = ({ room }) => {
         </div>
       )}
 
-      {/* PIC Card */}
+      {}
       {room.pic_name && (
         <div style={{ border: '1px solid #1e3a8a', borderRadius: '12px', padding: '22px', display: 'flex', gap: '18px', alignItems: 'flex-start' }}>
           <div style={{

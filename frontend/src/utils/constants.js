@@ -1,6 +1,4 @@
-/**
- * constants.js — Application-wide constants
- */
+
 
 export const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
 
@@ -26,7 +24,7 @@ export const FACILITY_OPTIONS = [
 ];
 
 export const ALLOWED_FILE_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
-export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+export const MAX_FILE_SIZE = 5 * 1024 * 1024; 
 
 export const STEPPER_STEPS = [
   { number: 1, label: 'Pilih Ruangan' },

@@ -1,6 +1,4 @@
-/**
- * formatStatus.js — Status display utilities
- */
+
 
 export const STATUS_CONFIG = {
   Pending: {

@@ -28,7 +28,7 @@ const RoomDetailPage = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
 
-    // Fetch the specific room
+    
     api.get(`/rooms/${id}`)
       .then(res => {
         setRoom(res.data?.data || res.data);
@@ -36,7 +36,7 @@ const RoomDetailPage = () => {
       })
       .catch(() => setLoading(false));
 
-    // Fetch all rooms for "Ruangan Lain" section
+    
     api.get(`/rooms/`)
       .then(res => setAllRooms(res.data?.data || res.data || []))
       .catch(() => {});
@@ -74,11 +74,11 @@ const RoomDetailPage = () => {
     if (selection.date) params.set('date', selection.date);
 
     if (selection.slots.length > 0) {
-      // Sort slots chronologically e.g. ['08:00-09:00', '09:00-10:00']
+      
       const sortedSlots = [...selection.slots].sort();
-      // start = left side of first slot: '08:00'
+      
       const startStr = sortedSlots[0].split('-')[0];
-      // end = right side of last slot: '10:00'
+      
       const endStr = sortedSlots[sortedSlots.length - 1].split('-')[1];
       params.set('start', startStr);
       params.set('end', endStr);
@@ -116,7 +116,7 @@ const RoomDetailPage = () => {
 
       <div style={{ padding: '0 24px', width: '100%', flexGrow: 1, marginBottom: '80px' }}>
 
-        {/* Breadcrumb */}
+        {}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: 700, margin: '20px 0 32px', color: '#000' }}>
           <Link to="/" style={{ color: '#000', textDecoration: 'none' }}>Beranda</Link>
           <ChevronRight size={16} strokeWidth={3} />
@@ -125,20 +125,20 @@ const RoomDetailPage = () => {
           <span style={{ color: '#1e3a8a' }}>Detail Katalog</span>
         </div>
 
-        {/* Main 2-Column Layout */}
+        {}
         <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr', gap: '40px', alignItems: 'start', marginBottom: '60px' }}>
 
-          {/* Left Column: Gallery + Calendar */}
+          {}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
             <RoomGallery images={getImages(room)} />
             <DateTimePicker roomId={room.id} onSelectionChange={setSelection} />
           </div>
 
-          {/* Right Column: Room Info + Book Button */}
+          {}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', position: 'sticky', top: '100px' }}>
             <RoomInfoCard room={room} />
 
-            {/* Book Button */}
+            {}
             <button
               onClick={handleBook}
               style={{
@@ -162,7 +162,7 @@ const RoomDetailPage = () => {
           </div>
         </div>
 
-        {/* Related Rooms */}
+        {}
         {relatedRooms.length > 0 && (
           <div>
             <h2 style={{ fontSize: '24px', fontWeight: 800, margin: '0 0 24px', color: '#000' }}>
@@ -230,7 +230,7 @@ const RoomDetailPage = () => {
       </div>
       <Footer />
 
-      {/* Modern Toast Notification */}
+      {}
       {toast.show && (
         <div style={{
           position: 'fixed',

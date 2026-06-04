@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 
-/* ─── STYLE TOKENS ──────────────────────────────────────────────── */
+
 const IPB = {
   navy: '#0d2260',
   navyMd: '#1e3a8a',
@@ -15,7 +15,7 @@ const IPB = {
 };
 
 const S = {
-  /* page */
+  
   page: {
     fontFamily: "'Times New Roman', Times, serif",
     background: '#ffffff',
@@ -24,7 +24,7 @@ const S = {
     color: '#1e293b',
   },
 
-  /* cover */
+  
   cover: {
     height: '297mm',
     background: `linear-gradient(160deg, ${IPB.navy} 0%, #1a2f6e 55%, #1e3a8a 100%)`,
@@ -39,13 +39,13 @@ const S = {
     pageBreakAfter: 'always',
   },
 
-  /* content wrapper */
+  
   content: {
     padding: '30mm 25mm 25mm 30mm',
     boxSizing: 'border-box',
   },
 
-  /* running header */
+  
   hdr: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -55,7 +55,7 @@ const S = {
     marginBottom: '20px',
   },
 
-  /* typography */
+  
   secTitle: {
     fontSize: '18px',
     fontWeight: 'bold',
@@ -85,7 +85,7 @@ const S = {
     pageBreakAfter: 'avoid',
   },
 
-  /* body text */
+  
   txt: {
     fontSize: '12px',
     lineHeight: '1.75',
@@ -111,7 +111,7 @@ const S = {
     pageBreakInside: 'avoid',
   },
 
-  /* callout boxes */
+  
   note: {
     background: '#eff6ff',
     borderLeft: `4px solid ${IPB.navyMd}`,
@@ -146,7 +146,7 @@ const S = {
     pageBreakInside: 'avoid',
   },
 
-  /* image block */
+  
   imgBox: {
     border: `1.5px solid ${IPB.border}`,
     borderRadius: '5px',
@@ -165,7 +165,7 @@ const S = {
     borderTop: `1px solid ${IPB.borderL}`,
   },
 
-  /* footer */
+  
   pgFooter: {
     borderTop: `1.5px solid ${IPB.navy}`,
     marginTop: '30px',
@@ -176,7 +176,7 @@ const S = {
   },
 };
 
-/* ─── REUSABLE COMPONENTS ───────────────────────────────────────── */
+
 
 function PageHeader() {
   return (
@@ -210,7 +210,7 @@ function Screenshot({ label, src, caption }) {
           e.target.nextSibling.style.display = 'flex';
         }}
       />
-      {/* Fallback jika gambar tidak ada */}
+      {}
       <div style={{
         display: 'none', alignItems: 'center', justifyContent: 'center',
         height: '120px', background: '#f1f5f9',
@@ -356,7 +356,7 @@ function FaqItem({ q, a, idx }) {
   );
 }
 
-/* ─── SIGNATURE BLOCK ───────────────────────────────────────────── */
+
 function SignatureBlock() {
   return (
     <div style={{ marginTop: '32px', display: 'flex', justifyContent: 'flex-end' }}>
@@ -382,7 +382,7 @@ function SignatureBlock() {
   );
 }
 
-/* ─── PAGE FOOTER ────────────────────────────────────────────────── */
+
 function DocFooter() {
   return (
     <div style={S.pgFooter}>
@@ -392,14 +392,14 @@ function DocFooter() {
   );
 }
 
-/* ─── MAIN COMPONENT ─────────────────────────────────────────────── */
+
 const BukuPanduanSIPBeru = forwardRef((props, ref) => {
   return (
     <div ref={ref} style={S.page}>
 
-      {/* ════════════ COVER ════════════ */}
+      {}
       <div style={S.cover}>
-        {/* top label */}
+        {}
         <div style={{
           position: 'absolute', top: '32px', textAlign: 'center', width: '100%',
         }}>
@@ -408,9 +408,9 @@ const BukuPanduanSIPBeru = forwardRef((props, ref) => {
           </div>
         </div>
 
-        {/* logos */}
+        {}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '22px', marginBottom: '30px' }}>
-          {/* IPB logo */}
+          {}
           <img
             src="/loginAsset/logologin.png"
             alt="Logo IPB"
@@ -429,7 +429,7 @@ const BukuPanduanSIPBeru = forwardRef((props, ref) => {
 
           <div style={{ width: '2px', height: '70px', background: 'rgba(255,255,255,0.25)' }} />
 
-          {/* SIPBeru logotype */}
+          {}
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', alignItems: 'center', lineHeight: 1 }}>
               <span style={{ fontSize: '56px', fontWeight: '900', color: '#ffffff', letterSpacing: '-1px' }}>S</span>
@@ -442,10 +442,10 @@ const BukuPanduanSIPBeru = forwardRef((props, ref) => {
           </div>
         </div>
 
-        {/* gold divider */}
+        {}
         <div style={{ width: '72px', height: '3px', background: IPB.gold, borderRadius: '2px', marginBottom: '22px' }} />
 
-        {/* title block */}
+        {}
         <div style={{ textAlign: 'center', marginBottom: '28px' }}>
           <h1 style={{
             fontSize: '24px', fontWeight: 'bold', margin: '0 0 8px',
@@ -458,10 +458,10 @@ const BukuPanduanSIPBeru = forwardRef((props, ref) => {
           </p>
         </div>
 
-        {/* gold divider */}
+        {}
         <div style={{ width: '72px', height: '3px', background: IPB.gold, borderRadius: '2px', marginBottom: '28px' }} />
 
-        {/* institution info */}
+        {}
         <div style={{
           textAlign: 'center',
           background: 'rgba(255,255,255,0.07)',
@@ -474,16 +474,16 @@ const BukuPanduanSIPBeru = forwardRef((props, ref) => {
           <p style={{ margin: 0, fontSize: '11px', color: '#7dd3fc' }}>Institut Pertanian Bogor (IPB University)</p>
         </div>
 
-        {/* bottom note */}
+        {}
         <div style={{ position: 'absolute', bottom: '24px', fontSize: '9px', color: 'rgba(255,255,255,0.3)', textAlign: 'center' }}>
           Panduan resmi untuk seluruh civitas akademika IPB University
         </div>
       </div>
 
-      {/* ════════════ CONTENT PAGES ════════════ */}
+      {}
       <div style={S.content}>
 
-        {/* ── KATA PENGANTAR ── */}
+        {}
         <PageHeader />
         <h2 style={S.secTitle}>Kata Pengantar</h2>
 
@@ -530,7 +530,7 @@ const BukuPanduanSIPBeru = forwardRef((props, ref) => {
         <SectionBreak />
         <PageHeader />
 
-        {/* ── DAFTAR ISI ── */}
+        {}
         <h2 style={S.secTitle}>Daftar Isi</h2>
         {[
           ['Kata Pengantar', '2'],
@@ -578,7 +578,7 @@ const BukuPanduanSIPBeru = forwardRef((props, ref) => {
         <SectionBreak />
         <PageHeader />
 
-        {/* ════ BAB 1 ════ */}
+        {}
         <h2 style={S.secTitle}>1. Pengenalan SIPBeru IPB</h2>
 
         <h3 style={S.sub}>1.1 Gambaran Umum Sistem</h3>
@@ -652,7 +652,7 @@ const BukuPanduanSIPBeru = forwardRef((props, ref) => {
         <SectionBreak />
         <PageHeader />
 
-        {/* ════ BAB 2 ════ */}
+        {}
         <h2 style={S.secTitle}>2. Tujuan dan Manfaat Sistem</h2>
 
         <h3 style={S.sub}>2.1 Tujuan Sistem</h3>
@@ -716,7 +716,7 @@ const BukuPanduanSIPBeru = forwardRef((props, ref) => {
         <SectionBreak />
         <PageHeader />
 
-        {/* ════ BAB 3 ════ */}
+        {}
         <h2 style={S.secTitle}>3. Hak Akses Pengguna</h2>
         <p style={S.txt}>
           SIPBeru IPB menerapkan sistem manajemen hak akses berbasis peran (Role-Based Access Control / RBAC) yang
@@ -750,7 +750,7 @@ const BukuPanduanSIPBeru = forwardRef((props, ref) => {
           administrator sistem.
         </div>
 
-        {/* ════ BAB 4 ════ */}
+        {}
         <h2 style={S.secTitle}>4. Persyaratan Penggunaan Sistem</h2>
 
         <h3 style={S.sub}>4.1 Perangkat dan Browser yang Didukung</h3>
@@ -806,7 +806,7 @@ const BukuPanduanSIPBeru = forwardRef((props, ref) => {
           diterima oleh sistem. Pastikan dokumen telah dikonversi ke format PDF sebelum diunggah.
         </div>
 
-        {/* ════ BAB 5 ════ */}
+        {}
         <h2 style={S.secTitle}>5. Panduan Login dan Keamanan Akun</h2>
         <p style={S.txt}>
           Fitur autentikasi merupakan gerbang utama untuk mengakses seluruh layanan SIPBeru IPB. Sistem autentikasi
@@ -859,7 +859,7 @@ const BukuPanduanSIPBeru = forwardRef((props, ref) => {
         <SectionBreak />
         <PageHeader />
 
-        {/* ════ BAB 6 ════ */}
+        {}
         <h2 style={S.secTitle}>6. Dashboard Pengguna</h2>
         <p style={S.txt}>
           Dashboard merupakan halaman utama yang ditampilkan setelah pengguna berhasil login ke dalam sistem
@@ -898,7 +898,7 @@ const BukuPanduanSIPBeru = forwardRef((props, ref) => {
         <SectionBreak />
         <PageHeader />
 
-        {/* ════ BAB 7 ════ */}
+        {}
         <h2 style={S.secTitle}>7. Panduan Peminjaman Ruangan</h2>
         <p style={S.txt}>
           Fitur peminjaman ruangan merupakan fitur inti dari SIPBeru IPB. Seluruh proses pengajuan peminjaman dapat
@@ -976,7 +976,7 @@ const BukuPanduanSIPBeru = forwardRef((props, ref) => {
         <SectionBreak />
         <PageHeader />
 
-        {/* ════ BAB 8 ════ */}
+        {}
         <h2 style={S.secTitle}>8. Kalender dan Jadwal Ruangan</h2>
         <p style={S.txt}>
           SIPBeru IPB menyediakan fitur kalender interaktif yang memungkinkan pengguna untuk melihat jadwal
@@ -1001,7 +1001,7 @@ const BukuPanduanSIPBeru = forwardRef((props, ref) => {
           informasi kegiatan yang sedang berlangsung atau yang telah dijadwalkan pada slot tersebut.
         </div>
 
-        {/* ════ BAB 9 ════ */}
+        {}
         <h2 style={S.secTitle}>9. Status Pengajuan Peminjaman</h2>
         <p style={S.txt}>
           Setiap pengajuan peminjaman ruangan yang diajukan melalui SIPBeru IPB akan melewati beberapa tahapan
@@ -1034,7 +1034,7 @@ const BukuPanduanSIPBeru = forwardRef((props, ref) => {
         <SectionBreak />
         <PageHeader />
 
-        {/* ════ BAB 10 ════ */}
+        {}
         <h2 style={S.secTitle}>10. Riwayat dan Export Laporan PDF</h2>
         <p style={S.txt}>
           Fitur riwayat dan export laporan merupakan salah satu fitur penting dalam SIPBeru IPB yang berfungsi
@@ -1057,7 +1057,7 @@ const BukuPanduanSIPBeru = forwardRef((props, ref) => {
           Sistem akan menghasilkan file PDF secara otomatis → File akan terunduh ke perangkat Anda.
         </div>
 
-        {/* ════ BAB 11 ════ */}
+        {}
         <h2 style={S.secTitle}>11. Panduan Penggunaan E-Pass</h2>
         <p style={S.txt}>
           E-Pass (Electronic Pass) merupakan dokumen digital resmi yang diterbitkan oleh SIPBeru IPB sebagai bukti
@@ -1095,7 +1095,7 @@ const BukuPanduanSIPBeru = forwardRef((props, ref) => {
         <SectionBreak />
         <PageHeader />
 
-        {/* ════ BAB 12 ════ */}
+        {}
         <h2 style={S.secTitle}>12. Profil dan Pengaturan Akun</h2>
         <p style={S.txt}>
           Menu Profil memungkinkan pengguna untuk mengelola data pribadi dan pengaturan akun secara mandiri.
@@ -1113,7 +1113,7 @@ const BukuPanduanSIPBeru = forwardRef((props, ref) => {
           administrator sistem. Jika terdapat kesalahan pada data tersebut, silakan hubungi administrator.
         </div>
 
-        {/* ════ BAB 13 ════ */}
+        {}
         <h2 style={S.secTitle}>13. Panduan Administrator</h2>
         <p style={S.txt}>
           Administrator memiliki peran sentral dalam pengelolaan SIPBeru IPB. Selain memiliki seluruh akses yang
@@ -1163,7 +1163,7 @@ const BukuPanduanSIPBeru = forwardRef((props, ref) => {
         <SectionBreak />
         <PageHeader />
 
-        {/* ════ BAB 14 ════ */}
+        {}
         <h2 style={S.secTitle}>14. Aturan Penggunaan Ruangan</h2>
         <p style={S.txt}>
           Seluruh pengguna yang telah mendapatkan persetujuan peminjaman ruangan wajib mematuhi aturan dan
@@ -1184,7 +1184,7 @@ const BukuPanduanSIPBeru = forwardRef((props, ref) => {
           peminjaman ruangan atau sanksi administratif sesuai ketentuan yang berlaku di IPB University.
         </div>
 
-        {/* ════ BAB 15 ════ */}
+        {}
         <h2 style={S.secTitle}>15. Troubleshooting Sistem</h2>
         <p style={S.txt}>
           Berikut adalah panduan penyelesaian kendala teknis yang mungkin dialami pengguna saat menggunakan
@@ -1201,7 +1201,7 @@ const BukuPanduanSIPBeru = forwardRef((props, ref) => {
           <TroubleCard key={i} problem={problem} solution={solution} />
         ))}
 
-        {/* ════ BAB 16 ════ */}
+        {}
         <h2 style={S.secTitle}>16. Frequently Asked Questions (FAQ)</h2>
         {[
           ['Apakah mahasiswa dapat meminjam auditorium atau aula besar?', 'Ya, mahasiswa dapat mengajukan peminjaman untuk semua jenis ruangan yang tersedia di katalog, termasuk auditorium, selama memenuhi persyaratan dan mendapatkan persetujuan dari administrator.'],
@@ -1218,7 +1218,7 @@ const BukuPanduanSIPBeru = forwardRef((props, ref) => {
         <SectionBreak />
         <PageHeader />
 
-        {/* ════ BAB 17 ════ */}
+        {}
         <h2 style={S.secTitle}>17. Kontak dan Bantuan Sistem</h2>
         <p style={S.txt}>
           Jika pengguna mengalami kendala teknis, memiliki pertanyaan, atau memerlukan bantuan terkait penggunaan
@@ -1253,7 +1253,7 @@ const BukuPanduanSIPBeru = forwardRef((props, ref) => {
           menghubungi tim pengelola.
         </div>
 
-        {/* ════ BAB 18 ════ */}
+        {}
         <h2 style={S.secTitle}>18. Penutup</h2>
         <p style={S.txt}>
           SIPBeru IPB merupakan wujud nyata dari komitmen IPB University dalam mendukung transformasi digital
@@ -1282,7 +1282,7 @@ const BukuPanduanSIPBeru = forwardRef((props, ref) => {
         <DocFooter />
 
       </div>
-      {/* end content wrapper */}
+      {}
     </div>
   );
 });

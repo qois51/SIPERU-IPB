@@ -60,7 +60,7 @@ const ProfilePage = () => {
       setIsEditing(false);
       showToastMsg('Profil berhasil diperbarui!', 'success');
       
-      // Delay reload to let user see the beautiful premium toast
+      
       setTimeout(() => {
         window.location.reload();
       }, 1500);
@@ -79,7 +79,7 @@ const ProfilePage = () => {
       <div style={{ flexGrow: 1, paddingTop: '32px', paddingBottom: '64px' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 16px' }}>
           
-          {/* Header */}
+          {}
           <div style={{ marginBottom: '24px' }}>
             <h1 style={{ fontSize: '28px', fontWeight: 800, color: '#1e293b', marginBottom: '8px' }}>Profil Saya</h1>
             <p style={{ color: '#64748b' }}>Kelola informasi identitas dan data diri Anda di SIPBeru.</p>
@@ -87,7 +87,7 @@ const ProfilePage = () => {
 
           <div style={{ background: 'white', borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
             
-            {/* Banner & Avatar section */}
+            {}
             <div style={{ position: 'relative', height: '140px', background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)' }}>
               <div style={{ position: 'absolute', bottom: '-40px', left: '32px', display: 'flex', alignItems: 'flex-end', gap: '20px' }}>
                 <div style={{ position: 'relative' }}>
@@ -207,7 +207,7 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      {/* Premium Toast Notification */}
+      {}
       {toast.show && (
         <div
           style={{

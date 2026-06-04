@@ -26,7 +26,7 @@ body {
   color: var(--gray-900);
 }
 
-/* Hide native browser password reveal icon (Edge/Chrome) */
+
 input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear,
 input::-webkit-credentials-auto-fill-button {

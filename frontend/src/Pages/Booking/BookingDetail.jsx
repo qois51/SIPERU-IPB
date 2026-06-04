@@ -12,15 +12,15 @@ import bookingService from '../../services/bookingService';
 import { PROGRESS_STEPS } from '../../utils/constants';
 import { formatDateID, formatTimeRange } from '../../utils/formatDate';
 
-// Map booking status to progress step
-// The stepper marks steps < currentStep as completed (checkmark)
+
+
 const statusToStep = {
   Draft:     1,
-  Pending:   3,   // steps 1,2 checked
-  Rejected:  3,   // steps 1,2 checked, step 3 shows rejected
-  Approved:  5,   // steps 1-4 checked (including E-Pass Terbit)
-  CheckedIn: 6,   // steps 1-5 checked (including Ambil Kunci)
-  Completed: 8,   // steps 1-7 ALL checked (6+7 together)
+  Pending:   3,   
+  Rejected:  3,   
+  Approved:  5,   
+  CheckedIn: 6,   
+  Completed: 8,   
   Expired:   8,
 };
 
@@ -80,7 +80,7 @@ const BookingDetail = () => {
 
       <div style={{ flexGrow: 1, paddingTop: '24px', paddingBottom: '48px' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px' }}>
-          {/* Breadcrumb */}
+          {}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '14px', color: '#6b7280', marginBottom: '16px' }}>
             <Link to="/dashboard" style={{ color: '#6b7280', textDecoration: 'none' }}>Dashboard</Link>
             <span>&gt;</span>
@@ -96,19 +96,19 @@ const BookingDetail = () => {
             <p style={{ fontSize: '14px', color: '#9ca3af', marginBottom: '24px' }}>Kode booking tersedia setelah disetujui</p>
           )}
 
-          {/* Progress Stepper */}
+          {}
           <div style={{ background: 'white', borderRadius: '16px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', marginBottom: '24px' }}>
             <h3 style={{ fontWeight: 700, color: '#1f2937', marginBottom: '16px' }}>Progres Pengajuan</h3>
             <BookingStepper currentStep={progressStep} steps={PROGRESS_STEPS} />
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px' }}>
-            {/* Left: Booking Info */}
+            {}
             <div>
               <div style={{ background: 'white', borderRadius: '16px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
                 <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#1f2937', marginBottom: '16px' }}>Informasi Booking</h2>
 
-                {/* Data Peminjam */}
+                {}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#fde047', color: '#1e3a8a', padding: '10px 16px', borderRadius: '8px', marginBottom: '16px' }}>
                   <User size={18} />
                   <span style={{ fontSize: '14px', fontWeight: 700 }}>Data Peminjam</span>
@@ -131,7 +131,7 @@ const BookingDetail = () => {
                   ))}
                 </div>
 
-                {/* Data Kegiatan */}
+                {}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#fde047', color: '#1e3a8a', padding: '10px 16px', borderRadius: '8px', marginBottom: '16px' }}>
                   <BookOpen size={18} />
                   <span style={{ fontSize: '14px', fontWeight: 700 }}>Data Kegiatan</span>
@@ -157,7 +157,7 @@ const BookingDetail = () => {
                     </div>
                   </div>
                   
-                  {/* Fasilitas Tambahan */}
+                  {}
                   <div>
                     <label style={{ fontSize: '13px', fontWeight: 700, color: '#111827', display: 'block', marginBottom: '6px' }}>Fasilitas Tambahan</label>
                     <div style={{ padding: '12px 16px', background: '#e0e7ff', border: '1px solid #c7d2fe', borderRadius: '8px', minHeight: '50px' }}>
@@ -178,7 +178,7 @@ const BookingDetail = () => {
                   </div>
                 </div>
 
-                {/* Notes (dynamic color based on status) */}
+                {}
                 {booking.notes && (
                   <div style={{ 
                     background: (booking.status === 'Approved' || booking.status === 'CheckedIn' || booking.status === 'Completed') ? '#f0fdf4' : booking.status === 'Rejected' ? '#fef2f2' : '#fefce8', 
@@ -201,9 +201,9 @@ const BookingDetail = () => {
               </div>
             </div>
 
-            {/* Right: E-Pass Card */}
+            {}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {/* E-Pass Digital */}
+              {}
               <div style={{ background: '#2f458d', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
                 <div style={{ padding: '24px 16px', textAlign: 'center' }}>
                   <p style={{ fontSize: '13px', fontWeight: 700, color: 'white', marginBottom: '8px' }}>E-Pass Digital</p>                  <p style={{ color: '#fde047', fontWeight: 800, fontSize: '16px', marginBottom: '24px' }}>
@@ -216,7 +216,7 @@ const BookingDetail = () => {
                           : 'Menunggu Persetujuan'}
                   </p>
                   
-                  {/* QR Code */}
+                  {}
                   <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '16px', background: 'white', borderRadius: '12px', marginBottom: '20px', width: '200px', height: '200px' }}>
                     {booking.status === 'Approved' || booking.status === 'CheckedIn' ? (
                       <QRCodeSVG value={qrValue} size={168} fgColor="#000000" level="M" />
@@ -236,14 +236,14 @@ const BookingDetail = () => {
                     )}
                   </div>
  
-                  {/* Info */}
+                  {}
                   <p style={{ fontSize: '15px', color: 'white', margin: '0 0 4px' }}>{booking.room_name}</p>
                   <p style={{ fontSize: '13px', color: '#bfdbfe', margin: '0 0 4px' }}>{(booking.room_location || 'Gedung Rektorat, Lantai 4').replace(/\bfmipa\b/gi, 'FMIPA')}</p>
                   <p style={{ fontSize: '14px', color: 'white', margin: '0 0 4px' }}>{formatDateID(booking.date)}</p>
                   <p style={{ fontSize: '14px', color: 'white', margin: '0 0 4px' }}>{formatTimeRange(booking.start_time, booking.end_time)}</p>
                   <p style={{ fontSize: '14px', color: 'white', margin: '0 0 16px' }}>{booking.nama_peminjam}</p>
                   
-                  {/* Status Badge */}
+                  {}
                   <div style={{ display: 'inline-block', padding: '6px 24px', borderRadius: '999px', fontSize: '14px', fontWeight: 600,
                     background: booking.status === 'Approved' ? '#22c55e' : booking.status === 'CheckedIn' ? '#2563eb' : booking.status === 'Completed' || booking.status === 'Expired' || booking.status === 'Rejected' ? '#dc2626' : '#eab308',
                     color: 'white'
@@ -261,7 +261,7 @@ const BookingDetail = () => {
                 </div>
               </div>
 
-              {/* Actions */}
+              {}
               {booking.status === 'Approved' && (
                 <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <button
@@ -282,10 +282,10 @@ const BookingDetail = () => {
                 </div>
               )}
 
-              {/* Ringkasan Peminjaman */}
+              {}
               <div style={{ background: 'white', borderRadius: '16px', padding: '20px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
                 <h4 style={{ fontSize: '14px', fontWeight: 800, color: '#1f2937', marginBottom: '16px' }}>Ringkasan Peminjaman</h4>
-                {/* Fallback image if no room image available */}
+                {}
                 <div style={{ width: '100%', height: '140px', background: '#f1f5f9', borderRadius: '8px', marginBottom: '16px', overflow: 'hidden' }}>
                   <img src="https://images.unsplash.com/photo-1577412647305-991150c7d163?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Room" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 </div>
@@ -317,7 +317,7 @@ const BookingDetail = () => {
                 </div>
               </div>
 
-              {/* PIC Ruangan */}
+              {}
               <div style={{ background: 'white', borderRadius: '16px', padding: '16px', border: '1px solid #e2e8f0', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
                 <p style={{ fontSize: '11px', color: '#64748b', marginBottom: '12px' }}>PIC Ruangan</p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>

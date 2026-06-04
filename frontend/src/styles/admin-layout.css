@@ -1,8 +1,8 @@
-/* Dashboard Layout */
+
 .dashboard-container {
   display: flex;
   min-height: 100vh;
-  background-color: #fef2f2; /* Light creamy/pinkish background from screenshot */
+  background-color: #fef2f2; 
 }
 
 .sidebar {
@@ -118,7 +118,7 @@
 .dropdown-item:hover { background: #f1f5f9; color: #1e3a8a; }
 .dropdown-item.logout:hover { background: #fee2e2; color: #dc2626; }
 
-/* Sidebar Backdrop overlay on mobile */
+
 .sidebar-overlay {
   display: none;
 }
@@ -136,7 +136,7 @@
     backdrop-filter: blur(4px);
   }
 
-  /* Sidebar melayang di atas konten */
+  
   .sidebar {
     position: fixed;
     top: 0;
@@ -168,7 +168,7 @@
     display: none !important;
   }
 
-  /* Make sure notification bell dropdown is responsive and doesn't overflow screen */
+  
   .header-right > div > div[style*="width: 380px"] {
     width: calc(100vw - 32px) !important;
     max-width: 380px !important;

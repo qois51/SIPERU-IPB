@@ -35,7 +35,7 @@ const FAQ = () => {
     <section id="faq" className="faq-section" style={{ padding: '80px 0' }}>
       <div className="container faq-container">
 
-        {/* Left Column: Info & Contacts */}
+        {}
         <div className="faq-info">
           <div style={{ display: 'inline-block', background: '#e2e8f0', padding: '6px 16px', borderRadius: '20px', fontSize: '14px', fontWeight: 800, color: '#1e3a8a', marginBottom: '20px' }}>
             FAQ
@@ -44,14 +44,14 @@ const FAQ = () => {
             Pertanyaan yang Sering Ditanyakan
           </h2>
 
-          {/* Colored Accent Bars */}
+          {}
           <div style={{ display: 'flex', gap: '8px', marginBottom: '40px' }}>
             <div style={{ width: '24px', height: '4px', backgroundColor: '#fbbf24', borderRadius: '2px' }}></div>
             <div style={{ width: '24px', height: '4px', backgroundColor: '#1e3a8a', borderRadius: '2px' }}></div>
             <div style={{ width: '24px', height: '4px', backgroundColor: '#10b981', borderRadius: '2px' }}></div>
           </div>
 
-          {/* Contacts Grid */}
+          {}
           <div className="contacts-grid">
             <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
               <MapPin size={20} color="#1e3a8a" style={{ flexShrink: 0, marginTop: '2px' }} />
@@ -83,7 +83,7 @@ const FAQ = () => {
           </div>
         </div>
 
-        {/* Right Column: Accordion Questions */}
+        {}
         <div className="faq-accordion" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {faqs.map((item, idx) => {
             const isOpen = activeIndex === idx;

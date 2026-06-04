@@ -1,4 +1,4 @@
-/* Room Management */
+
 .room-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -49,7 +49,7 @@
   font-weight: 600;
 }
 
-/* Room Detail */
+
 .room-info-card {
   background: white;
   border-radius: 20px;
@@ -142,7 +142,7 @@
   cursor: pointer;
 }
 
-/* Room Gallery */
+
 .room-gallery {
   margin-bottom: 32px;
 }
@@ -197,7 +197,7 @@
   opacity: 0.8;
 }
 
-/* Image Lightbox */
+
 .image-lightbox-overlay {
   position: fixed;
   top: 0;
@@ -244,7 +244,7 @@
   transform: scale(1.1);
 }
 
-/* Media Queries for Room Management Responsiveness */
+
 @media (max-width: 768px) {
   .room-info-card {
     padding: 20px !important;

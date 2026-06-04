@@ -26,7 +26,7 @@ const RoomGallery = ({ images = [] }) => {
   const lightboxNext = () => setLightboxIndex((i) => (i === displayImages.length - 1 ? 0 : i + 1));
   const lightboxPrev = () => setLightboxIndex((i) => (i === 0 ? displayImages.length - 1 : i - 1));
 
-  // Close lightbox on Escape key
+  
   useEffect(() => {
     const handleKey = (e) => {
       if (!isLightboxOpen) return;
@@ -38,7 +38,7 @@ const RoomGallery = ({ images = [] }) => {
     return () => window.removeEventListener('keydown', handleKey);
   }, [isLightboxOpen, lightboxIndex]);
 
-  // Prevent body scroll when lightbox is open
+  
   useEffect(() => {
     document.body.style.overflow = isLightboxOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
@@ -47,7 +47,7 @@ const RoomGallery = ({ images = [] }) => {
   return (
     <>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        {/* Main Image with zoom cursor */}
+        {}
         <div
           onClick={() => openLightbox(activeIndex)}
           style={{
@@ -63,7 +63,7 @@ const RoomGallery = ({ images = [] }) => {
             onMouseOver={(e) => { e.currentTarget.style.transform = 'scale(1.03)'; }}
             onMouseOut={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
           />
-          {/* Zoom hint badge */}
+          {}
           <div style={{
             position: 'absolute', bottom: '14px', right: '14px',
             background: 'rgba(0,0,0,0.55)', color: 'white',
@@ -76,7 +76,7 @@ const RoomGallery = ({ images = [] }) => {
           </div>
         </div>
 
-        {/* Thumbnails Row */}
+        {}
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
           <div style={{ display: 'flex', gap: '10px', flexGrow: 1 }}>
             {displayImages.map((img, idx) => (
@@ -112,7 +112,7 @@ const RoomGallery = ({ images = [] }) => {
         </div>
       </div>
 
-      {/* ─── Lightbox Modal ─── */}
+      {}
       {isLightboxOpen && (
         <div
           onClick={closeLightbox}
@@ -123,7 +123,7 @@ const RoomGallery = ({ images = [] }) => {
             animation: 'fadeIn 0.2s ease'
           }}
         >
-          {/* Close button */}
+          {}
           <button
             onClick={closeLightbox}
             style={{
@@ -137,7 +137,7 @@ const RoomGallery = ({ images = [] }) => {
             <X size={22} />
           </button>
 
-          {/* Prev arrow */}
+          {}
           {displayImages.length > 1 && (
             <button
               onClick={(e) => { e.stopPropagation(); lightboxPrev(); }}
@@ -153,7 +153,7 @@ const RoomGallery = ({ images = [] }) => {
             </button>
           )}
 
-          {/* Main zoomed image */}
+          {}
           <img
             src={displayImages[lightboxIndex]}
             alt={`Zoomed image ${lightboxIndex + 1}`}
@@ -166,7 +166,7 @@ const RoomGallery = ({ images = [] }) => {
             }}
           />
 
-          {/* Next arrow */}
+          {}
           {displayImages.length > 1 && (
             <button
               onClick={(e) => { e.stopPropagation(); lightboxNext(); }}
@@ -182,7 +182,7 @@ const RoomGallery = ({ images = [] }) => {
             </button>
           )}
 
-          {/* Image counter */}
+          {}
           <div style={{
             position: 'absolute', bottom: '24px',
             background: 'rgba(255,255,255,0.15)', color: 'white',

@@ -1,7 +1,4 @@
-"""
-UploadService (OOP) — File upload/delete for documents and QR codes.
-Saves to Supabase Storage if configured, falls back to local disk.
-"""
+
 import os
 import uuid
 import json
@@ -18,15 +15,10 @@ DOCUMENTS_FOLDER = os.path.join(UPLOAD_FOLDER, "documents")
 QR_FOLDER = os.path.join(UPLOAD_FOLDER, "qr")
 
 ALLOWED_EXTENSIONS = {"pdf"}
-MAX_FILE_SIZE = 5 * 1024 * 1024  # 5 MB
+MAX_FILE_SIZE = 5 * 1024 * 1024
 
 
 class UploadService:
-    """Manages file uploads and deletions (local or Supabase)."""
-
-    # ------------------------------------------------------------------ #
-    #  Helpers                                                             #
-    # ------------------------------------------------------------------ #
 
     def _ensure_dirs(self):
         os.makedirs(DOCUMENTS_FOLDER, exist_ok=True)
@@ -46,14 +38,14 @@ class UploadService:
         key = getattr(settings, "supabase_key", None) or os.environ.get("SUPABASE_KEY")
         return url, key
 
-    # ------------------------------------------------------------------ #
-    #  Supabase Storage                                                    #
-    # ------------------------------------------------------------------ #
+
+
+
 
     def upload_to_supabase(
         self, bucket: str, filename: str, file_bytes: bytes, content_type: str
     ) -> tuple[bool, str]:
-        """Upload raw bytes to a Supabase Storage bucket via REST API."""
+
         supabase_url, supabase_key = self._get_supabase_creds()
         if not supabase_url or not supabase_key:
             return False, "Kredensial Supabase belum dikonfigurasi."
@@ -90,7 +82,7 @@ class UploadService:
             return False, msg
 
     def delete_from_supabase(self, bucket: str, filename: str) -> bool:
-        """Delete an object from a Supabase Storage bucket."""
+
         supabase_url, supabase_key = self._get_supabase_creds()
         if not supabase_url or not supabase_key:
             return False
@@ -112,26 +104,19 @@ class UploadService:
             print(f"[UploadService] Supabase delete error for {filename}: {e}")
             return False
 
-    # ------------------------------------------------------------------ #
-    #  Public API                                                          #
-    # ------------------------------------------------------------------ #
+
+
+
 
     def save_uploaded_file(self, upload_file) -> tuple[bool, str]:
-        """Save an uploaded document (PDF) to Supabase or local storage.
 
-        Args:
-            upload_file: FastAPI UploadFile object.
-
-        Returns:
-            (success, filepath_or_url_or_error_message)
-        """
         if not upload_file or upload_file.filename == "":
             return False, "File tidak ditemukan."
 
         if not self._allowed_file(upload_file.filename):
             return False, "Format file tidak diizinkan. Harap unggah dokumen dalam format PDF."
 
-        # Check size
+
         file_size = getattr(upload_file, "size", None)
         if file_size is None:
             try:
@@ -161,7 +146,7 @@ class UploadService:
                 return True, res
             print(f"[UploadService] Supabase upload failed ({res}). Using local fallback.")
 
-        # Local fallback
+
         self._ensure_dirs()
         filepath = os.path.join(DOCUMENTS_FOLDER, safe_name)
         try:
@@ -172,7 +157,7 @@ class UploadService:
             return False, f"Gagal menyimpan file secara lokal: {str(e)}"
 
     def save_qrcode_file(self, booking_code: str, img_bytes: bytes) -> tuple[bool, str]:
-        """Save QR code PNG bytes to Supabase 'qrcode' bucket, or local storage."""
+
         filename = f"qr_{booking_code}.png"
 
         supabase_url, supabase_key = self._get_supabase_creds()
@@ -192,7 +177,7 @@ class UploadService:
             return False, f"Gagal menyimpan QR code secara lokal: {str(e)}"
 
     def delete_uploaded_file(self, filepath: str):
-        """Delete a file from local storage or Supabase Storage."""
+
         if not filepath:
             return
 
@@ -221,9 +206,9 @@ class UploadService:
         return os.path.join(base_dir, relative_path)
 
 
-# ---------------------------------------------------------------------------
-# Backward-compatibility shims (module-level functions)
-# ---------------------------------------------------------------------------
+
+
+
 
 def save_uploaded_file(upload_file):
     return UploadService().save_uploaded_file(upload_file)

@@ -26,7 +26,7 @@
   font-size: 16px;
 }
 
-/* Navbar */
+
 .landing-navbar {
   display: flex;
   justify-content: space-between;
@@ -75,7 +75,7 @@
   color: #1e3a8a;
 }
 
-/* Hero */
+
 .hero-section {
   width: 100%;
   padding: 0;
@@ -83,7 +83,7 @@
   display: block;
 }
 
-/* Steps */
+
 .steps-section {
   padding: 80px 0;
 }
@@ -120,7 +120,7 @@
   font-weight: 800;
 }
 
-/* Rules */
+
 .rules-section {
   padding: 80px 0;
   background: #fef2f2;
@@ -156,7 +156,7 @@
   font-weight: 700;
 }
 
-/* Stats */
+
 .stats-bar {
   background: #1e3a8a;
   padding: 40px 0;
@@ -182,7 +182,7 @@
   font-weight: 800;
 }
 
-/* Faculties */
+
 .faculties-section {
   padding: 80px 0;
   text-align: center;
@@ -208,7 +208,7 @@
   font-size: 14px;
 }
 
-/* FAQ */
+
 .faq-section {
   padding: 80px 0;
 }
@@ -226,7 +226,7 @@
   cursor: pointer;
 }
 
-/* CTA */
+
 .cta-section {
   background: url('/landing/CTA/cta.png');
   background-size: cover;
@@ -262,7 +262,7 @@
   text-decoration: none;
 }
 
-/* Footer */
+
 .landing-footer {
   background: #1e3a8a;
   color: white;
@@ -310,7 +310,7 @@
   gap: 24px;
 }
 
-/* Media Queries for Responsiveness */
+
 
 @media (max-width: 1024px) {
   .steps-grid {
@@ -330,7 +330,7 @@
 }
 
 @media (max-width: 768px) {
-  /* Navbar Mobile Layout */
+  
   .nav-links-desktop,
   .search-wrapper-desktop,
   .login-divider,
@@ -360,10 +360,10 @@
     max-width: 320px !important;
   }
 
-  /* Mobile Drawer */
+  
   .mobile-nav-drawer-overlay {
     position: fixed;
-    top: 68px; /* height of navbar */
+    top: 68px; 
     left: 0;
     right: 0;
     bottom: 0;
@@ -431,7 +431,7 @@
     left: 14px;
   }
 
-  /* Animations */
+  
   @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -442,7 +442,7 @@
     to { transform: translateX(0); }
   }
 
-  /* Homepage Grid Elements Mobile */
+  
   .steps-grid {
     grid-template-columns: 1fr !important;
     gap: 16px !important;

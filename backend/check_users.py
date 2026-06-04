@@ -4,7 +4,7 @@ import ssl
 import os
 
 async def main():
-    # Load .env manually to get credentials
+
     config = {}
     env_paths = [".env", "backend/.env", "../.env"]
     for path in env_paths:
@@ -39,7 +39,7 @@ async def main():
         )
         print("Successfully connected!")
         
-        # Check current columns in public.users table
+
         columns = await conn.fetch("""
             SELECT column_name, data_type 
             FROM information_schema.columns 

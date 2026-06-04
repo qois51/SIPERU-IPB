@@ -61,17 +61,17 @@ function getCalendarDays(year, month) {
 
   const days = [];
 
-  // Previous month trailing days
+  
   for (let i = startDow - 1; i >= 0; i--) {
     days.push({ day: daysInPrev - i, currentMonth: false, date: new Date(year, month - 1, daysInPrev - i) });
   }
 
-  // Current month days
+  
   for (let d = 1; d <= daysInMonth; d++) {
     days.push({ day: d, currentMonth: true, date: new Date(year, month, d) });
   }
 
-  // Next month leading days
+  
   const remaining = 42 - days.length;
   for (let d = 1; d <= remaining; d++) {
     days.push({ day: d, currentMonth: false, date: new Date(year, month + 1, d) });
@@ -141,17 +141,17 @@ const CalendarPage = () => {
 
   const calendarDays = getCalendarDays(currentYear, currentMonth);
 
-  // Get unique rooms for filter
+  
   const uniqueRooms = [...new Set(events.map(e => e.room_name).filter(Boolean))].sort();
   
-  // Filter events
+  
   const filteredEvents = events.filter(e => {
     if (filterRoom !== 'all' && e.room_name !== filterRoom) return false;
     if (filterStatus !== 'all' && e.status !== filterStatus) return false;
     return true;
   });
 
-  // Group events by date
+  
   const eventsByDate = {};
   filteredEvents.forEach(e => {
     if (!e.date) return;
@@ -176,7 +176,7 @@ const CalendarPage = () => {
 
   const selectedDayEvents = selectedDay ? (eventsByDate[selectedDay] || []) : [];
 
-  // Count total events for the month
+  
   const totalEvents = filteredEvents.length;
   const approvedCount = filteredEvents.filter(e => e.status === 'Approved' || e.status === 'CheckedIn' || e.status === 'Completed').length;
   const pendingCount = filteredEvents.filter(e => e.status === 'Pending').length;
@@ -465,7 +465,7 @@ const CalendarPage = () => {
         }
       `}</style>
 
-      {/* ===== HEADER ===== */}
+      {}
       <div className="cal-animate-fade-up" style={{ marginBottom: '28px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div>
@@ -477,9 +477,9 @@ const CalendarPage = () => {
             </p>
           </div>
 
-          {/* Month Navigation + Quick Stats */}
+          {}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
-            {/* Navigation */}
+            {}
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <button className="cal-nav-btn" onClick={prevMonth}>
                 <ChevronLeft size={18} color="#475569" />
@@ -515,7 +515,7 @@ const CalendarPage = () => {
               </button>
             </div>
 
-            {/* Quick Stats */}
+            {}
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
               <div className="cal-stat-mini" style={{ background: '#eff6ff', padding: '10px 16px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px', border: '1px solid #dbeafe' }}>
                 <CalendarIcon size={14} color="#1e40af" />
@@ -532,7 +532,7 @@ const CalendarPage = () => {
             </div>
           </div>
 
-          {/* Filters */}
+          {}
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#94a3b8' }}>
               <Filter size={14} />
@@ -584,9 +584,9 @@ const CalendarPage = () => {
         </div>
       </div>
 
-      {/* ===== CALENDAR + DAY PANEL LAYOUT ===== */}
+      {}
       <div className="cal-animate-fade-up cal-delay-1 cal-layout" style={{ display: 'grid', gridTemplateColumns: selectedDay ? '1fr 360px' : '1fr', gap: '24px', transition: 'grid-template-columns 0.3s ease' }}>
-        {/* Calendar Grid */}
+        {}
         <div style={{ background: 'white', borderRadius: '20px', border: '1px solid #f1f5f9', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', overflow: 'hidden' }}>
           {loading ? (
             <div style={{ padding: '80px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
@@ -597,12 +597,12 @@ const CalendarPage = () => {
             </div>
           ) : (
             <div className="cal-grid">
-              {/* Day Headers */}
+              {}
               {DAYS_ID.map(day => (
                 <div key={day} className="cal-header-cell">{day}</div>
               ))}
 
-              {/* Day Cells */}
+              {}
               {calendarDays.map((dayObj, idx) => {
                 const dateKey = dayStr(dayObj.date);
                 const dayEvents = eventsByDate[dateKey] || [];
@@ -659,7 +659,7 @@ const CalendarPage = () => {
             </div>
           )}
 
-          {/* Room Color Legend */}
+          {}
           {!loading && Object.keys(roomColorMap.current).length > 0 && (
             <div style={{ padding: '16px 20px', borderTop: '1px solid #f1f5f9', display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center' }}>
               <span style={{ fontSize: '10px', fontWeight: 800, color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.06em', marginRight: '4px' }}>Legenda Ruangan:</span>
@@ -673,7 +673,7 @@ const CalendarPage = () => {
           )}
         </div>
 
-        {/* Day Detail Panel */}
+        {}
         {selectedDay && (
           <div className="cal-day-panel">
             <div style={{ padding: '20px 24px', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -769,11 +769,11 @@ const CalendarPage = () => {
         )}
       </div>
 
-      {/* ===== EVENT DETAIL MODAL ===== */}
+      {}
       {selectedEvent && (
         <div className="cal-modal-overlay" onClick={() => setSelectedEvent(null)}>
           <div className="cal-modal" onClick={(e) => e.stopPropagation()}>
-            {/* Modal Header */}
+            {}
             <div style={{
               padding: '24px 28px 20px',
               borderBottom: '1px solid #f1f5f9',
@@ -815,9 +815,9 @@ const CalendarPage = () => {
               </button>
             </div>
 
-            {/* Modal Body */}
+            {}
             <div style={{ padding: '24px 28px' }}>
-              {/* Schedule Card */}
+              {}
               <div style={{ background: 'linear-gradient(135deg, #eff6ff, #f0f9ff)', borderRadius: '16px', padding: '20px', marginBottom: '20px', border: '1px solid #dbeafe' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
                   <div style={{ padding: '8px', background: 'white', borderRadius: '10px', boxShadow: '0 1px 3px rgba(0,0,0,0.06)' }}>
@@ -846,9 +846,9 @@ const CalendarPage = () => {
                 </div>
               </div>
 
-              {/* Details Grid */}
+              {}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
-                {/* Peminjam */}
+                {}
                 <div style={{ background: '#f8fafc', borderRadius: '14px', padding: '16px', border: '1px solid #f1f5f9' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
                     <User size={14} color="#6366f1" />
@@ -858,7 +858,7 @@ const CalendarPage = () => {
                   <p style={{ fontSize: '11px', fontWeight: 600, color: '#64748b', margin: 0 }}>{selectedEvent.nim_nip || '-'}</p>
                 </div>
 
-                {/* Organisasi */}
+                {}
                 <div style={{ background: '#f8fafc', borderRadius: '14px', padding: '16px', border: '1px solid #f1f5f9' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
                     <Users size={14} color="#f59e0b" />
@@ -868,7 +868,7 @@ const CalendarPage = () => {
                   <p style={{ fontSize: '11px', fontWeight: 600, color: '#64748b', margin: 0 }}>{selectedEvent.program_studi || '-'}</p>
                 </div>
 
-                {/* Peserta */}
+                {}
                 <div style={{ background: '#f8fafc', borderRadius: '14px', padding: '16px', border: '1px solid #f1f5f9' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
                     <Users size={14} color="#10b981" />
@@ -877,7 +877,7 @@ const CalendarPage = () => {
                   <p style={{ fontSize: '18px', fontWeight: 900, color: '#1e293b', margin: 0 }}>{selectedEvent.participants || 1} <span style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8' }}>Orang</span></p>
                 </div>
 
-                {/* Jenis Kegiatan */}
+                {}
                 <div style={{ background: '#f8fafc', borderRadius: '14px', padding: '16px', border: '1px solid #f1f5f9' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
                     <BookOpen size={14} color="#ec4899" />
@@ -887,7 +887,7 @@ const CalendarPage = () => {
                 </div>
               </div>
 
-              {/* Purpose / Description */}
+              {}
               {(selectedEvent.purpose || selectedEvent.deskripsi_kegiatan) && (
                 <div style={{ background: '#f8fafc', borderRadius: '14px', padding: '16px', border: '1px solid #f1f5f9', marginBottom: '20px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
@@ -900,7 +900,7 @@ const CalendarPage = () => {
                 </div>
               )}
 
-              {/* Facilities */}
+              {}
               {selectedEvent.facilities && selectedEvent.facilities.length > 0 && (
                 <div style={{ background: '#f8fafc', borderRadius: '14px', padding: '16px', border: '1px solid #f1f5f9' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>

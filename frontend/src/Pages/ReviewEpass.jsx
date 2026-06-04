@@ -1,4 +1,4 @@
-/*---- Punya Agoy ----*/
+
 
 import React from 'react';
 

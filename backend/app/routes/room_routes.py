@@ -1,6 +1,4 @@
-"""
-room_routes.py — Thin wrapper; logic ada di RoomController.
-"""
+
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List

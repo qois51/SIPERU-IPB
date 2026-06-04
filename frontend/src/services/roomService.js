@@ -1,7 +1,4 @@
-/**
- * roomService.js — Room API calls
- * NOTE: Backend room endpoints return plain objects (not wrapped in {success, data})
- */
+
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
@@ -12,20 +9,16 @@ const getAuthHeaders = () => {
 };
 
 const roomService = {
-  /**
-   * Get all rooms — returns array of room objects
-   */
+  
   getRooms: async () => {
     const response = await axios.get(`${API_URL}/rooms/`, { headers: getAuthHeaders() });
-    return response.data; // returns array directly
+    return response.data; 
   },
 
-  /**
-   * Get room detail by ID — returns single room object
-   */
+  
   getRoomById: async (id) => {
     const response = await axios.get(`${API_URL}/rooms/${id}`, { headers: getAuthHeaders() });
-    return response.data; // returns object directly
+    return response.data; 
   },
 };
 

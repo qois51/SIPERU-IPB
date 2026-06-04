@@ -3,7 +3,7 @@ import api from '../../services/api';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { MapPin, Users, User, ChevronRight, Banknote } from 'lucide-react';
 
-// Modular Components
+
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import CatalogSidebar from '../../components/catalog/CatalogSidebar';
@@ -16,7 +16,7 @@ const CatalogPage = () => {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Filter & Search States
+  
   const getInitialSearchQuery = () => {
     const params = new URLSearchParams(location.search);
     return params.get('q') || '';
@@ -29,7 +29,7 @@ const CatalogPage = () => {
   const [selectedFacilities, setSelectedFacilities] = useState([]);
   const [selectedDate, setSelectedDate] = useState('2025-02-14');
 
-  // Trigger Filter Application State
+  
   const [appliedFilters, setAppliedFilters] = useState({
     location: '',
     minCap: '',
@@ -46,7 +46,7 @@ const CatalogPage = () => {
   ];
 
   useEffect(() => {
-    // Scroll to top upon navigation
+    
     window.scrollTo(0, 0);
 
     api.get(`/rooms/`)
@@ -66,7 +66,7 @@ const CatalogPage = () => {
       });
   }, []);
 
-  // Listen to URL search parameter changes
+  
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const q = params.get('q');
@@ -75,10 +75,10 @@ const CatalogPage = () => {
     }
   }, [location.search]);
 
-  // Extract unique locations dynamically for the sidebar select dropdown
+  
   const uniqueLocations = Array.from(new Set(rooms.map(r => r.location).filter(Boolean)));
 
-  // Extract all unique facilities from all rooms (flatten + dedupe)
+  
   const uniqueFacilities = Array.from(
     new Set(
       rooms.flatMap(r => {
@@ -129,9 +129,9 @@ const CatalogPage = () => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price);
   };
 
-  // Filter logic combined with search query
+  
   const filteredRooms = rooms.filter(room => {
-    // Search Query matching
+    
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       const matchName = room.name?.toLowerCase().includes(query);
@@ -139,7 +139,7 @@ const CatalogPage = () => {
       if (!matchName && !matchLoc) return false;
     }
 
-    // Applied Filters
+    
     if (appliedFilters.location && room.location !== appliedFilters.location) {
       return false;
     }
@@ -151,7 +151,7 @@ const CatalogPage = () => {
     }
     if (appliedFilters.facilities && appliedFilters.facilities.length > 0) {
       const roomFacs = Array.isArray(room.facilities) ? room.facilities : [];
-      // Verify if room contains all selected facilities
+      
       const hasAll = appliedFilters.facilities.every(fac => roomFacs.includes(fac));
       if (!hasAll && room.facilities?.length > 0) return false;
     }
@@ -159,30 +159,30 @@ const CatalogPage = () => {
     return true;
   });
 
-  // Sort logic
+  
   const sortedRooms = [...filteredRooms].sort((a, b) => {
     if (sortBy === 'name_asc') return a.name.localeCompare(b.name);
     if (sortBy === 'name_desc') return b.name.localeCompare(a.name);
     if (sortBy === 'cap_desc') return b.capacity - a.capacity;
     if (sortBy === 'cap_asc') return a.capacity - b.capacity;
-    return (b.id || 0) - (a.id || 0); // Default to newest
+    return (b.id || 0) - (a.id || 0); 
   });
 
   return (
     <div className="catalog-page-container" style={{ background: '#f8fafc', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Navbar />
 
-      {/* Main Layout Container */}
+      {}
       <div style={{ padding: '0 24px', width: '100%', flexGrow: 1, marginBottom: '80px' }}>
         
-        {/* Breadcrumb Navigation */}
+        {}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: 700, margin: '16px 0 32px', color: '#000' }}>
           <Link to="/" style={{ color: '#000', textDecoration: 'none' }}>Beranda</Link>
           <ChevronRight size={16} strokeWidth={3} />
           <span>Katalog</span>
         </div>
 
-        {/* Page Titles */}
+        {}
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
           <h1 style={{ fontSize: '36px', fontWeight: 800, margin: '0 0 12px', color: '#000' }}>Katalog Ruangan</h1>
           <p style={{ fontSize: '16px', color: '#64748b', margin: 0, fontWeight: 500 }}>
@@ -190,7 +190,7 @@ const CatalogPage = () => {
           </p>
         </div>
 
-        {/* Top Search and Sort Controls Bar */}
+        {}
         <CatalogControls 
           searchQuery={searchQuery} 
           setSearchQuery={setSearchQuery} 
@@ -198,10 +198,10 @@ const CatalogPage = () => {
           setSortBy={setSortBy} 
         />
 
-        {/* Main 2-Column Section */}
+        {}
         <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: '32px', alignItems: 'start' }}>
           
-          {/* Left Panel: Sidebar Filtering */}
+          {}
           <CatalogSidebar 
             selectedLocation={selectedLocation}
             setSelectedLocation={setSelectedLocation}
@@ -219,7 +219,7 @@ const CatalogPage = () => {
             availableFacilities={uniqueFacilities}
           />
 
-          {/* Right Panel: Room Cards Grid */}
+          {}
           <div>
             {loading ? (
               <LoadingSpinner text="Memuat katalog ruangan..." />

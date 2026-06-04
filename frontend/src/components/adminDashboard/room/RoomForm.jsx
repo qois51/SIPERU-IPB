@@ -11,9 +11,9 @@ const formatRupiah = (value) => {
 
 const RoomForm = ({ room, onBack, onSuccess, onZoomImage }) => {
   const DEFAULT_IMAGE = '/loginAsset/ruanganTerdaftar.png';
-  const DEFAULT_PIC_IMAGE = ''; // Empty for placeholder icon
+  const DEFAULT_PIC_IMAGE = ''; 
 
-  // Retrieve current logged-in admin data to auto-populate PIC fields
+  
   const activeUserStr = localStorage.getItem('user');
   const activeUser = activeUserStr ? JSON.parse(activeUserStr) : {};
 
@@ -36,7 +36,7 @@ const RoomForm = ({ room, onBack, onSuccess, onZoomImage }) => {
     pic_name: room ? '' : (activeUser.full_name || activeUser.username || ''),
     pic_email: room ? '' : (activeUser.email || ''),
     pic_phone: room ? '' : (activeUser.phone || ''),
-    image_url: [], // Changed to array for multiple images
+    image_url: [], 
     pic_image_url: room ? DEFAULT_PIC_IMAGE : (activeUser.profile_image || DEFAULT_PIC_IMAGE),
     op_start_day: 'Senin',
     op_end_day: 'Jumat',
@@ -47,7 +47,7 @@ const RoomForm = ({ room, onBack, onSuccess, onZoomImage }) => {
 
   useEffect(() => {
     if (room) {
-      // Parse operational_hours: "Senin - Jumat, 08:00 - 17:00"
+      
       const parts = (room.operational_hours || '').split(', ');
       const dayRange = parts[0] || '';
       const times = parts[1] || '';
@@ -382,7 +382,7 @@ const RoomForm = ({ room, onBack, onSuccess, onZoomImage }) => {
         </div>
       </form>
 
-      {/* Premium Toast Notification */}
+      {}
       {toast.show && (
         <div
           style={{

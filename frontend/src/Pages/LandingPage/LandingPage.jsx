@@ -10,7 +10,7 @@ import FAQ from '../../components/landing/FAQ';
 import CTA from '../../components/landing/CTA';
 import Footer from '../../components/Footer';
 
-// Styles
+
 import '../../styles/landing/landing.css';
 
 const LandingPage = () => {

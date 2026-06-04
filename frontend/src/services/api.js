@@ -1,9 +1,4 @@
-/**
- * api.js — Central Axios instance
- * - baseURL auto-set
- * - JWT auto-inject via request interceptor
- * - Global error handling + auto-logout on 401
- */
+
 import axios from 'axios';
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
@@ -14,7 +9,7 @@ const api = axios.create({
   timeout: 15000,
 });
 
-// ─── Request Interceptor: Auto-inject JWT token ───────────────────────────────
+
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -26,14 +21,14 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// ─── Response Interceptor: Global error handling ─────────────────────────────
+
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response) {
       const { status } = error.response;
 
-      // Auto logout on 401 Unauthorized (token expired)
+      
       if (status === 401) {
         localStorage.removeItem('token');
         localStorage.removeItem('role');
@@ -41,7 +36,7 @@ api.interceptors.response.use(
         window.location.href = '/login';
       }
 
-      // Pass the standardized error message
+      
       const message =
         error.response.data?.detail ||
         error.response.data?.message ||
@@ -59,10 +54,7 @@ api.interceptors.response.use(
 );
 
 export class ReactFrontend {
-  /**
-   * Conceptual boundary class method matching the Class Diagram.
-   * Dispatches network requests via the central Axios instance.
-   */
+  
   static async fetchAPI(endpoint, options = {}) {
     return api({ url: endpoint, ...options });
   }

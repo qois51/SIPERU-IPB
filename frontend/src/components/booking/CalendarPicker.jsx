@@ -39,7 +39,7 @@ const CalendarPicker = ({ selectedDate, onDateSelect, bookedDates = [] }) => {
 
   return (
     <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
-      {/* Header */}
+      {}
       <div className="flex items-center justify-between mb-4">
         <button onClick={prevMonth} className="p-2 hover:bg-gray-100 rounded-lg transition">
           <ChevronLeft className="w-5 h-5 text-gray-600" />
@@ -50,16 +50,16 @@ const CalendarPicker = ({ selectedDate, onDateSelect, bookedDates = [] }) => {
         </button>
       </div>
 
-      {/* Day names */}
+      {}
       <div className="grid grid-cols-7 gap-1 mb-2">
         {dayNames.map((d) => (
           <div key={d} className="text-center text-xs font-semibold text-gray-400 py-1">{d}</div>
         ))}
       </div>
 
-      {/* Days */}
+      {}
       <div className="grid grid-cols-7 gap-1">
-        {/* Empty cells for days before month starts */}
+        {}
         {Array.from({ length: firstDayOfWeek }).map((_, i) => (
           <div key={`empty-${i}`} />
         ))}
@@ -89,7 +89,7 @@ const CalendarPicker = ({ selectedDate, onDateSelect, bookedDates = [] }) => {
         })}
       </div>
 
-      {/* Legend */}
+      {}
       <div className="flex items-center gap-4 mt-4 text-xs text-gray-500">
         <div className="flex items-center gap-1">
           <div className="w-3 h-3 rounded bg-[#1e3a8a]" /> Dipilih

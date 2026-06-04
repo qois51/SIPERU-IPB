@@ -9,9 +9,7 @@ const TIME_SLOTS = [
   '19:00', '19:30', '20:00',
 ];
 
-/**
- * Check if a slot overlaps with any booked slot.
- */
+
 const isSlotBooked = (slot, bookedSlots) => {
   return bookedSlots.some(
     (b) => slot >= b.start_time && slot < b.end_time
@@ -29,13 +27,13 @@ const TimeSlotPicker = ({
     if (isSlotBooked(slot, bookedSlots)) return;
 
     if (!selectedStart || (selectedStart && selectedEnd)) {
-      // Start fresh selection
+      
       onStartSelect(slot);
       onEndSelect('');
     } else {
-      // Set end time (must be after start)
+      
       if (slot > selectedStart) {
-        // Check no booked slot in between
+        
         const hasConflict = bookedSlots.some(
           (b) => b.start_time < slot && b.end_time > selectedStart
         );
@@ -110,7 +108,7 @@ const TimeSlotPicker = ({
         })}
       </div>
 
-      {/* Legend */}
+      {}
       <div className="flex flex-wrap items-center gap-4 mt-4 text-xs text-gray-500">
         <div className="flex items-center gap-1">
           <div className="w-3 h-3 rounded bg-gray-50 border" /> Tersedia

@@ -6,16 +6,7 @@ import bcrypt
 
 
 def _raw(obj) -> dict:
-    """Baca instance.__dict__ secara langsung, bypass SA attribute machinery.
 
-    SQLAlchemy menyimpan nilai kolom yang sudah di-load sebagai entry biasa
-    di instance.__dict__. Dengan membaca lewat object.__getattribute__ kita
-    mendapatkan dict itu tanpa melalui descriptor SA — artinya tidak ada
-    lazy-load, tidak ada greenlet, tidak ada MissingGreenlet.
-
-    Kalau kolom subclass belum di-load (karena query tidak JOIN), .get()
-    mengembalikan '' (default) tanpa trigger IO apapun.
-    """
     return object.__getattribute__(obj, '__dict__')
 
 
@@ -34,7 +25,7 @@ class User(Base):
         "polymorphic_identity": "user",
     }
 
-    # Compatibility properties for legacy routes and services
+
     @property
     def role(self) -> str:
         if self.type == "mahasiswa":
@@ -88,9 +79,9 @@ class User(Base):
                 return False
 
     def to_dict(self):
-        # Kolom base table selalu aman diakses via SA (ada di SELECT User)
-        # Kolom subclass (nim, nip, unit_kerja, jabatan) dibaca via _raw()
-        # agar tidak trigger lazy-load → MissingGreenlet
+
+
+
         r = _raw(self)
         nim_nip_val = r.get('nim', r.get('nip', ''))
 
@@ -100,7 +91,7 @@ class User(Base):
             "email":      self.email,
             "no_telepon": self.no_telepon,
             "type":       self.type,
-            # Legacy fields
+
             "id":         self.id_user,
             "username":   self.nama,
             "full_name":  self.nama,

@@ -67,11 +67,11 @@ const BookingSuccess = () => {
 
       <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '16px' }}>
         
-        {/* Stepper with Step 5 active */}
+        {}
         <Stepper current={5} />
 
         <div style={{ background: 'white', borderRadius: '16px', boxShadow: '0 4px 24px rgba(0,0,0,0.1)', padding: '32px', maxWidth: '450px', width: '100%', textAlign: 'center' }}>
-          {/* Success Icon */}
+          {}
           <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: '#dcfce7', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
             <CheckCircle size={40} color="#16a34a" />
           </div>
@@ -81,7 +81,7 @@ const BookingSuccess = () => {
             Pengajuan peminjaman ruangan Anda telah berhasil dikirim. Admin akan segera memproses permintaan Anda.
           </p>
 
-          {/* Info Card / Next Steps Timeline */}
+          {}
           <div style={{ background: '#f8fafc', borderRadius: '12px', padding: '20px', marginBottom: '24px', textAlign: 'left', border: '1px solid #e2e8f0' }}>
             <p style={{ fontSize: '15px', color: '#1e3a8a', fontWeight: 700, marginBottom: '16px' }}>Apa selanjutnya?</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>

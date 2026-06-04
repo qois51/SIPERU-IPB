@@ -1,13 +1,3 @@
-"""
-Test Suite for SIPBeru Backend
-Maps exactly to the Test Plan Specification:
-- TC_PMJ_001 to TC_PMJ_005 (Mengajukan Peminjaman Ruangan)
-- TC_STN_001 to TC_STN_003 (Menyetujui/Menolak Pengajuan)
-- TC_EPS_001 (Menampilkan E-Pass)
-- TC_LPR_001 (Melihat Laporan)
-- TC_VRE_001 to TC_VRE_002 (Memverifikasi E-Pass)
-"""
-
 import os
 import sys
 import unittest
@@ -15,7 +5,6 @@ import json
 import urllib.request
 import urllib.error
 
-# Add parent directory to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def api_request(url, method="GET", headers=None, data=None, content_type="application/json"):
@@ -31,7 +20,7 @@ def api_request(url, method="GET", headers=None, data=None, content_type="applic
             encoded_data = json.dumps(data).encode('utf-8')
             req_headers["Content-Type"] = content_type
         else:
-            encoded_data = data  # Raw bytes (multipart)
+            encoded_data = data
             req_headers["Content-Type"] = content_type
             
     req = urllib.request.Request(
@@ -79,7 +68,6 @@ class TestSIPBeruBackend(unittest.TestCase):
     room_id = None
     mahasiswa_id = None
     
-    # Store references to created bookings to verify and clean up
     booking_id_1 = None
     booking_code_1 = None
     booking_id_2 = None
@@ -90,7 +78,6 @@ class TestSIPBeruBackend(unittest.TestCase):
         print("  STARTING INTEGRATION TEST RUN - INITIALIZING FIXTURES")
         print("="*80)
 
-        # 1. Verify if local API server is running
         code, _, _ = api_request(cls.BASE_URL + "/")
         if code == 0:
             print(f"[ERROR] API Server not running at {cls.BASE_URL}")
@@ -99,7 +86,6 @@ class TestSIPBeruBackend(unittest.TestCase):
                 "Please start the FastAPI server using 'uvicorn app.main:app --reload' first."
             )
             
-        # 2. Login as Mahasiswa
         print("[SETUP] Authenticating as Student (mahasiswa)...")
         code, _, body = api_request(cls.BASE_URL + "/api/auth/login", method="POST", data={
             "username": "mahasiswa",
@@ -111,7 +97,6 @@ class TestSIPBeruBackend(unittest.TestCase):
         cls.mahasiswa_id = login_data["user"]["id_user"]
         print(f"-> Access Token Acquired. User ID (Mahasiswa): {cls.mahasiswa_id}")
         
-        # 3. Login as PIC
         print("[SETUP] Authenticating as PIC (pic)...")
         code, _, body = api_request(cls.BASE_URL + "/api/auth/login", method="POST", data={
             "username": "pic",
@@ -121,7 +106,6 @@ class TestSIPBeruBackend(unittest.TestCase):
         cls.pic_token = json.loads(body.decode('utf-8'))["access_token"]
         print("-> Access Token Acquired for PIC.")
         
-        # 4. Get first available Room ID from API
         print("[SETUP] Fetching list of available rooms...")
         code, _, body = api_request(
             cls.BASE_URL + "/api/rooms",
@@ -149,12 +133,7 @@ class TestSIPBeruBackend(unittest.TestCase):
         print("[CLEANUP] Database cleaned up successfully.")
         print("="*80)
 
-    # =========================================================================
-    #  1. FITUR: MENGAJUKAN PEMINJAMAN RUANGAN
-    # =========================================================================
-
     def test_01_TC_PMJ_001_check_calendar_realtime(self):
-        """Memastikan pengguna dapat mengecek ketersediaan jadwal ruangan pada kalender secara real-time."""
         print("[TC_PMJ_001] Checking room availability on calendar for June 2026...")
         endpoint = f"{self.BASE_URL}/api/bookings/calendar/events?year=2026&month=6"
         print(f"-> HTTP GET: {endpoint}")
@@ -172,7 +151,6 @@ class TestSIPBeruBackend(unittest.TestCase):
         print(f"-> Result: SUCCESS (HTTP 200). Events count: {len(events)}")
 
     def test_02_TC_PMJ_002_mahasiswa_create_reservation(self):
-        """Memastikan mahasiswa dapat membuat reservasi peminjaman ruangan dengan mengisi form data."""
         print("[TC_PMJ_002] Mahasiswa creating a room reservation...")
         endpoint = f"{self.BASE_URL}/api/bookings/"
         payload = {
@@ -213,7 +191,6 @@ class TestSIPBeruBackend(unittest.TestCase):
         print(f"-> Result: SUCCESS (HTTP {code}). Created Booking ID: {self.booking_id_1}, E-Pass Code: {self.booking_code_1}")
 
     def test_03_TC_PMJ_003_download_pdf_document(self):
-        """Memverifikasi fungsi otomatisasi pembuatan dokumen perizinan."""
         print("[TC_PMJ_003] Downloading E-Pass/Permission PDF document for booking ID:", self.booking_id_1)
         self.assertIsNotNone(self.booking_id_1, "Booking ID should be created in the previous step")
         endpoint = f"{self.BASE_URL}/api/bookings/{self.booking_id_1}/download-pdf"
@@ -229,13 +206,11 @@ class TestSIPBeruBackend(unittest.TestCase):
         print(f"-> Result: SUCCESS (HTTP 200). PDF stream downloaded ({len(body)} bytes).")
 
     def test_04_TC_PMJ_004_upload_supporting_document(self):
-        """Menguji proses melengkapi berkas dengan mengunggah dokumen perizinan resmi yang valid."""
         print("[TC_PMJ_004] Uploading supporting signed document for booking ID:", self.booking_id_1)
         self.assertIsNotNone(self.booking_id_1, "Booking ID should be created in the previous step")
         endpoint = f"{self.BASE_URL}/api/bookings/{self.booking_id_1}/upload-document"
         print(f"-> HTTP POST: {endpoint}")
         
-        # Formulate multipart upload body
         content_type, body_data = encode_multipart_formdata(
             fields={},
             files=[("file", "surat_izin_signed.pdf", b"%PDF-1.4 dummy pdf content for testing")]
@@ -257,7 +232,6 @@ class TestSIPBeruBackend(unittest.TestCase):
         self.assertIsNotNone(uploaded_filepath)
         print(f"-> Upload completed. File saved at: {uploaded_filepath}")
         
-        # Verify details
         print("-> Fetching details to check database update...")
         code, _, detail_body = api_request(
             f"{self.BASE_URL}/api/bookings/{self.booking_id_1}",
@@ -269,7 +243,6 @@ class TestSIPBeruBackend(unittest.TestCase):
         print(f"-> Result: SUCCESS (HTTP 200). DB path matches: {detail_data.get('path_file_bukti')}")
 
     def test_05_TC_PMJ_005_monitor_status_dashboard(self):
-        """Memverifikasi bahwa mahasiswa dapat memantau status perkembangan pengajuan secara berkala."""
         print("[TC_PMJ_005] Monitoring booking status list on mahasiswa's dashboard...")
         endpoint = f"{self.BASE_URL}/api/bookings/my-bookings"
         print(f"-> HTTP GET: {endpoint}")
@@ -288,12 +261,7 @@ class TestSIPBeruBackend(unittest.TestCase):
         self.assertIn(my_booking["status"], ["Pending", "Verifying"])
         print(f"-> Result: SUCCESS (HTTP 200). Found booking ID {self.booking_id_1} with status: '{my_booking['status']}'")
 
-    # =========================================================================
-    #  2. FITUR: MENYETUJUI/MENOLAK PENGAJUAN PEMINJAMAN
-    # =========================================================================
-
     def test_06_TC_STN_001_side_by_side_review_data(self):
-        """Memastikan PIC Ruangan dapat melakukan peninjauan berkas dengan data pendukung."""
         print("[TC_STN_001] PIC reviewing booking ID", self.booking_id_1, "using Side-by-Side data view...")
         self.assertIsNotNone(self.booking_id_1)
         endpoint = f"{self.BASE_URL}/api/bookings/{self.booking_id_1}"
@@ -315,7 +283,6 @@ class TestSIPBeruBackend(unittest.TestCase):
         print(f"-> Result: SUCCESS (HTTP 200). Side-by-side details correct. Room ID: {self.room_id}, File: {booking_detail.get('path_file_bukti')}")
 
     def test_07_TC_STN_002_approve_booking_generates_epass(self):
-        """Memastikan PIC Ruangan dapat menyetujui pengajuan peminjaman ruangan yang dokumennya valid."""
         print("[TC_STN_002] PIC approving booking ID", self.booking_id_1, "to generate E-Pass...")
         self.assertIsNotNone(self.booking_id_1)
         endpoint = f"{self.BASE_URL}/api/bookings/{self.booking_id_1}/approve"
@@ -338,15 +305,12 @@ class TestSIPBeruBackend(unittest.TestCase):
         self.assertIsNotNone(approved_booking.get("id_epass"))
         self.assertIsNotNone(approved_booking.get("qr_code"))
         
-        # Save approved code for check-in step
         self.__class__.booking_code_1 = approved_booking["id_epass"]
         print(f"-> Result: SUCCESS (HTTP 200). Approved code generated: {self.booking_code_1}, QR path: {approved_booking['qr_code']}")
 
     def test_08_TC_STN_003_reject_booking_releases_slot(self):
-        """Memastikan PIC Ruangan dapat menolak pengajuan dengan memberikan alasan penolakan."""
         print("[TC_STN_003] Testing rejection flow on a separate booking...")
         
-        # 1. Create a second booking
         payload = {
             "room_id": self.room_id,
             "user_id": self.mahasiswa_id,
@@ -372,7 +336,6 @@ class TestSIPBeruBackend(unittest.TestCase):
         self.__class__.booking_id_2 = json.loads(body.decode('utf-8'))["data"]["id_booking"]
         print(f"-> Created second Booking ID: {self.booking_id_2}")
         
-        # 2. Reject the second booking
         endpoint = f"{self.BASE_URL}/api/bookings/{self.booking_id_2}/reject"
         reject_payload = {"notes": "Tanda tangan ketua panitia belum dilampirkan."}
         print(f"-> HTTP PUT: {endpoint}")
@@ -390,12 +353,7 @@ class TestSIPBeruBackend(unittest.TestCase):
         self.assertEqual(res_data["data"]["notes"], "Tanda tangan ketua panitia belum dilampirkan.")
         print(f"-> Result: SUCCESS (HTTP 200). Status changed to Rejected. Slot released.")
 
-    # =========================================================================
-    #  3. FITUR: MENAMPILKAN E-PASS
-    # =========================================================================
-
     def test_09_TC_EPS_001_get_epass_details(self):
-        """Memastikan tiket digital E-Pass dan komponen QR Code dapat diakses oleh mahasiswa."""
         print("[TC_EPS_001] Fetching E-Pass details for approved booking ID:", self.booking_id_1)
         self.assertIsNotNone(self.booking_id_1)
         endpoint = f"{self.BASE_URL}/api/bookings/{self.booking_id_1}/epass"
@@ -412,12 +370,7 @@ class TestSIPBeruBackend(unittest.TestCase):
         self.assertIsNotNone(res_data["data"].get("qr_code"))
         print(f"-> Result: SUCCESS (HTTP 200). E-Pass details retrieved. QR code available.")
 
-    # =========================================================================
-    #  4. FITUR: MELIHAT LAPORAN
-    # =========================================================================
-
     def test_10_TC_LPR_001_monthly_report_statistics(self):
-        """Memverifikasi bahwa PIC Ruangan dapat melihat laporan penggunaan ruangan."""
         print("[TC_LPR_001] PIC querying monthly usage report statistics...")
         endpoint = f"{self.BASE_URL}/api/bookings/reports/stats?period=1month"
         print(f"-> HTTP GET: {endpoint}")
@@ -434,16 +387,10 @@ class TestSIPBeruBackend(unittest.TestCase):
         self.assertIn("by_room", stats)
         print(f"-> Result: SUCCESS (HTTP 200). Report loaded. Total duration hours: {stats['summary']['total_duration_hours']}")
 
-    # =========================================================================
-    #  5. FITUR: MEMVERIFIKASI E-PASS
-    # =========================================================================
-
     def test_11_TC_VRE_001_verify_valid_epass(self):
-        """Memverifikasi fungsi pemindaian dan validasi QR Code E-Pass mahasiswa yang valid."""
         print("[TC_VRE_001] Scanner/Penjaga scanning and check-in valid code:", self.booking_code_1)
         self.assertIsNotNone(self.booking_code_1)
         
-        # Verify Code
         verify_endpoint = f"{self.BASE_URL}/api/bookings/verify-code?code={self.booking_code_1}"
         print(f"-> HTTP GET: {verify_endpoint}")
         verify_code, _, verify_body = api_request(verify_endpoint)
@@ -452,7 +399,6 @@ class TestSIPBeruBackend(unittest.TestCase):
         self.assertTrue(verify_res.get("success"))
         print(f"-> E-Pass code exists. Owner User ID: {verify_res['data']['id_mahasiswa']}")
         
-        # Check-in
         checkin_endpoint = f"{self.BASE_URL}/api/bookings/check-in"
         print(f"-> HTTP POST: {checkin_endpoint}")
         checkin_code, _, checkin_body = api_request(
@@ -467,10 +413,8 @@ class TestSIPBeruBackend(unittest.TestCase):
         print(f"-> Result: SUCCESS (HTTP 200). Check-in Completed. Status changed to 'CheckedIn'.")
 
     def test_12_TC_VRE_002_verify_invalid_epass(self):
-        """Menguji penanganan sistem jika memindai QR Code yang tidak terdaftar."""
         print("[TC_VRE_002] Scanner/Penjaga scanning an invalid/fake code...")
         
-        # Verify fake code
         verify_endpoint = f"{self.BASE_URL}/api/bookings/verify-code?code=INVALID_FAKE_CODE"
         print(f"-> HTTP GET: {verify_endpoint}")
         verify_code, _, verify_body = api_request(verify_endpoint)
@@ -479,7 +423,6 @@ class TestSIPBeruBackend(unittest.TestCase):
         self.assertEqual(verify_res["detail"], "Kode booking tidak ditemukan.")
         print("-> Rejected by verify route (HTTP 404).")
         
-        # Check-in fake code
         checkin_endpoint = f"{self.BASE_URL}/api/bookings/check-in"
         print(f"-> HTTP POST: {checkin_endpoint}")
         checkin_code, _, checkin_body = api_request(

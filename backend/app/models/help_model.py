@@ -9,6 +9,6 @@ class HelpRequest(Base):
     nama = Column(String(100), nullable=False)
     email = Column(String(100), nullable=False)
     pesan = Column(Text, nullable=False)
-    status = Column(String(20), default="Pending") # Pending, Replied
+    status = Column(String(20), default="Pending")
     reply = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)

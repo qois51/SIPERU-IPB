@@ -1,6 +1,4 @@
-"""
-PDFService (OOP) — Generates E-Pass PDF documents for approved bookings.
-"""
+
 from io import BytesIO
 
 from reportlab.lib.pagesizes import A4
@@ -8,7 +6,7 @@ from reportlab.lib.colors import HexColor
 from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
 
-# Brand colours
+
 BLUE_PRIMARY = HexColor("#1e3a8a")
 BLUE_DARK = HexColor("#0f1d45")
 BLUE_LIGHT = HexColor("#3b82f6")
@@ -26,7 +24,6 @@ STATUS_MAP = {
 
 
 class PDFService:
-    """Handles PDF generation for booking E-Passes."""
 
     @staticmethod
     def _format_date(d) -> str:
@@ -37,15 +34,12 @@ class PDFService:
         return str(d)
 
     def generate_epass_pdf(self, booking) -> BytesIO:
-        """Generate an E-Pass PDF for an approved booking.
 
-        Returns: BytesIO buffer containing the PDF.
-        """
         buffer = BytesIO()
         c = canvas.Canvas(buffer, pagesize=A4)
         width, height = A4
 
-        # --- Header ---
+
         c.setFillColor(BLUE_PRIMARY)
         c.rect(0, height - 100, width, 100, fill=1, stroke=0)
 
@@ -62,7 +56,7 @@ class PDFService:
         c.setFont("Helvetica", 11)
         c.drawRightString(width - 30, height - 62, f"{booking.booking_code}")
 
-        # --- Status Badge ---
+
         badge_color, status_text = STATUS_MAP.get(
             booking.status, (GOLD, "PENDING")
         )
@@ -72,13 +66,13 @@ class PDFService:
         c.setFont("Helvetica-Bold", 10)
         c.drawCentredString(width - 90, height - 84, status_text)
 
-        # --- Divider ---
+
         y = height - 120
         c.setStrokeColor(BLUE_LIGHT)
         c.setLineWidth(2)
         c.line(30, y, width - 30, y)
 
-        # --- QR Code ---
+
         try:
             from app.services.qr_service import QRService
             qr_svc = QRService()
@@ -90,7 +84,7 @@ class PDFService:
             c.setFont("Helvetica", 9)
             c.drawString(width - 170, y - 100, "QR Code tidak tersedia")
 
-        # --- Booking Info ---
+
         y -= 30
         c.setFillColor(BLUE_DARK)
         c.setFont("Helvetica-Bold", 14)
@@ -98,7 +92,7 @@ class PDFService:
 
         y -= 25
 
-        # Fix: use mahasiswa relationship (not .user which doesn't exist)
+
         peminjam_name = (
             booking.mahasiswa.nama if booking.mahasiswa else "-"
         )
@@ -126,7 +120,7 @@ class PDFService:
             c.drawString(150, y, str(value))
             y -= 18
 
-        # --- Kegiatan Section ---
+
         y -= 15
         c.setFillColor(BLUE_PRIMARY)
         c.roundRect(30, y - 5, width - 240, 22, 4, fill=1, stroke=0)
@@ -158,7 +152,7 @@ class PDFService:
             c.drawString(150, y, str(value))
             y -= 18
 
-        # --- Facilities ---
+
         if booking.facilities:
             y -= 10
             c.setFont("Helvetica-Bold", 10)
@@ -173,7 +167,7 @@ class PDFService:
             c.drawString(30, y, facilities_text)
             y -= 18
 
-        # --- Notes ---
+
         if booking.notes:
             y -= 10
             c.setFont("Helvetica-Bold", 10)
@@ -184,7 +178,7 @@ class PDFService:
             c.setFillColor(GRAY)
             c.drawString(30, y, booking.notes[:100])
 
-        # --- Footer ---
+
         c.setFillColor(BLUE_PRIMARY)
         c.rect(0, 0, width, 40, fill=1, stroke=0)
         c.setFillColor(WHITE)
@@ -204,9 +198,9 @@ class PDFService:
         return buffer
 
 
-# ---------------------------------------------------------------------------
-# Backward-compatibility shim
-# ---------------------------------------------------------------------------
+
+
+
 
 def generate_epass_pdf(booking) -> BytesIO:
     return PDFService().generate_epass_pdf(booking)

@@ -1,7 +1,4 @@
-"""
-BookingController — Business logic untuk booking/peminjaman ruangan.
-Menggunakan BookingService (OOP) sebagai layer data.
-"""
+
 from fastapi import HTTPException, status, UploadFile
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -28,16 +25,11 @@ def _error(message="Error", code=400):
 
 
 class BookingController:
-    """Handles all booking-related request/response logic."""
-
-    # ------------------------------------------------------------------ #
-    #  READ                                                                #
-    # ------------------------------------------------------------------ #
 
     @staticmethod
     async def get_all(page: int, per_page: int, status: Optional[str],
                       search: Optional[str], db: AsyncSession) -> dict:
-        """Return paginated list of all bookings."""
+
         svc = BookingService(db)
         result = await svc.get_bookings_paginated(
             page=page, per_page=per_page, status=status, search=search
@@ -48,7 +40,7 @@ class BookingController:
     async def get_my_bookings(page: int, per_page: int, status: Optional[str],
                               search: Optional[str], current_user: dict,
                               db: AsyncSession) -> dict:
-        """Return paginated bookings for the current logged-in user."""
+
         username = current_user.get("username")
         result_user = await db.execute(select(User).filter(
             (User.nama == username) | (func.lower(User.email) == func.lower(username))
@@ -66,7 +58,7 @@ class BookingController:
 
     @staticmethod
     async def verify_code(code: str, db: AsyncSession) -> dict:
-        """Verify a booking e-pass code."""
+
         code_upper = code.strip().upper()
         result = await db.execute(
             select(Peminjaman).filter(Peminjaman.id_epass == code_upper)
@@ -78,7 +70,7 @@ class BookingController:
 
     @staticmethod
     async def get_by_id(id: int, db: AsyncSession) -> dict:
-        """Return detail of a single booking."""
+
         result = await db.execute(
             select(Peminjaman).filter(Peminjaman.id_booking == id)
         )
@@ -89,21 +81,21 @@ class BookingController:
 
     @staticmethod
     async def get_dashboard_stats(user_id: Optional[int], db: AsyncSession) -> dict:
-        """Return dashboard statistics."""
+
         svc = BookingService(db)
         result = await svc.get_dashboard_stats(user_id=user_id)
         return _success(data=result, message="Statistik dashboard.")
 
     @staticmethod
     async def get_reports_stats(period: str, db: AsyncSession) -> dict:
-        """Return report statistics for the given period."""
+
         svc = BookingService(db)
         result = await svc.get_reports_stats(period=period)
         return _success(data=result, message="Statistik laporan berhasil diambil.")
 
     @staticmethod
     async def get_calendar_events(year: int, month: int, db: AsyncSession) -> dict:
-        """Return bookings for a given calendar month."""
+
         first_day = datetime(year, month, 1)
         last_day = datetime(year, month, monthrange(year, month)[1], 23, 59, 59)
 
@@ -119,7 +111,7 @@ class BookingController:
 
     @staticmethod
     async def get_room_bookings(room_id: int, date: str, db: AsyncSession) -> dict:
-        """Return availability data for a room on a given date."""
+
         svc = BookingService(db)
         result, err = await svc.get_room_availability(room_id, date)
         if err:
@@ -130,7 +122,7 @@ class BookingController:
     async def get_user_bookings(user_id: int, page: int, per_page: int,
                                 status: Optional[str], search: Optional[str],
                                 db: AsyncSession) -> dict:
-        """Return paginated bookings for a specific user ID."""
+
         svc = BookingService(db)
         result = await svc.get_bookings_paginated(
             page=page, per_page=per_page, status=status,
@@ -140,7 +132,7 @@ class BookingController:
 
     @staticmethod
     async def get_epass(id: int, db: AsyncSession) -> dict:
-        """Return E-Pass data for a booking."""
+
         result = await db.execute(
             select(Peminjaman).filter(Peminjaman.id_booking == id)
         )
@@ -152,13 +144,13 @@ class BookingController:
         epass_data["is_valid"] = booking.status == "Approved"
         return _success(data=epass_data, message="Data E-Pass.")
 
-    # ------------------------------------------------------------------ #
-    #  WRITE                                                               #
-    # ------------------------------------------------------------------ #
+
+
+
 
     @staticmethod
     async def create(data: BookingSchema, db: AsyncSession) -> dict:
-        """Create a new booking."""
+
         raw_data = data.model_dump()
         svc = BookingService(db)
         ok, result = await svc.create_booking(raw_data)
@@ -168,7 +160,7 @@ class BookingController:
 
     @staticmethod
     async def update(id: int, data: BookingSchema, db: AsyncSession) -> dict:
-        """Update an existing Pending/Draft booking."""
+
         from datetime import date as date_type
         result = await db.execute(
             select(Peminjaman).filter(Peminjaman.id_booking == id)
@@ -211,7 +203,7 @@ class BookingController:
 
     @staticmethod
     async def delete(id: int, db: AsyncSession) -> dict:
-        """Delete a booking and its associated files."""
+
         result = await db.execute(
             select(Peminjaman).filter(Peminjaman.id_booking == id)
         )
@@ -231,7 +223,7 @@ class BookingController:
 
     @staticmethod
     async def approve(id: int, notes: Optional[str], db: AsyncSession) -> dict:
-        """Approve a pending booking and generate QR code."""
+
         svc = BookingService(db)
         ok, result = await svc.approve_booking(id, notes=notes)
         if not ok:
@@ -240,7 +232,7 @@ class BookingController:
 
     @staticmethod
     async def reject(id: int, notes: Optional[str], db: AsyncSession) -> dict:
-        """Reject a pending booking."""
+
         svc = BookingService(db)
         ok, result = await svc.reject_booking(id, notes=notes)
         if not ok:
@@ -249,7 +241,7 @@ class BookingController:
 
     @staticmethod
     async def update_status(id: int, new_status: str, db: AsyncSession) -> dict:
-        """Patch the status of a booking."""
+
         VALID_STATUSES = {"Approved", "Rejected", "Cancelled", "Completed"}
         if new_status not in VALID_STATUSES:
             _error("Status tidak valid.", 400)
@@ -267,7 +259,7 @@ class BookingController:
 
     @staticmethod
     async def check_in(booking_code: str, db: AsyncSession) -> dict:
-        """Process check-in for a booking."""
+
         code = booking_code.strip().upper()
         result = await db.execute(
             select(Peminjaman).filter(Peminjaman.id_epass == code)
@@ -289,7 +281,7 @@ class BookingController:
 
     @staticmethod
     async def check_out(booking_code: str, db: AsyncSession) -> dict:
-        """Process check-out for a booking."""
+
         code = booking_code.strip().upper()
         result = await db.execute(
             select(Peminjaman).filter(Peminjaman.id_epass == code)
@@ -309,7 +301,7 @@ class BookingController:
 
     @staticmethod
     async def upload_document(id: int, file: UploadFile, db: AsyncSession) -> dict:
-        """Upload a supporting document for a booking."""
+
         result = await db.execute(
             select(Peminjaman).filter(Peminjaman.id_booking == id)
         )
@@ -331,7 +323,7 @@ class BookingController:
 
     @staticmethod
     async def download_pdf(id: int, db: AsyncSession) -> StreamingResponse:
-        """Generate and stream an E-Pass PDF."""
+
         result = await db.execute(
             select(Peminjaman).filter(Peminjaman.id_booking == id)
         )

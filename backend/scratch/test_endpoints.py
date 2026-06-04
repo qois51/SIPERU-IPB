@@ -4,7 +4,7 @@ import json
 def test_api():
     print("Testing locally running API on port 8000...")
     
-    # 1. Test Login
+
     login_url = "http://127.0.0.1:8000/api/auth/login"
     login_data = json.dumps({
         "username": "mahasiswa",
@@ -28,7 +28,7 @@ def test_api():
         print("Login FAILED:", e)
         return
 
-    # 2. Test Get Rooms
+
     rooms_url = "http://127.0.0.1:8000/api/rooms"
     req_rooms = urllib.request.Request(
         rooms_url,
@@ -48,7 +48,7 @@ def test_api():
     except Exception as e:
         print("Get Rooms FAILED:", e)
 
-    # 3. Test Get Bookings
+
     bookings_url = "http://127.0.0.1:8000/api/bookings"
     req_bookings = urllib.request.Request(
         bookings_url,

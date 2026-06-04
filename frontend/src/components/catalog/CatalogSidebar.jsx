@@ -19,11 +19,11 @@ const CatalogSidebar = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
 
-  // Use dynamic list from backend; fallback to defaults if API hasn't loaded yet
+  
   const defaultFacilities = ['AC', 'Proyektor', 'Sound System', 'Meja', 'Kursi', 'Papan Tulis', 'Podium', 'Komputer', 'WiFi'];
   const facilitiesList = availableFacilities.length > 0 ? availableFacilities : defaultFacilities;
 
-  // Calculate active filters count
+  
   let activeFiltersCount = 0;
   if (selectedLocation) activeFiltersCount++;
   if (minCap > 1 || maxCap < 500) activeFiltersCount++;
@@ -46,7 +46,7 @@ const CatalogSidebar = ({
         overflow: 'hidden'
       }}
     >
-      {/* Header with Gradient */}
+      {}
       <div 
         style={{ 
           background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
@@ -70,7 +70,7 @@ const CatalogSidebar = ({
       {isExpanded && (
         <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '28px' }}>
           
-          {/* Lokasi / Gedung */}
+          {}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#1e293b' }}>
               <MapPin size={18} color="#3b82f6" />
@@ -107,7 +107,7 @@ const CatalogSidebar = ({
 
           <div style={{ height: '1px', background: '#f1f5f9' }}></div>
 
-          {/* Kapasitas Ruangan */}
+          {}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#1e293b' }}>
               <Users size={18} color="#3b82f6" />
@@ -157,7 +157,7 @@ const CatalogSidebar = ({
 
           <div style={{ height: '1px', background: '#f1f5f9' }}></div>
 
-          {/* Fasilitas */}
+          {}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#1e293b' }}>
               <Zap size={18} color="#3b82f6" />
@@ -196,7 +196,7 @@ const CatalogSidebar = ({
 
           <div style={{ height: '1px', background: '#f1f5f9' }}></div>
 
-          {/* Tanggal yang Diinginkan */}
+          {}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#1e293b' }}>
               <Calendar size={18} color="#3b82f6" />
@@ -221,7 +221,7 @@ const CatalogSidebar = ({
             />
           </div>
 
-          {/* Tombol Aksi */}
+          {}
           <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
             <button 
               onClick={onResetFilter}

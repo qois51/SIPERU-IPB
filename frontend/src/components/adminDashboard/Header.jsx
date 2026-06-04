@@ -17,7 +17,7 @@ const Header = ({ toggleSidebar, onMenuChange }) => {
   const userStr = localStorage.getItem('user');
   const user = userStr ? JSON.parse(userStr) : null;
 
-  // Fetch pending bookings every 30 seconds
+  
   const fetchPending = async () => {
     try {
       const res = await adminService.getBookings({ status: 'Pending', perPage: 20 });
@@ -34,12 +34,12 @@ const Header = ({ toggleSidebar, onMenuChange }) => {
     return () => clearInterval(interval);
   }, []);
 
-  // Persist readIds
+  
   useEffect(() => {
     localStorage.setItem('notif_read_ids', JSON.stringify(readIds));
   }, [readIds]);
 
-  // Close dropdowns when clicking outside
+  
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (notifRef.current && !notifRef.current.contains(e.target)) setShowNotifDropdown(false);
@@ -59,11 +59,11 @@ const Header = ({ toggleSidebar, onMenuChange }) => {
     return new Date(dateStr).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
   };
 
-  // Unread = pending bookings whose IDs are NOT in readIds
+  
   const unreadBookings = pendingBookings.filter(b => !readIds.includes(b.id));
   const unreadCount = unreadBookings.length;
 
-  // Show latest 5 (unread first, then read)
+  
   const displayBookings = [
     ...unreadBookings,
     ...pendingBookings.filter(b => readIds.includes(b.id))
@@ -99,7 +99,7 @@ const Header = ({ toggleSidebar, onMenuChange }) => {
       </div>
       
       <div className="header-right">
-        {/* Notification Bell */}
+        {}
         <div ref={notifRef} style={{ position: 'relative' }}>
           <div
             className="notification-badge"
@@ -119,7 +119,7 @@ const Header = ({ toggleSidebar, onMenuChange }) => {
               boxShadow: '0 20px 60px rgba(0,0,0,0.15)', border: '1px solid #f1f5f9',
               zIndex: 1000, overflow: 'hidden'
             }}>
-              {/* Header */}
+              {}
               <div style={{ padding: '16px 20px', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                   <div style={{ fontWeight: 700, fontSize: '15px', color: '#1e293b' }}>Notifikasi</div>
@@ -141,7 +141,7 @@ const Header = ({ toggleSidebar, onMenuChange }) => {
                 )}
               </div>
 
-              {/* List */}
+              {}
               <div style={{ maxHeight: '340px', overflowY: 'auto' }}>
                 {displayBookings.length === 0 ? (
                   <div style={{ padding: '40px 20px', textAlign: 'center' }}>
@@ -169,7 +169,7 @@ const Header = ({ toggleSidebar, onMenuChange }) => {
                         onMouseEnter={e => e.currentTarget.style.background = isRead ? '#f3f4f6' : '#f8fafc'}
                         onMouseLeave={e => e.currentTarget.style.background = isRead ? '#fafafa' : 'white'}
                       >
-                        {/* Unread dot */}
+                        {}
                         <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: isRead ? '#f1f5f9' : '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative' }}>
                           <Clock size={16} color={isRead ? '#94a3b8' : '#d97706'} />
                           {!isRead && (
@@ -206,7 +206,7 @@ const Header = ({ toggleSidebar, onMenuChange }) => {
                 )}
               </div>
 
-              {/* Footer */}
+              {}
               {displayBookings.length > 0 && (
                 <div
                   onClick={() => { setShowNotifDropdown(false); if (onMenuChange) onMenuChange('verifikasi'); }}
@@ -221,7 +221,7 @@ const Header = ({ toggleSidebar, onMenuChange }) => {
           )}
         </div>
 
-        {/* User Profile Dropdown */}
+        {}
         <div ref={dropdownRef} className="user-profile-wrapper" style={{ position: 'relative' }}>
           <div 
             className="user-profile" 

@@ -44,7 +44,7 @@ const Footer = () => {
     element.style.display = 'block';
 
     const opt = {
-      margin: [0, 0, 0, 0], // Margin is handled by the component's internal padding
+      margin: [0, 0, 0, 0], 
       filename: 'Buku_Panduan_SIPERU_IPB.pdf',
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true, letterRendering: true },
@@ -68,7 +68,7 @@ const Footer = () => {
   return (
     <footer style={{ background: '#263C92', color: 'white' }}>
       <div className="footer-grid" style={{ padding: '60px 24px' }}>
-        {/* Brand */}
+        {}
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
             <img src="/loginAsset/logologin.png" alt="Logo SIPBeru" style={{ width: '60px', height: 'auto' }} />
@@ -98,7 +98,7 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Navigasi */}
+        {}
         <div>
           <h4 style={{ marginBottom: '24px', fontSize: '18px' }}>Navigasi</h4>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
@@ -110,7 +110,7 @@ const Footer = () => {
           </ul>
         </div>
 
-        {/* Akun */}
+        {}
         <div>
           <h4 style={{ marginBottom: '24px', fontSize: '18px' }}>Akun</h4>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
@@ -122,7 +122,7 @@ const Footer = () => {
           </ul>
         </div>
 
-        {/* Kontak */}
+        {}
         <div>
           <h4 style={{ marginBottom: '24px', fontSize: '18px' }}>Kontak & Informasi</h4>
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px', fontSize: '13px', marginBottom: '16px' }}>
@@ -152,7 +152,7 @@ const Footer = () => {
       </div>
       <img src="/footerAsset/footer.png" alt="Pattern" style={{ width: '100%', height: 'auto', display: 'block' }} />
 
-      {/* Hidden PDF Content */}
+      {}
       <div style={{ display: 'none' }}>
         <BukuPanduanPDF ref={pdfRef} />
       </div>

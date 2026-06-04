@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import axios from 'axios';
 
-// All possible time slots for the day
+
 const ALL_SLOTS = [
   '07:00-08:00', '08:00-09:00', '09:00-10:00', '10:00-11:00',
   '11:00-12:00', '12:00-13:00', '13:00-14:00', '14:00-15:00',
@@ -20,14 +20,14 @@ const DateTimePicker = ({ roomId, onSelectionChange }) => {
   const [selectedSlots, setSelectedSlots] = useState([]);
   const [bookedSlots, setBookedSlots] = useState([]);
 
-  // Sync selection with parent component instantly
+  
   useEffect(() => {
     if (selectedDate && onSelectionChange) {
       onSelectionChange({ date: formatDate(selectedDate), slots: selectedSlots });
     }
   }, [selectedDate, selectedSlots]);
 
-  // Fetch booked slots for selected date
+  
   useEffect(() => {
     if (!selectedDate || !roomId) return;
     const dateStr = formatDate(selectedDate);
@@ -41,7 +41,7 @@ const DateTimePicker = ({ roomId, onSelectionChange }) => {
             const startH = parseInt(b.start_time.split(':')[0], 10);
             let endH = parseInt(b.end_time.split(':')[0], 10);
             
-            // If end time has minutes (e.g., 10:30), we might want to block the 10:00-11:00 slot as well
+            
             const endM = parseInt(b.end_time.split(':')[1], 10);
             if (endM > 0) endH += 1;
 
@@ -68,24 +68,24 @@ const DateTimePicker = ({ roomId, onSelectionChange }) => {
     return `${date.getDate()} ${MONTHS[date.getMonth()]} ${date.getFullYear()}`;
   };
 
-  // Build calendar grid
+  
   const buildCalendar = () => {
     const firstDay = new Date(viewYear, viewMonth, 1);
-    // 0=Sun..6=Sat → convert to Mon-first (0=Mon..6=Sun)
+    
     const startDow = (firstDay.getDay() + 6) % 7;
     const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
     const daysInPrev = new Date(viewYear, viewMonth, 0).getDate();
 
     const cells = [];
-    // Previous month padding
+    
     for (let i = startDow - 1; i >= 0; i--) {
       cells.push({ day: daysInPrev - i, currentMonth: false, date: new Date(viewYear, viewMonth - 1, daysInPrev - i) });
     }
-    // Current month
+    
     for (let d = 1; d <= daysInMonth; d++) {
       cells.push({ day: d, currentMonth: true, date: new Date(viewYear, viewMonth, d) });
     }
-    // Next month padding (fill to 6 rows = 42 cells)
+    
     let next = 1;
     while (cells.length < 42) {
       cells.push({ day: next, currentMonth: false, date: new Date(viewYear, viewMonth + 1, next) });
@@ -133,7 +133,7 @@ const DateTimePicker = ({ roomId, onSelectionChange }) => {
   const isSlotInPast = (slot) => {
     if (!selectedDate) return false;
     
-    // Get current date/time in Asia/Jakarta (WIB / GMT+7)
+    
     const now = new Date();
     const formatter = new Intl.DateTimeFormat('en-US', {
       timeZone: 'Asia/Jakarta',
@@ -154,7 +154,7 @@ const DateTimePicker = ({ roomId, onSelectionChange }) => {
     const jktDay = parseInt(jkt.day, 10);
     const jktHour = parseInt(jkt.hour, 10);
     
-    // Check if selectedDate matches the current date in Jakarta
+    
     const isTodayInJakarta = 
       selectedDate.getFullYear() === jktYear &&
       selectedDate.getMonth() === jktMonth &&
@@ -162,14 +162,14 @@ const DateTimePicker = ({ roomId, onSelectionChange }) => {
       
     if (!isTodayInJakarta) return false;
     
-    // Parse slot start hour (e.g. '07:00-08:00' -> '07')
+    
     const startHourStr = slot.split('-')[0].split(':')[0];
     const slotStartHour = parseInt(startHourStr, 10);
     
     return jktHour >= slotStartHour;
   };
 
-  // Compute merged slot display label
+  
   const computeSelectedRange = () => {
     if (selectedSlots.length === 0) return null;
     const sorted = [...selectedSlots].sort();
@@ -180,11 +180,11 @@ const DateTimePicker = ({ roomId, onSelectionChange }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      {/* Calendar */}
+      {}
       <div>
         <p style={{ fontSize: '18px', fontWeight: 800, margin: '0 0 16px' }}>Pilih Tanggal</p>
         <div style={{ border: '1px solid #1e3a8a', borderRadius: '12px', padding: '20px', background: 'white' }}>
-          {/* Month header */}
+          {}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
             <button onClick={prevMonth} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}>
               <ChevronLeft size={20} color="#1e3a8a" />
@@ -197,14 +197,14 @@ const DateTimePicker = ({ roomId, onSelectionChange }) => {
             </button>
           </div>
 
-          {/* Day headers */}
+          {}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '8px' }}>
             {DAYS.map(d => (
               <div key={d} style={{ textAlign: 'center', fontSize: '12px', fontWeight: 700, color: '#94a3b8', padding: '4px 0' }}>{d}</div>
             ))}
           </div>
 
-          {/* Date cells */}
+          {}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px' }}>
             {cells.map((cell, idx) => {
               const selected = isSelected(cell);
@@ -233,7 +233,7 @@ const DateTimePicker = ({ roomId, onSelectionChange }) => {
             })}
           </div>
 
-          {/* Legend */}
+          {}
           <div style={{ display: 'flex', gap: '16px', marginTop: '16px', fontSize: '12px', color: '#64748b' }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ width: '14px', height: '14px', background: '#eff6ff', border: '2px solid #93c5fd', borderRadius: '3px', display: 'inline-block' }}></span>
@@ -257,7 +257,7 @@ const DateTimePicker = ({ roomId, onSelectionChange }) => {
         )}
       </div>
 
-      {/* Time Slots */}
+      {}
       {selectedDate && (
         <div>
           <p style={{ fontSize: '18px', fontWeight: 800, margin: '0 0 16px' }}>Pilih Jam</p>
@@ -277,7 +277,7 @@ const DateTimePicker = ({ roomId, onSelectionChange }) => {
                 border = '2px solid #1e3a8a';
                 color = 'white';
               } else if (isDisabled) {
-                // Tidak tersedia (Grey)
+                
                 bg = '#e5e7eb';
                 border = '1px solid #d1d5db';
                 color = '#9ca3af';
@@ -306,7 +306,7 @@ const DateTimePicker = ({ roomId, onSelectionChange }) => {
             })}
           </div>
 
-          {/* Slot legend */}
+          {}
           <div style={{ display: 'flex', gap: '16px', marginTop: '12px', fontSize: '12px', color: '#64748b' }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ width: '14px', height: '14px', background: '#eff6ff', border: '1px solid #93c5fd', borderRadius: '3px', display: 'inline-block' }}></span>

@@ -16,7 +16,7 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# CORS configuration
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -25,7 +25,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include routers
+
 app.include_router(auth_router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(protected_router, prefix="/api/data", tags=["Protected"])
 app.include_router(room_router, prefix="/api/rooms", tags=["Rooms"])
@@ -55,7 +55,7 @@ async def test_db_endpoint():
             "message": f"Database connection failed: {str(e)}"
         }
 
-# Serve uploaded files (surat, documents)
+
 UPLOAD_BASE = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'uploads')
 os.makedirs(UPLOAD_BASE, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=UPLOAD_BASE), name="uploads")

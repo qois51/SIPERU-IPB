@@ -30,7 +30,7 @@ const bookingSchema = yup.object({
   deskripsi_kegiatan: yup.string().required('Tolong jelaskan secara singkat kegiatanmu.'),
 });
 
-/* ── Inline form field components ── */
+
 const Field = ({ label, children, error }) => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
     {label && (
@@ -71,7 +71,7 @@ const SectionHeader = ({ icon: Icon, title }) => (
   </div>
 );
 
-/* ── Stepper ── */
+
 const STEPS = ['Pilih Ruangan', 'Form Booking', 'Upload Dokumen', 'Review', 'Menunggu Approval'];
 const Stepper = ({ current }) => (
   <div style={{
@@ -124,7 +124,7 @@ const Stepper = ({ current }) => (
   </div>
 );
 
-/* ── Main Component ── */
+
 const BookingForm = () => {
   const { roomId } = useParams();
   const [searchParams] = useSearchParams();
@@ -222,7 +222,7 @@ const BookingForm = () => {
 
   const buildPayload = (formData) => {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
-    // Backend to_dict() returns id_user; fallback to id for compatibility
+    
     const userId = user.id_user || user.id || null;
     return {
       ...formData,
@@ -246,7 +246,7 @@ const BookingForm = () => {
     try {
       const editId = searchParams.get('edit');
       const payload = buildPayload(formData);
-      // When submitting for real, always set status to Pending
+      
       payload.status = 'Pending';
       
       let res;
@@ -364,7 +364,7 @@ const BookingForm = () => {
       <div style={{ flexGrow: 1, padding: '32px 0 56px' }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 20px' }}>
 
-          {/* Breadcrumbs */}
+          {}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#6b7280', marginBottom: '20px', fontWeight: 500 }}>
             <span style={{ cursor: 'pointer', transition: 'color 0.2s' }} onMouseOver={e => e.currentTarget.style.color = '#1e3a8a'} onMouseOut={e => e.currentTarget.style.color = '#6b7280'} onClick={() => navigate(`/katalog/${roomId}`)}>
               Detail Katalog
@@ -373,12 +373,12 @@ const BookingForm = () => {
             <span style={{ color: '#1e3a8a', fontWeight: 600 }}>Form Reservasi</span>
           </div>
 
-          {/* Stepper */}
+          {}
           <Stepper current={2} />
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '24px', alignItems: 'start' }}>
 
-            {/* ═══ MAIN FORM ═══ */}
+            {}
             <form onSubmit={handleSubmit(onSubmit, onInvalid)}>
               <div style={{
                 background: 'white', borderRadius: '16px',
@@ -405,7 +405,7 @@ const BookingForm = () => {
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
 
-                  {/* ── Data Peminjam ── */}
+                  {}
                   <SectionHeader icon={User} title="Data Peminjam" />
 
                   <Field label="Nama Peminjam" error={errors.nama_peminjam?.message}>
@@ -424,7 +424,7 @@ const BookingForm = () => {
                     <input {...register('nomor_hp')} placeholder="081234567890" style={inputStyle(errors.nomor_hp)} />
                   </Field>
 
-                  {/* ── Data Kegiatan ── */}
+                  {}
                   <SectionHeader icon={BookOpen} title="Data Kegiatan" />
 
                   <Field label="Nama Kegiatan" error={errors.activity_name?.message}>
@@ -448,7 +448,7 @@ const BookingForm = () => {
                       style={{ ...inputStyle(errors.deskripsi_kegiatan), resize: 'vertical', lineHeight: 1.6 }} />
                   </Field>
 
-                  {/* Kebutuhan Tambahan */}
+                  {}
                   <Field label="Kebutuhan Tambahan">
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '4px' }}>
                       {FACILITY_OPTIONS.map(f => (
@@ -466,7 +466,7 @@ const BookingForm = () => {
                     </div>
                   </Field>
 
-                  {/* ── Upload Surat ── */}
+                  {}
                   <SectionHeader icon={Upload} title="Upload Surat Izin/Surat Pengantar" />
 
                   {uploadFile ? (
@@ -517,7 +517,7 @@ const BookingForm = () => {
                 </div>
               </div>
 
-              {/* ── Action Buttons ── */}
+              {}
               <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
                 <button type="button" onClick={() => navigate(-1)}
                   style={{
@@ -559,10 +559,10 @@ const BookingForm = () => {
               </div>
             </form>
 
-            {/* ═══ SIDEBAR ═══ */}
+            {}
             <div style={{ position: 'sticky', top: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
-              {/* Room Info Card */}
+              {}
               <div style={{ background: 'white', borderRadius: '16px', border: '1px solid #e5e7eb', overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.07)' }}>
                 <div style={{ padding: '16px 16px 12px' }}>
                   <p style={{ fontSize: '13px', fontWeight: 700, color: '#1e3a8a', margin: '0 0 12px' }}>Informasi Peminjaman</p>
@@ -595,7 +595,7 @@ const BookingForm = () => {
                   )}
                 </div>
 
-                {/* PIC Section */}
+                {}
                 {room?.pic_name && (
                   <div style={{ borderTop: '1px solid #f3f4f6', padding: '12px 16px' }}>
                     <p style={{ fontSize: '11px', color: '#9ca3af', margin: '0 0 10px' }}>PIC Ruangan</p>
@@ -622,7 +622,7 @@ const BookingForm = () => {
 
       <Footer />
 
-      {/* Error Modal Popup */}
+      {}
       {showErrorModal && (
         <div style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
