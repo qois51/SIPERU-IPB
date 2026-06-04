@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, field_validator
-from typing import Optional, List
+from typing import Optional, List, Any
 from datetime import date, datetime
 
 
@@ -30,7 +30,8 @@ class BookingSchema(BaseModel):
     participants: Optional[int] = 1
     purpose: Optional[str] = None
     deskripsi_kegiatan: Optional[str] = None
-    date: Optional[date] = None
+    # date menerima str ("YYYY-MM-DD") ATAU date object dari frontend
+    date: Optional[Any] = None
     start_time: Optional[str] = None
     end_time: Optional[str] = None
     surat_file: Optional[str] = None
@@ -44,10 +45,10 @@ class BookingSchema(BaseModel):
     @field_validator("nomor_hp")
     def validate_nomor_hp(cls, v):
         if v:
-            if not (10 <= len(v) <= 20):
-                raise ValueError("Nomor HP harus antara 10 sampai 20 karakter")
-            if not v.startswith("08"):
-                raise ValueError("Nomor HP harus diawali 08")
+            # Hapus spasi dan tanda hubung untuk validasi panjang
+            cleaned = v.replace(" ", "").replace("-", "")
+            if not (10 <= len(cleaned) <= 20):
+                raise ValueError("Nomor HP harus antara 10 sampai 20 digit")
         return v
 
     class Config:

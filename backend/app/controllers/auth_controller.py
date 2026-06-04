@@ -4,11 +4,12 @@ AuthController — Business logic untuk authentication.
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy.orm import with_polymorphic
 from sqlalchemy import func
 import random
 import time
 
-from app.models.user_model import User
+from app.models.user_model import User, Mahasiswa, PICRuangan, PenjagaRuangan
 from app.schemas.auth_schema import LoginSchema
 from app.schemas.user_schema import UserSchema
 from app.utils.auth_middleware import create_access_token
@@ -17,6 +18,18 @@ from app.utils.auth_middleware import create_access_token
 # In-memory OTP store: { email: { otp, expires_at } }
 _otp_store: dict = {}
 
+# Polymorphic alias — dibuat sekali, dipakai ulang di setiap query
+# agar SQLAlchemy JOIN ke semua tabel subclass dan load semua kolom sekaligus
+_POLY = None
+
+
+def _get_poly():
+    """Lazy-init with_polymorphic agar tidak dibuat sebelum mapper dikonfig."""
+    global _POLY
+    if _POLY is None:
+        _POLY = with_polymorphic(User, [Mahasiswa, PICRuangan, PenjagaRuangan])
+    return _POLY
+
 
 class AuthController:
     """Handles all authentication-related business logic."""
@@ -24,7 +37,10 @@ class AuthController:
     @staticmethod
     async def login(username: str, password: str, selected_role: str, db: AsyncSession) -> dict:
         """Authenticate user credentials and return JWT token."""
-        result = await db.execute(select(User).filter(
+        # Gunakan with_polymorphic agar kolom subclass (nim, nip, dll)
+        # langsung di-load via LEFT OUTER JOIN — tidak lazy-load nanti
+        poly = _get_poly()
+        result = await db.execute(select(poly).filter(
             (User.nama == username) | (func.lower(User.email) == func.lower(username))
         ))
         user = result.scalars().first()
@@ -47,7 +63,10 @@ class AuthController:
             additional_claims={"role": user.role}
         )
 
-        user_data = UserSchema.model_validate(user).model_dump()
+        # JANGAN pakai UserSchema.model_validate(user) — Pydantic membaca
+        # property 'nim_nip' via SA descriptor → trigger lazy-load → MissingGreenlet.
+        # Gunakan user.to_dict() yang membaca __dict__ langsung (aman).
+        user_data = user.to_dict()
         user_data.pop("password", None)
 
         return {

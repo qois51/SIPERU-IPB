@@ -6,14 +6,16 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 
 from database import get_db
-from app.schemas.user_schema import UserSchema
+from app.schemas.user_schema import UserSchema, UserCreateSchema
 from app.utils.auth_middleware import get_current_user, role_required
 from app.controllers.user_controller import UserController, UserCreate, UserUpdate
 
 user_router = APIRouter()
 
 
-@user_router.get("/", response_model=List[UserSchema])
+# GET /api/users/ — returns list of dicts (bukan ORM object)
+# response_model dihapus karena return type adalah list[dict] dari .to_dict()
+@user_router.get("/")
 async def get_users(
     current_user: dict = Depends(role_required(["admin"])),
     db: AsyncSession = Depends(get_db),
@@ -21,7 +23,7 @@ async def get_users(
     return await UserController.get_all(db)
 
 
-@user_router.get("/{id}", response_model=UserSchema)
+@user_router.get("/{id}")
 async def get_user(
     id: int,
     current_user: dict = Depends(get_current_user),
@@ -30,16 +32,17 @@ async def get_user(
     return await UserController.get_by_id(id, current_user, db)
 
 
-@user_router.post("/", response_model=UserSchema, status_code=status.HTTP_201_CREATED)
+# POST /api/users/ — response_model dihapus, return dict dari .to_dict()
+@user_router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_user(
-    data: UserCreate,
+    data: UserCreateSchema,
     current_user: dict = Depends(role_required(["admin"])),
     db: AsyncSession = Depends(get_db),
 ):
     return await UserController.create(data, db)
 
 
-@user_router.put("/{id}", response_model=UserSchema)
+@user_router.put("/{id}")
 async def update_user(
     id: int,
     data: UserUpdate,

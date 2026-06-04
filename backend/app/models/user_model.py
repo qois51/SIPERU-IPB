@@ -4,6 +4,21 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import List, Optional
 import bcrypt
 
+
+def _raw(obj) -> dict:
+    """Baca instance.__dict__ secara langsung, bypass SA attribute machinery.
+
+    SQLAlchemy menyimpan nilai kolom yang sudah di-load sebagai entry biasa
+    di instance.__dict__. Dengan membaca lewat object.__getattribute__ kita
+    mendapatkan dict itu tanpa melalui descriptor SA — artinya tidak ada
+    lazy-load, tidak ada greenlet, tidak ada MissingGreenlet.
+
+    Kalau kolom subclass belum di-load (karena query tidak JOIN), .get()
+    mengembalikan '' (default) tanpa trigger IO apapun.
+    """
+    return object.__getattribute__(obj, '__dict__')
+
+
 class User(Base):
     __tablename__ = "user"
 
@@ -73,20 +88,26 @@ class User(Base):
                 return False
 
     def to_dict(self):
+        # Kolom base table selalu aman diakses via SA (ada di SELECT User)
+        # Kolom subclass (nim, nip, unit_kerja, jabatan) dibaca via _raw()
+        # agar tidak trigger lazy-load → MissingGreenlet
+        r = _raw(self)
+        nim_nip_val = r.get('nim', r.get('nip', ''))
+
         return {
-            "id_user": self.id_user,
-            "nama": self.nama,
-            "email": self.email,
+            "id_user":    self.id_user,
+            "nama":       self.nama,
+            "email":      self.email,
             "no_telepon": self.no_telepon,
-            "type": self.type,
+            "type":       self.type,
             # Legacy fields
-            "id": self.id_user,
-            "username": self.nama,
-            "full_name": self.nama,
-            "email_str": self.email,
-            "phone": self.no_telepon,
-            "role": self.role,
-            "nim_nip": self.nim_nip
+            "id":         self.id_user,
+            "username":   self.nama,
+            "full_name":  self.nama,
+            "email_str":  self.email,
+            "phone":      self.no_telepon,
+            "role":       self.role,
+            "nim_nip":    nim_nip_val,
         }
 
 
@@ -108,9 +129,10 @@ class Mahasiswa(User):
 
     def to_dict(self):
         d = super().to_dict()
+        nim_val = _raw(self).get('nim', '')
         d.update({
-            "nim": self.nim,
-            "nim_nip": self.nim
+            "nim":     nim_val,
+            "nim_nip": nim_val,
         })
         return d
 
@@ -135,11 +157,13 @@ class PICRuangan(User):
 
     def to_dict(self):
         d = super().to_dict()
+        r = _raw(self)
+        nip_val = r.get('nip', '')
         d.update({
-            "nip": self.nip,
-            "unit_kerja": self.unit_kerja,
-            "jabatan": self.jabatan,
-            "nim_nip": self.nip
+            "nip":        nip_val,
+            "unit_kerja": r.get('unit_kerja', ''),
+            "jabatan":    r.get('jabatan', ''),
+            "nim_nip":    nip_val,
         })
         return d
 
@@ -161,9 +185,11 @@ class PenjagaRuangan(User):
 
     def to_dict(self):
         d = super().to_dict()
+        r = _raw(self)
+        nip_val = r.get('nip', '')
         d.update({
-            "nip": self.nip,
-            "unit_kerja": self.unit_kerja,
-            "nim_nip": self.nip
+            "nip":        nip_val,
+            "unit_kerja": r.get('unit_kerja', ''),
+            "nim_nip":    nip_val,
         })
         return d
