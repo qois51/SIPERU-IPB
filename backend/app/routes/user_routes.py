@@ -1,6 +1,4 @@
-"""
-user_routes.py — Thin wrapper; logic ada di UserController.
-"""
+
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
@@ -13,8 +11,8 @@ from app.controllers.user_controller import UserController, UserCreate, UserUpda
 user_router = APIRouter()
 
 
-# GET /api/users/ — returns list of dicts (bukan ORM object)
-# response_model dihapus karena return type adalah list[dict] dari .to_dict()
+
+
 @user_router.get("/")
 async def get_users(
     current_user: dict = Depends(role_required(["admin"])),
@@ -32,7 +30,7 @@ async def get_user(
     return await UserController.get_by_id(id, current_user, db)
 
 
-# POST /api/users/ — response_model dihapus, return dict dari .to_dict()
+
 @user_router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_user(
     data: UserCreateSchema,

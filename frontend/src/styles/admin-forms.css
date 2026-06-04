@@ -1,4 +1,4 @@
-/* Premium Form Styles */
+
 .premium-form {
   background: white;
   border-radius: 24px;
@@ -86,7 +86,7 @@
   font-size: 16px;
 }
 
-/* Multi Upload Grid */
+
 .multi-upload-container {
   background: #fcfcfd;
   padding: 30px;
@@ -173,7 +173,7 @@
   transform: translateY(-2px);
 }
 
-/* PIC specific upload */
+
 .pic-upload-area {
   display: flex;
   flex-direction: column;
@@ -204,7 +204,7 @@
   object-fit: cover;
 }
 
-/* Time & Day Range Picker */
+
 .time-range-wrapper, .day-range-wrapper {
   display: flex;
   align-items: center;

@@ -1,6 +1,4 @@
-"""
-RoomController — Business logic untuk manajemen ruangan.
-"""
+
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -12,18 +10,17 @@ from app.schemas.room_schema import RoomSchema
 
 
 class RoomController:
-    """Handles all room-related CRUD logic."""
 
     @staticmethod
     async def get_all(db: AsyncSession) -> list:
-        """Return all rooms."""
+
         result = await db.execute(select(Room))
         rooms = result.scalars().all()
         return [room.to_dict() for room in rooms]
 
     @staticmethod
     async def get_by_id(id: int, db: AsyncSession) -> dict:
-        """Return a single room by its ID."""
+
         result = await db.execute(select(Room).filter(Room.id_ruangan == id))
         room = result.scalars().first()
         if not room:
@@ -32,12 +29,12 @@ class RoomController:
 
     @staticmethod
     async def _resolve_pic_id(data: RoomSchema, db: AsyncSession) -> int:
-        """Resolve PIC ID from data or fallback to lookup by email/name."""
+
         id_pic = data.id_pic
         if id_pic:
             return id_pic
 
-        # Try to find PIC by email or name
+
         pic_email = data.pic_email or ""
         pic_name = data.pic_name or ""
         if pic_email or pic_name:
@@ -52,7 +49,7 @@ class RoomController:
             if pic:
                 return pic.id_user
 
-        # Fallback: use first available PIC
+
         pic_res = await db.execute(select(PICRuangan))
         pic = pic_res.scalars().first()
         if not pic:
@@ -64,10 +61,10 @@ class RoomController:
 
     @staticmethod
     async def create(data: RoomSchema, db: AsyncSession) -> dict:
-        """Create a new room."""
+
         id_pic = await RoomController._resolve_pic_id(data, db)
 
-        # Resolve display name
+
         nama_ruangan = data.nama_ruangan or data.name
         if not nama_ruangan:
             raise HTTPException(status_code=422, detail="nama_ruangan atau name wajib diisi.")
@@ -94,13 +91,13 @@ class RoomController:
 
     @staticmethod
     async def update(id: int, data: RoomSchema, db: AsyncSession) -> dict:
-        """Update an existing room."""
+
         result = await db.execute(select(Room).filter(Room.id_ruangan == id))
         room = result.scalars().first()
         if not room:
             raise HTTPException(status_code=404, detail="Room tidak ditemukan")
 
-        # Resolve PIC if provided
+
         if data.id_pic or data.pic_email or data.pic_name:
             resolved_pic = await RoomController._resolve_pic_id(data, db)
             room.id_pic = resolved_pic
@@ -133,7 +130,7 @@ class RoomController:
 
     @staticmethod
     async def delete(id: int, db: AsyncSession) -> dict:
-        """Delete a room."""
+
         result = await db.execute(select(Room).filter(Room.id_ruangan == id))
         room = result.scalars().first()
         if not room:

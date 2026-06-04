@@ -21,14 +21,14 @@ const BookingInfoCard = ({ room, startTime, endTime }) => {
       border: '1px solid #f3f4f6',
       overflow: 'hidden',
     }}>
-      {/* Title */}
+      {}
       <div style={{ padding: '16px 16px 0' }}>
         <p style={{ fontSize: '13px', fontWeight: 700, color: '#1e3a8a', marginBottom: '10px' }}>
           Informasi Peminjaman
         </p>
       </div>
 
-      {/* Room Image */}
+      {}
       <div style={{ padding: '0 16px' }}>
         <img
           src={imageUrl}
@@ -45,7 +45,7 @@ const BookingInfoCard = ({ room, startTime, endTime }) => {
         />
       </div>
 
-      {/* Info */}
+      {}
       <div style={{ padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
         <div>
           <p style={{ fontSize: '11px', color: '#9ca3af', marginBottom: '2px' }}>Nama Ruangan</p>
@@ -77,12 +77,12 @@ const BookingInfoCard = ({ room, startTime, endTime }) => {
         </div>
       </div>
 
-      {/* PIC Section */}
+      {}
       {room.pic_name && (
         <div style={{ borderTop: '1px solid #f3f4f6', margin: '0 16px', paddingTop: '12px', marginBottom: '16px' }}>
           <p style={{ fontSize: '11px', color: '#9ca3af', marginBottom: '8px' }}>PIC Ruangan</p>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            {/* Avatar */}
+            {}
             <div style={{
               width: '36px',
               height: '36px',

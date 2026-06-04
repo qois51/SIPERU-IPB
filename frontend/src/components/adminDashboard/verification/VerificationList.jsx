@@ -10,9 +10,9 @@ const VerificationList = ({ onViewDetail }) => {
     const fetchBookings = async () => {
       try {
         const res = await adminService.getBookings({ perPage: 100 });
-        // Backend returns { success, message, data: { bookings: [...], pagination } }
+        
         const allBookings = res.data?.bookings || res.bookings || [];
-        // Exclude Draft — those are not yet submitted by the user
+        
         setData(allBookings.filter(b => b.status !== 'Draft'));
       } catch (err) {
         console.error('Failed to fetch verification list:', err);

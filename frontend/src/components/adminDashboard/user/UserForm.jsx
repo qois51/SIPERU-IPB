@@ -27,7 +27,7 @@ const UserForm = ({ user, onBack, onSuccess, onZoomImage }) => {
     if (user) {
       setFormData({
         ...user,
-        password: '' // Don't show hashed password, leave empty for no change
+        password: '' 
       });
     }
   }, [user]);
@@ -36,7 +36,7 @@ const UserForm = ({ user, onBack, onSuccess, onZoomImage }) => {
     e.preventDefault();
     setLoading(true);
     
-    // Validate email
+    
     if (!formData.email.includes('@')) {
       showToastMsg('Email tidak valid!', 'error');
       setLoading(false);
@@ -45,8 +45,8 @@ const UserForm = ({ user, onBack, onSuccess, onZoomImage }) => {
 
     try {
       const payload = { ...formData };
-      if (!payload.password) delete payload.password; // Don't send empty password
-      // Alias phone field
+      if (!payload.password) delete payload.password; 
+      
       if (payload.no_telepon) payload.phone = payload.no_telepon;
 
       if (user) {
@@ -65,7 +65,7 @@ const UserForm = ({ user, onBack, onSuccess, onZoomImage }) => {
       }, 1500);
     } catch (err) {
       console.error(err);
-      // Tampilkan pesan error dari backend jika ada
+      
       const backendMsg =
         err.response?.data?.detail ||
         err.response?.data?.message ||
@@ -106,7 +106,7 @@ const UserForm = ({ user, onBack, onSuccess, onZoomImage }) => {
       <form onSubmit={handleSubmit} className="premium-form">
         <div className="form-section">
           <div style={{ display: 'flex', gap: '40px', alignItems: 'flex-start' }}>
-            {/* Left side: Avatar Upload */}
+            {}
             <div className="avatar-upload-section" style={{ textAlign: 'center' }}>
               <div 
                 className="profile-image-preview" 
@@ -150,7 +150,7 @@ const UserForm = ({ user, onBack, onSuccess, onZoomImage }) => {
               <p style={{ fontSize: '12px', opacity: 0.5, marginTop: '8px' }}>Format: JPG, PNG (Maks 2MB)</p>
             </div>
 
-            {/* Right side: Form Fields */}
+            {}
             <div style={{ flex: 1 }}>
               <div className="form-grid">
                 <div className="form-group">
@@ -265,7 +265,7 @@ const UserForm = ({ user, onBack, onSuccess, onZoomImage }) => {
         </div>
       </form>
 
-      {/* Premium Toast Notification */}
+      {}
       {toast.show && (
         <div
           style={{

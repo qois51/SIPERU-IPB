@@ -49,7 +49,7 @@ const ExportLaporanPDF = forwardRef(({ data, period }, ref) => {
         boxSizing: 'border-box' 
       }}
     >
-      {/* 1. KOP SURAT RESMI */}
+      {}
       <div style={{ display: 'flex', alignItems: 'center', borderBottom: '3px double #1e3a8a', paddingBottom: '14px', marginBottom: '25px' }}>
         <img
           src="/loginAsset/logologin.png"
@@ -64,7 +64,7 @@ const ExportLaporanPDF = forwardRef(({ data, period }, ref) => {
         </div>
       </div>
 
-      {/* 2. JUDUL LAPORAN */}
+      {}
       <div style={{ textAlign: 'center', marginBottom: '24px' }}>
         <h2 style={{ margin: '0', fontSize: '16px', fontWeight: 'bold', textTransform: 'uppercase', textDecoration: 'underline' }}>
           Laporan Statistik Penggunaan Ruangan & Fasilitas
@@ -74,9 +74,9 @@ const ExportLaporanPDF = forwardRef(({ data, period }, ref) => {
         </p>
       </div>
 
-      {/* 3. METADATA & EXECUTIVE SUMMARY CARDS */}
+      {}
       <div style={{ display: 'flex', gap: '20px', marginBottom: '25px' }}>
-        {/* Left info box */}
+        {}
         <div style={{ flex: 1.2, background: '#f8fafc', padding: '14px 16px', borderRadius: '8px', border: '1px solid #cbd5e1' }}>
           <h3 style={{ margin: '0 0 10px', fontSize: '11px', color: '#1e3a8a', fontWeight: 'bold', borderBottom: '1px solid #94a3b8', paddingBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
             Informasi Dokumen Laporan
@@ -92,7 +92,7 @@ const ExportLaporanPDF = forwardRef(({ data, period }, ref) => {
           </table>
         </div>
 
-        {/* Right metrics grid */}
+        {}
         <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
           <div style={{ background: '#eff6ff', borderRadius: '8px', border: '1px solid #bfdbfe', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '80px', boxSizing: 'border-box' }}>
             <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#1e3a8a', lineHeight: '1', marginBottom: '4px' }}>{summary.total_bookings}</div>
@@ -113,9 +113,9 @@ const ExportLaporanPDF = forwardRef(({ data, period }, ref) => {
         </div>
       </div>
 
-      {/* 4. SEKSI ANALISIS RUANGAN & DEPARTEMEN */}
+      {}
       <div style={{ display: 'flex', gap: '20px', marginBottom: '25px', pageBreakInside: 'avoid' }}>
-        {/* Table Rooms ranking */}
+        {}
         <div style={{ flex: 1 }}>
           <h3 style={{ margin: '0 0 8px', fontSize: '12px', color: '#1e3a8a', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px', borderBottom: '1.5px solid #1e3a8a', paddingBottom: '3px' }}>
             A. Intensitas Penggunaan Ruangan
@@ -150,7 +150,7 @@ const ExportLaporanPDF = forwardRef(({ data, period }, ref) => {
           </table>
         </div>
 
-        {/* Table Department ranking */}
+        {}
         <div style={{ flex: 1 }}>
           <h3 style={{ margin: '0 0 8px', fontSize: '12px', color: '#1e3a8a', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px', borderBottom: '1.5px solid #1e3a8a', paddingBottom: '3px' }}>
             B. Departemen / Studi Teraktif
@@ -184,9 +184,9 @@ const ExportLaporanPDF = forwardRef(({ data, period }, ref) => {
         </div>
       </div>
 
-      {/* 5. SEKSI ANALISIS ORGANISASI & STATUS */}
+      {}
       <div style={{ display: 'flex', gap: '20px', marginBottom: '25px', pageBreakInside: 'avoid' }}>
-        {/* Table Organizations ranking */}
+        {}
         <div style={{ flex: 1.2 }}>
           <h3 style={{ margin: '0 0 8px', fontSize: '12px', color: '#1e3a8a', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px', borderBottom: '1.5px solid #1e3a8a', paddingBottom: '3px' }}>
             C. Aktivitas Peminjaman Unit / Organisasi
@@ -219,7 +219,7 @@ const ExportLaporanPDF = forwardRef(({ data, period }, ref) => {
           </table>
         </div>
 
-        {/* Status breakdown list */}
+        {}
         <div style={{ flex: 0.8, background: '#f8fafc', padding: '12px 14px', borderRadius: '8px', border: '1px solid #cbd5e1' }}>
           <h3 style={{ margin: '0 0 6px', fontSize: '11px', color: '#475569', fontWeight: 'bold', borderBottom: '1px solid #cbd5e1', paddingBottom: '3px', textTransform: 'uppercase' }}>
             Status Berkas Ajuan:
@@ -241,10 +241,10 @@ const ExportLaporanPDF = forwardRef(({ data, period }, ref) => {
         </div>
       </div>
 
-      {/* Page Break here for attaching detailed logs */}
+      {}
       <div style={{ pageBreakBefore: 'always' }} />
 
-      {/* 6. LAMPIRAN RINCIAN HISTORI PEMINJAMAN */}
+      {}
       <h3 style={{ margin: '20px 0 10px', fontSize: '12px', color: '#1e3a8a', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px', borderBottom: '1.5px solid #1e3a8a', paddingBottom: '3px' }}>
         D. Lampiran - Rincian Histori Peminjaman Ruangan
       </h3>
@@ -291,7 +291,7 @@ const ExportLaporanPDF = forwardRef(({ data, period }, ref) => {
         </tbody>
       </table>
 
-      {/* 7. BLOK TANDA TANGAN (SIGNATURE BLOCK) */}
+      {}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', pageBreakInside: 'avoid', marginTop: '30px' }}>
         <div style={{ width: '40%', fontSize: '10px', color: '#4b5563', lineHeight: '1.5' }}>
           <strong>Catatan Penting:</strong><br/>
@@ -303,7 +303,7 @@ const ExportLaporanPDF = forwardRef(({ data, period }, ref) => {
           <div style={{ marginTop: '2px', fontWeight: 'bold' }}>Menyetujui / Mengesahkan,</div>
           <div style={{ fontWeight: 'bold', color: '#1e3a8a' }}>Direktur Sarana & Prasarana IPB</div>
           
-          {/* Spacing for physical signature or stamp */}
+          {}
           <div style={{ height: '70px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <div style={{ fontSize: '9px', color: '#cbd5e1', border: '1px dashed #cbd5e1', padding: '6px 12px', borderRadius: '4px' }}>
               STAMPEL & PARAF DIGITAL RESMI
@@ -315,7 +315,7 @@ const ExportLaporanPDF = forwardRef(({ data, period }, ref) => {
         </div>
       </div>
 
-      {/* FOOTER PADA HALAMAN DOKUMEN */}
+      {}
       <div style={{ borderTop: '1px solid #cbd5e1', marginTop: '30px', paddingTop: '10px', display: 'flex', justifyContent: 'space-between', fontSize: '8px', color: '#9ca3af' }}>
         <div>SIPBeru IPB University — Sistem Informasi Peminjaman Ruangan Akademik</div>
         <div>Halaman Lampiran Cetak | Tanggal Unduh: {currentDate} pukul {currentTime} WIB</div>

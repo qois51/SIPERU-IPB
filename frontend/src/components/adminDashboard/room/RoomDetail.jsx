@@ -18,7 +18,7 @@ const RoomDetail = ({ room, onBack, onEdit, onDeleteSuccess, onZoomImage }) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price);
   };
 
-  // Ensure image_url is an array
+  
   const rawImg = room.image_url;
   const imageUrls = Array.isArray(rawImg) 
     ? rawImg 
@@ -29,7 +29,7 @@ const RoomDetail = ({ room, onBack, onEdit, onDeleteSuccess, onZoomImage }) => {
 
   useEffect(() => {
     setMainImage(imageUrls[0]);
-    // Fetch some upcoming bookings for this room to show to admin
+    
     const today = new Date().toISOString().split('T')[0];
     api.get(`/bookings/room/${room.id}?date=${today}`)
       .then(res => setBookings(res.data?.data || res.data || []))
@@ -181,7 +181,7 @@ const RoomDetail = ({ room, onBack, onEdit, onDeleteSuccess, onZoomImage }) => {
          <button className="btn-delete-room" onClick={handleDelete}>Hapus Ruangan</button>
       </div>
 
-      {/* Premium Toast Notification */}
+      {}
       {toast.show && (
         <div
           style={{

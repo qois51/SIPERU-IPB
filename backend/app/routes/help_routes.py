@@ -1,6 +1,4 @@
-"""
-help_routes.py — Thin wrapper; logic ada di HelpController.
-"""
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List

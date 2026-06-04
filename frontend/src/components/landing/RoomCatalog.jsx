@@ -22,7 +22,7 @@ const RoomCatalog = () => {
     axios.get(`${API_BASE}/rooms/`)
       .then(res => {
         if (res.data && res.data.length > 0) {
-          // Take up to 3 rooms for the landing page display
+          
           setRooms(res.data.slice(0, 3));
         } else {
           setRooms(fallbackRooms);

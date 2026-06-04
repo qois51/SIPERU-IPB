@@ -14,7 +14,7 @@ class BookingSchema(BaseModel):
     id_mahasiswa: Optional[int] = None
     id_ruangan: Optional[int] = None
 
-    # Fallback/alias fields untuk kompatibilitas frontend
+
     id: Optional[int] = None
     booking_code: Optional[str] = None
     room_id: Optional[int] = None
@@ -30,7 +30,7 @@ class BookingSchema(BaseModel):
     participants: Optional[int] = 1
     purpose: Optional[str] = None
     deskripsi_kegiatan: Optional[str] = None
-    # date menerima str ("YYYY-MM-DD") ATAU date object dari frontend
+
     date: Optional[Any] = None
     start_time: Optional[str] = None
     end_time: Optional[str] = None
@@ -45,7 +45,7 @@ class BookingSchema(BaseModel):
     @field_validator("nomor_hp")
     def validate_nomor_hp(cls, v):
         if v:
-            # Hapus spasi dan tanda hubung untuk validasi panjang
+
             cleaned = v.replace(" ", "").replace("-", "")
             if not (10 <= len(cleaned) <= 20):
                 raise ValueError("Nomor HP harus antara 10 sampai 20 digit")

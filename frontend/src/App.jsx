@@ -7,7 +7,7 @@ import CatalogPage from './Pages/Catalog/CatalogPage';
 import RoomDetailPage from './Pages/Catalog/RoomDetailPage';
 import ProtectedRoute from './components/ProtectedRoute';
 
-// New Pages — Phase 5-8
+
 import BookingForm from './Pages/Booking/BookingForm';
 import BookingSuccess from './Pages/Booking/BookingSuccess';
 import BookingDetail from './Pages/Booking/BookingDetail';
@@ -15,7 +15,7 @@ import DashboardPengajuan from './Pages/Dashboard/DashboardPengajuan';
 import ProfilePage from './Pages/Profile/ProfilePage';
 import SettingsPage from './Pages/Profile/SettingsPage';
 
-// Scroll to top on route change
+
 function ScrollToTop() {
   const { pathname } = useLocation();
 
@@ -26,7 +26,7 @@ function ScrollToTop() {
   return null;
 }
 
-// Scroll to hash helper component
+
 function ScrollToHash() {
   const { hash } = useLocation();
 
@@ -35,7 +35,7 @@ function ScrollToHash() {
       const id = hash.replace('#', '');
       const element = document.getElementById(id);
       if (element) {
-        // Use a short timeout to ensure the component is fully mounted in the DOM
+        
         const timer = setTimeout(() => {
           element.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }, 150);
@@ -54,7 +54,7 @@ function App() {
         <ScrollToTop />
         <ScrollToHash />
         <Routes>
-          {/* Rute publik */}
+          {}
           <Route path="/" element={<LandingPage />} />
           <Route path="/katalog" element={<CatalogPage />} />
           <Route path="/catalog" element={<CatalogPage />} />
@@ -62,7 +62,7 @@ function App() {
           <Route path="/catalog/:id" element={<RoomDetailPage />} />
           <Route path="/login" element={<LoginPage />} />
 
-          {/* Rute mahasiswa — memerlukan login */}
+          {}
           <Route
             path="/dashboard"
             element={
@@ -112,7 +112,7 @@ function App() {
             }
           />
 
-          {/* Rute terproteksi — hanya admin, satpam, dosen, pic */}
+          {}
           <Route
             path="/admin"
             element={

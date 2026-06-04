@@ -28,7 +28,7 @@ const DashboardPengajuan = () => {
   const [perPage, setPerPage] = useState(10);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [selectedBookingId, setSelectedBookingId] = useState(null);
-  const [cancelModalType, setCancelModalType] = useState('cancel'); // 'cancel' or 'delete'
+  const [cancelModalType, setCancelModalType] = useState('cancel'); 
   const [isCancelling, setIsCancelling] = useState(false);
 
   const pagination = usePagination(1, perPage);
@@ -37,7 +37,7 @@ const DashboardPengajuan = () => {
     if (!isRetry) setLoading(true);
     setError('');
     try {
-      // Fetch bookings
+      
       const res = await bookingService.getMyBookings({
         page: pagination.page,
         perPage: perPage,
@@ -47,17 +47,17 @@ const DashboardPengajuan = () => {
       setBookings(res.data?.bookings || []);
       pagination.updateFromResponse(res.data?.pagination);
 
-      // Fetch stats
+      
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       const statsRes = await bookingService.getDashboardStats(user.id);
       setStats(statsRes.data?.stats || null);
       
-      // Clear error on successful fetch
+      
       setError('');
     } catch (err) {
       setError(err.message);
       
-      // Auto-retry after 4 seconds if it's a server connection error
+      
       if (err.message.includes('terhubung ke server') || err.message.includes('Network Error')) {
         console.warn("Koneksi gagal, menjadwalkan percobaan ulang otomatis dalam 4 detik...");
         setTimeout(() => {
@@ -109,11 +109,11 @@ const DashboardPengajuan = () => {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     const filename = `Riwayat_Peminjaman_${user.username || 'SIPERU'}.pdf`;
 
-    // Sembunyikan elemen aslinya agar tak mengganggu UI, tapi tampilkan sementara untuk di-render oleh html2pdf
+    
     element.style.display = 'block';
 
     const opt = {
-      margin:       [0, 0, 0, 0], // Margin ditangani di dalam komponen React (padding 40px)
+      margin:       [0, 0, 0, 0], 
       filename:     filename,
       image:        { type: 'jpeg', quality: 0.98 },
       html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
@@ -121,7 +121,7 @@ const DashboardPengajuan = () => {
     };
 
     html2pdf().set(opt).from(element).save().then(() => {
-      // Sembunyikan lagi setelah selesai
+      
       element.style.display = 'none';
     });
   };
@@ -141,13 +141,13 @@ const DashboardPengajuan = () => {
 
       <div style={{ flexGrow: 1, paddingTop: '32px', paddingBottom: '48px' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
-          {/* Header */}
+          {}
           <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#1f2937', marginBottom: '4px' }}>Dashboard Peminjaman</h1>
           <p style={{ color: '#6b7280', fontSize: '14px', marginBottom: '24px' }}>Pantau seluruh status pengajuanmu disini</p>
 
           {error && <ErrorAlert message={error} onClose={() => setError('')} />}
 
-          {/* Stat Cards */}
+          {}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: '16px', marginBottom: '40px' }}>
             {statCards.map((card) => (
               <div
@@ -172,10 +172,10 @@ const DashboardPengajuan = () => {
             ))}
           </div>
 
-          {/* Riwayat Peminjaman Title */}
+          {}
           <h2 style={{ fontSize: '28px', fontWeight: 800, color: '#111827', marginBottom: '20px' }}>Riwayat Peminjaman</h2>
 
-          {/* Search & Filter Bar */}
+          {}
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginRight: '24px' }}>
               <span style={{ fontSize: '14px', color: '#4b5563', fontWeight: 500 }}>Show</span>
@@ -240,7 +240,7 @@ const DashboardPengajuan = () => {
             </div>
           </div>
 
-          {/* Table Container */}
+          {}
           <div style={{ background: 'white', borderRadius: '0', padding: '0', borderTop: '1px solid #f3f4f6' }}>
             {loading ? (
               <div style={{ padding: '40px 0' }}><LoadingSpinner size="sm" /></div>
@@ -337,7 +337,7 @@ const DashboardPengajuan = () => {
               </div>
             )}
 
-            {/* Pagination */}
+            {}
             {bookings.length > 0 && (
               <div style={{ padding: '20px 0', display: 'flex', justifyContent: 'center' }}>
                 <Pagination
@@ -352,7 +352,7 @@ const DashboardPengajuan = () => {
             )}
           </div>
 
-          {/* Bottom Actions */}
+          {}
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginTop: '32px' }}>
             <button 
               onClick={() => navigate('/katalog')}
@@ -372,7 +372,7 @@ const DashboardPengajuan = () => {
 
       <Footer />
 
-      {/* Hidden Component for PDF Export */}
+      {}
       <div style={{ display: 'none' }}>
         <ExportRiwayatPDF 
           ref={pdfRef} 
@@ -381,7 +381,7 @@ const DashboardPengajuan = () => {
         />
       </div>
 
-      {/* Premium confirmation modal */}
+      {}
       {showConfirmModal && (
         <div
           style={{
@@ -400,7 +400,7 @@ const DashboardPengajuan = () => {
             animation: 'fadeIn 0.2s ease-out'
           }}
         >
-          {/* Style tag for animations */}
+          {}
           <style>{`
             @keyframes fadeIn {
               from { opacity: 0; }
@@ -426,7 +426,7 @@ const DashboardPengajuan = () => {
               animation: 'scaleUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)'
             }}
           >
-            {/* Icon Wrapper */}
+            {}
             <div
               style={{
                 width: '64px',
@@ -446,7 +446,7 @@ const DashboardPengajuan = () => {
               )}
             </div>
 
-            {/* Title */}
+            {}
             <h3
               style={{
                 fontSize: '20px',
@@ -459,7 +459,7 @@ const DashboardPengajuan = () => {
               {cancelModalType === 'delete' ? 'Hapus Draft Peminjaman?' : 'Batalkan Peminjaman?'}
             </h3>
 
-            {/* Description */}
+            {}
             <p
               style={{
                 fontSize: '14px',
@@ -474,7 +474,7 @@ const DashboardPengajuan = () => {
                 : 'Apakah Anda yakin ingin membatalkan pengajuan peminjaman ruangan ini? Tindakan ini tidak dapat diurungkan.'}
             </p>
 
-            {/* Action Buttons */}
+            {}
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
               <button
                 onClick={() => {
@@ -531,7 +531,7 @@ const DashboardPengajuan = () => {
         </div>
       )}
 
-      {/* Premium cancellation loading overlay */}
+      {}
       {isCancelling && (
         <div
           style={{

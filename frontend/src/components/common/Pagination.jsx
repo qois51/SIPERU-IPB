@@ -15,7 +15,7 @@ const Pagination = ({
 
   return (
     <div className="flex items-center justify-center gap-1 mt-6">
-      {/* Previous */}
+      {}
       <button
         onClick={() => onPageChange(page - 1)}
         disabled={!hasPrev}
@@ -24,7 +24,7 @@ const Pagination = ({
         <ChevronLeft className="w-4 h-4" /> Previous
       </button>
 
-      {/* Page Numbers */}
+      {}
       {pages.map((p) => (
         <button
           key={p}
@@ -41,7 +41,7 @@ const Pagination = ({
         </button>
       ))}
 
-      {/* Next */}
+      {}
       <button
         onClick={() => onPageChange(page + 1)}
         disabled={!hasNext}

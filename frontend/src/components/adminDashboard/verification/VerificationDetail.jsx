@@ -7,7 +7,7 @@ import { formatDateID, formatTimeRange } from '../../../utils/formatDate';
 
 const BACKEND_URL = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'http://localhost:8000';
 
-// ── Modal Overlay ──
+
 const ModalOverlay = ({ isOpen, onClose, children }) => {
   if (!isOpen) return null;
   return (
@@ -92,7 +92,7 @@ const VerificationDetail = ({ item, onBack }) => {
       </div>
 
       <div className="detail-layout">
-        {/* Document Preview */}
+        {}
         <div className="preview-container">
         <div className="preview-header">
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
@@ -164,7 +164,7 @@ const VerificationDetail = ({ item, onBack }) => {
           </div>
         </div>
 
-        {/* Detail Card */}
+        {}
         <div className="detail-card">
           <h3 style={{ textAlign: 'center', marginBottom: '24px', color: '#1E3A8A' }}>Detail Peminjaman</h3>
           <ul className="detail-info-list">
@@ -191,7 +191,7 @@ const VerificationDetail = ({ item, onBack }) => {
             <li><strong>Status:</strong> <BookingStatusBadge status={item.status} /></li>
           </ul>
 
-          {/* Notes from admin (after approved/rejected) */}
+          {}
           {item.notes && (
             <div style={{
               padding: '14px 16px', borderRadius: '12px', marginTop: '16px',
@@ -207,7 +207,7 @@ const VerificationDetail = ({ item, onBack }) => {
             </div>
           )}
 
-          {/* Action Buttons */}
+          {}
           {isPending ? (
             <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
               <button
@@ -250,7 +250,7 @@ const VerificationDetail = ({ item, onBack }) => {
             </div>
           )}
 
-          {/* Download E-Pass for Approved */}
+          {}
           {isApproved && (
             <button
               onClick={handleDownloadPDF}
@@ -270,7 +270,7 @@ const VerificationDetail = ({ item, onBack }) => {
         </div>
       </div>
 
-      {/* ═══ Approve Modal ═══ */}
+      {}
       <ModalOverlay isOpen={showApproveModal} onClose={() => setShowApproveModal(false)}>
         <div style={{ padding: '28px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
@@ -283,7 +283,7 @@ const VerificationDetail = ({ item, onBack }) => {
             </button>
           </div>
 
-          {/* Summary */}
+          {}
           <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '12px', padding: '16px', marginBottom: '20px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
               <CheckCircle size={18} color="#16a34a" />
@@ -295,7 +295,7 @@ const VerificationDetail = ({ item, onBack }) => {
             </div>
           </div>
 
-          {/* Notes */}
+          {}
           <div style={{ marginBottom: '20px' }}>
             <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#374151', marginBottom: '8px' }}>
               Catatan Admin <span style={{ color: '#94a3b8', fontWeight: 400 }}>(opsional)</span>
@@ -315,7 +315,7 @@ const VerificationDetail = ({ item, onBack }) => {
             />
           </div>
 
-          {/* Buttons */}
+          {}
           <div style={{ display: 'flex', gap: '10px' }}>
             <button
               onClick={() => setShowApproveModal(false)}
@@ -343,7 +343,7 @@ const VerificationDetail = ({ item, onBack }) => {
         </div>
       </ModalOverlay>
 
-      {/* ═══ Reject Modal ═══ */}
+      {}
       <ModalOverlay isOpen={showRejectModal} onClose={() => setShowRejectModal(false)}>
         <div style={{ padding: '28px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
@@ -356,7 +356,7 @@ const VerificationDetail = ({ item, onBack }) => {
             </button>
           </div>
 
-          {/* Summary */}
+          {}
           <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '12px', padding: '16px', marginBottom: '20px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
               <XCircle size={18} color="#dc2626" />
@@ -368,7 +368,7 @@ const VerificationDetail = ({ item, onBack }) => {
             </div>
           </div>
 
-          {/* Notes */}
+          {}
           <div style={{ marginBottom: '20px' }}>
             <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#374151', marginBottom: '8px' }}>
               Alasan Penolakan <span style={{ color: '#ef4444' }}>*</span>
@@ -388,7 +388,7 @@ const VerificationDetail = ({ item, onBack }) => {
             />
           </div>
 
-          {/* Buttons */}
+          {}
           <div style={{ display: 'flex', gap: '10px' }}>
             <button
               onClick={() => setShowRejectModal(false)}
@@ -416,7 +416,7 @@ const VerificationDetail = ({ item, onBack }) => {
         </div>
       </ModalOverlay>
 
-      {/* ═══ Success Modal ═══ */}
+      {}
       <ModalOverlay isOpen={showSuccessModal} onClose={() => {}}>
         <div style={{ padding: '36px', textAlign: 'center' }}>
           <div style={{

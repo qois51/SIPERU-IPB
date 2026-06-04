@@ -8,7 +8,7 @@ import {
 import { Html5Qrcode } from 'html5-qrcode';
 import api from '../../../services/api';
 
-/* ─── Helpers ─── */
+
 const fmtDate = (d) =>
   d
     ? new Date(d).toLocaleDateString('id-ID', {
@@ -29,7 +29,7 @@ const STATUS_MAP = {
   Rejected:  { color: '#f87171', bg: '#1c0a0a', border: '#7f1d1d', Icon: XCircle,       label: 'Ditolak',                        action: null       },
 };
 
-/* ─── Scan Frame Overlay ─── */
+
 const ScanFrame = ({ scanning }) => (
   <div style={{
     position: 'absolute',
@@ -39,20 +39,20 @@ const ScanFrame = ({ scanning }) => (
     justifyContent: 'center',
     pointerEvents: 'none',
   }}>
-    {/* Dark vignette overlay */}
+    {}
     <div style={{
       position: 'absolute',
       inset: 0,
       background: 'radial-gradient(ellipse 55% 55% at center, transparent 38%, rgba(0,0,0,0.75) 70%)',
     }} />
 
-    {/* Scan box */}
+    {}
     <div style={{
       width: 240,
       height: 240,
       position: 'relative',
     }}>
-      {/* Corner markers */}
+      {}
       {[
         { top: 0, left: 0, borderTop: '3px solid', borderLeft: '3px solid', borderRadius: '4px 0 0 0' },
         { top: 0, right: 0, borderTop: '3px solid', borderRight: '3px solid', borderRadius: '0 4px 0 0' },
@@ -69,7 +69,7 @@ const ScanFrame = ({ scanning }) => (
         }} />
       ))}
 
-      {/* Scanning line */}
+      {}
       {scanning && (
         <div style={{
           position: 'absolute',
@@ -83,7 +83,7 @@ const ScanFrame = ({ scanning }) => (
       )}
     </div>
 
-    {/* Bottom hint */}
+    {}
     <div style={{
       position: 'absolute',
       bottom: '28%',
@@ -104,12 +104,12 @@ const ScanFrame = ({ scanning }) => (
   </div>
 );
 
-/* ─── Result Bottom Sheet ─── */
+
 const ResultSheet = ({ result, onReset, onCheckIn, onCheckOut, actionLoading }) => {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    // Slide-in animation
+    
     const t = setTimeout(() => setVisible(true), 30);
     return () => clearTimeout(t);
   }, []);
@@ -124,7 +124,7 @@ const ResultSheet = ({ result, onReset, onCheckIn, onCheckOut, actionLoading }) 
         flexDirection: 'column',
         background: '#0f172a',
       }}>
-        {/* Error state */}
+        {}
         <div style={{
           flex: 1,
           display: 'flex',
@@ -191,7 +191,7 @@ const ResultSheet = ({ result, onReset, onCheckIn, onCheckOut, actionLoading }) 
       flexDirection: 'column',
       overflowY: 'auto',
     }}>
-      {/* Status hero */}
+      {}
       <div style={{
         background: `linear-gradient(180deg, ${s.bg} 0%, #0f172a 100%)`,
         padding: '48px 24px 28px',
@@ -237,7 +237,7 @@ const ResultSheet = ({ result, onReset, onCheckIn, onCheckOut, actionLoading }) 
         </div>
       </div>
 
-      {/* Booking details */}
+      {}
       <div style={{ flex: 1, padding: '20px 20px 0' }}>
         <div style={{
           background: 'rgba(255,255,255,0.04)',
@@ -288,7 +288,7 @@ const ResultSheet = ({ result, onReset, onCheckIn, onCheckOut, actionLoading }) 
           ))}
         </div>
 
-        {/* Notes if any */}
+        {}
         {b.notes && (
           <div style={{
             background: 'rgba(251,191,36,0.08)',
@@ -305,7 +305,7 @@ const ResultSheet = ({ result, onReset, onCheckIn, onCheckOut, actionLoading }) 
         )}
       </div>
 
-      {/* Action buttons — fixed at bottom */}
+      {}
       <div style={{
         padding: '16px 20px',
         paddingBottom: 'max(16px, env(safe-area-inset-bottom))',
@@ -315,7 +315,7 @@ const ResultSheet = ({ result, onReset, onCheckIn, onCheckOut, actionLoading }) 
         flexDirection: 'column',
         gap: 10,
       }}>
-        {/* CheckIn */}
+        {}
         {b.status === 'Approved' && (
           <button
             onClick={() => onCheckIn(b.booking_code || b.id_epass)}
@@ -343,7 +343,7 @@ const ResultSheet = ({ result, onReset, onCheckIn, onCheckOut, actionLoading }) 
           </button>
         )}
 
-        {/* CheckOut */}
+        {}
         {b.status === 'CheckedIn' && (
           <button
             onClick={() => onCheckOut(b.booking_code || b.id_epass)}
@@ -371,7 +371,7 @@ const ResultSheet = ({ result, onReset, onCheckIn, onCheckOut, actionLoading }) 
           </button>
         )}
 
-        {/* Expired/Completed */}
+        {}
         {(b.status === 'Completed' || b.status === 'Expired') && (
           <div style={{
             padding: '16px',
@@ -387,7 +387,7 @@ const ResultSheet = ({ result, onReset, onCheckIn, onCheckOut, actionLoading }) 
           </div>
         )}
 
-        {/* Pending/Rejected */}
+        {}
         {(b.status === 'Pending' || b.status === 'Rejected' || b.status === 'Draft') && (
           <div style={{
             padding: '16px',
@@ -406,7 +406,7 @@ const ResultSheet = ({ result, onReset, onCheckIn, onCheckOut, actionLoading }) 
           </div>
         )}
 
-        {/* Scan next */}
+        {}
         <button
           onClick={onReset}
           style={{
@@ -432,7 +432,7 @@ const ResultSheet = ({ result, onReset, onCheckIn, onCheckOut, actionLoading }) 
   );
 };
 
-/* ─── Manual Input Sheet ─── */
+
 const ManualSheet = ({ onVerify, loading, onClose }) => {
   const [code, setCode] = useState('');
   const inputRef = useRef(null);
@@ -465,7 +465,7 @@ const ManualSheet = ({ onVerify, loading, onClose }) => {
         padding: '0 0 max(24px, env(safe-area-inset-bottom)) 0',
         border: '1px solid rgba(255,255,255,0.08)',
       }}>
-        {/* Handle */}
+        {}
         <div style={{ display: 'flex', justifyContent: 'center', padding: '12px 0' }}>
           <div style={{ width: 36, height: 4, background: 'rgba(255,255,255,0.2)', borderRadius: 2 }} />
         </div>
@@ -540,7 +540,7 @@ const ManualSheet = ({ onVerify, loading, onClose }) => {
   );
 };
 
-/* ─── Main Mobile Scanner Page ─── */
+
 const SatpamMobileScanner = () => {
   const [camOn,         setCamOn]         = useState(false);
   const [camActive,     setCamActive]     = useState(false);
@@ -693,7 +693,7 @@ const SatpamMobileScanner = () => {
 
   const userName = localStorage.getItem('nama') || localStorage.getItem('name') || 'Satpam';
 
-  /* ─── If result is shown ─── */
+  
   if (result) {
     return (
       <div className="satpam-mobile-scanner" style={{ background: '#0f172a', minHeight: '100vh' }}>
@@ -709,7 +709,7 @@ const SatpamMobileScanner = () => {
     );
   }
 
-  /* ─── If loading after scan ─── */
+  
   if (loading) {
     return (
       <div className="satpam-mobile-scanner" style={{
@@ -741,7 +741,7 @@ const SatpamMobileScanner = () => {
     }}>
       <style>{css}</style>
 
-      {/* ── Top Bar ── */}
+      {}
       <div style={{
         position: 'relative',
         zIndex: 20,
@@ -773,7 +773,7 @@ const SatpamMobileScanner = () => {
           </div>
         </div>
 
-        {/* Status dot */}
+        {}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
           <div style={{
             width: 8,
@@ -789,14 +789,14 @@ const SatpamMobileScanner = () => {
         </div>
       </div>
 
-      {/* ── Camera Area ── */}
+      {}
       <div style={{
         flex: 1,
         position: 'relative',
         background: '#000',
         minHeight: 340,
       }}>
-        {/* The actual qr reader element */}
+        {}
         <div id="qr-reader-mobile" style={{
           position: 'absolute',
           inset: 0,
@@ -804,7 +804,7 @@ const SatpamMobileScanner = () => {
           height: '100%',
         }} />
 
-        {/* Overlay when cam not active */}
+        {}
         {(!camOn || !camActive) && !camError && (
           <div style={{
             position: 'absolute',
@@ -847,10 +847,10 @@ const SatpamMobileScanner = () => {
           </div>
         )}
 
-        {/* Scan frame overlay when active */}
+        {}
         {camActive && <ScanFrame scanning={camActive} />}
 
-        {/* Camera error */}
+        {}
         {camError && (
           <div style={{
             position: 'absolute',
@@ -897,7 +897,7 @@ const SatpamMobileScanner = () => {
         )}
       </div>
 
-      {/* ── Bottom Controls ── */}
+      {}
       <div style={{
         background: '#111827',
         padding: '20px 20px max(24px, env(safe-area-inset-bottom))',
@@ -906,7 +906,7 @@ const SatpamMobileScanner = () => {
         flexDirection: 'column',
         gap: 12,
       }}>
-        {/* Main scan button */}
+        {}
         {!camActive ? (
           <button
             onClick={() => setCamOn(true)}
@@ -961,7 +961,7 @@ const SatpamMobileScanner = () => {
           </button>
         )}
 
-        {/* Manual input */}
+        {}
         <button
           onClick={() => setShowManual(true)}
           style={{
@@ -987,7 +987,7 @@ const SatpamMobileScanner = () => {
         </button>
       </div>
 
-      {/* ── Manual Input Sheet ── */}
+      {}
       {showManual && (
         <ManualSheet
           onVerify={verify}

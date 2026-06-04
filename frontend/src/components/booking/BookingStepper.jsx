@@ -26,9 +26,9 @@ const BookingStepper = ({ currentStep = 2, steps = STEPS }) => {
 
           return (
             <div key={step.number} style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
-              {/* Step Item */}
+              {}
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 2 }}>
-                {/* Circle */}
+                {}
                 <div style={{
                   width: '40px',
                   height: '40px',
@@ -47,7 +47,7 @@ const BookingStepper = ({ currentStep = 2, steps = STEPS }) => {
                 }}>
                   {isCompleted ? <Check size={18} strokeWidth={3} /> : step.number}
                 </div>
-                {/* Label */}
+                {}
                 <span style={{
                   fontSize: '12px',
                   marginTop: '8px',
@@ -60,7 +60,7 @@ const BookingStepper = ({ currentStep = 2, steps = STEPS }) => {
                 </span>
               </div>
 
-              {/* Connector Line */}
+              {}
               {index < steps.length - 1 && (
                 <div style={{
                   flex: 1,

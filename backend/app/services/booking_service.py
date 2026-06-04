@@ -1,7 +1,4 @@
-"""
-BookingService (OOP) — Data access layer untuk peminjaman ruangan.
-Semua operasi database booking terpusat di class ini.
-"""
+
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import and_, or_, func
@@ -16,7 +13,6 @@ from app.models.booking_facility_model import BookingFacility
 
 
 class BookingService:
-    """Service class untuk semua operasi terkait booking/peminjaman."""
 
     def __init__(self, db: AsyncSession):
         self.db = db
@@ -29,11 +25,7 @@ class BookingService:
         end_time: str,
         exclude_booking_id: Optional[int] = None
     ) -> Tuple[bool, list]:
-        """Check apakah ruangan tersedia di waktu yang diminta.
 
-        Returns: (is_available, conflict_list)
-        """
-        # Normalize date
         if isinstance(date_val, str):
             try:
                 date_val = datetime.strptime(date_val, "%Y-%m-%d").date()
@@ -67,10 +59,7 @@ class BookingService:
         data: dict,
         facilities_list: Optional[list] = None
     ) -> Tuple[bool, any]:
-        """Buat booking baru.
 
-        Returns: (success, peminjaman_obj_or_error_message)
-        """
         room_id = data.get("room_id") or data.get("id_ruangan")
         user_id = data.get("user_id") or data.get("id_mahasiswa")
         keperluan = (
@@ -102,7 +91,7 @@ class BookingService:
         except (ValueError, TypeError):
             return False, "Format jam mulai atau selesai tidak valid. Gunakan HH:MM."
 
-        # Validate room
+
         room_result = await self.db.execute(
             select(Ruangan).filter(Ruangan.id_ruangan == room_id)
         )
@@ -110,7 +99,7 @@ class BookingService:
         if not room:
             return False, "Ruangan tidak ditemukan."
 
-        # Validate user (must be mahasiswa)
+
         user_result = await self.db.execute(
             select(Mahasiswa).filter(Mahasiswa.id_user == user_id)
         )
@@ -118,7 +107,7 @@ class BookingService:
         if not user:
             return False, "Mahasiswa tidak ditemukan. Pastikan user terdaftar sebagai mahasiswa."
 
-        # Check availability
+
         is_available, conflicts = await self.check_room_availability(
             room_id, date_val, start_time, end_time
         )
@@ -138,7 +127,7 @@ class BookingService:
             waktu_mulai=start_dt,
             waktu_selesai=end_dt,
             keperluan=keperluan,
-            status="Pending",
+            status=data.get("status") or "Pending",
             path_file_bukti=path_file_bukti,
             id_epass=id_epass,
         )
@@ -159,7 +148,7 @@ class BookingService:
     async def approve_booking(
         self, booking_id: int, notes: Optional[str] = None
     ) -> Tuple[bool, any]:
-        """Approve a pending booking and generate its QR code."""
+
         result = await self.db.execute(
             select(Peminjaman).filter(Peminjaman.id_booking == booking_id)
         )
@@ -176,7 +165,7 @@ class BookingService:
         if not booking.id_epass:
             booking.id_epass = generate_booking_code()
 
-        # Generate QR code
+
         from app.services.qr_service import QRService
         qr_svc = QRService()
         qr_path = qr_svc.generate_qr_for_booking(booking)
@@ -194,7 +183,7 @@ class BookingService:
     async def reject_booking(
         self, booking_id: int, notes: Optional[str] = None
     ) -> Tuple[bool, any]:
-        """Reject a pending booking."""
+
         result = await self.db.execute(
             select(Peminjaman).filter(Peminjaman.id_booking == booking_id)
         )
@@ -216,7 +205,7 @@ class BookingService:
         return True, booking
 
     async def complete_booking(self, booking_id: int) -> Tuple[bool, any]:
-        """Mark a booking as completed."""
+
         result = await self.db.execute(
             select(Peminjaman).filter(Peminjaman.id_booking == booking_id)
         )
@@ -244,7 +233,7 @@ class BookingService:
         search: Optional[str] = None,
         user_id: Optional[int] = None,
     ) -> dict:
-        """Return paginated list of bookings with optional filters."""
+
         query = select(Peminjaman)
 
         if user_id:
@@ -288,7 +277,7 @@ class BookingService:
         }
 
     async def get_dashboard_stats(self, user_id: Optional[int] = None) -> dict:
-        """Return dashboard statistics."""
+
         base_query = select(func.count(Peminjaman.id_booking))
         if user_id:
             base_query = base_query.filter(Peminjaman.id_mahasiswa == user_id)
@@ -339,7 +328,7 @@ class BookingService:
     async def get_room_availability(
         self, room_id: int, date_str: str
     ) -> Tuple[Optional[dict], Optional[str]]:
-        """Return booked time slots for a room on a given date."""
+
         try:
             date_obj = datetime.strptime(date_str, "%Y-%m-%d").date()
         except ValueError:
@@ -383,7 +372,7 @@ class BookingService:
         }, None
 
     async def get_reports_stats(self, period: str) -> dict:
-        """Return report statistics for the given period."""
+
         today = datetime.now().date()
 
         period_map = {

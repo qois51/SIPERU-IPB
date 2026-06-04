@@ -26,7 +26,7 @@ const AdminDashboard = () => {
   const allowedForRole = allowedViews[role] || allowedViews['admin'];
   const activeView = searchParams.get('view') || 'beranda';
 
-  // Manage sidebar response to screen resize
+  
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth > 768) {
@@ -39,7 +39,7 @@ const AdminDashboard = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Force redirect if user tries to manually navigate to an unauthorized view
+  
   useEffect(() => {
     if (!allowedForRole.includes(activeView)) {
       setSearchParams({ view: 'beranda' });
@@ -53,7 +53,7 @@ const AdminDashboard = () => {
     const fetchStats = async () => {
       try {
         const res = await adminService.getDashboardStats();
-        // Backend returns { success, message, data: { stats, upcoming } }
+        
         const payload = res.data || res;
         setDashboardData({
           stats: payload.stats || payload,

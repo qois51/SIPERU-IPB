@@ -2,7 +2,7 @@ import asyncio
 import os
 import sys
 
-# Ensure backend directory is in path
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from database import engine, get_db
@@ -10,10 +10,10 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 from app.services import booking_service
 
 async def test():
-    # Use the session maker directly
+
     async_session = async_sessionmaker(engine, expire_on_commit=False)
     
-    # Let's try to create a booking for room_id=1, user_id=1 on 2026-05-28
+
     payload = {
         "room_id": 1,
         "user_id": 1,
@@ -28,7 +28,7 @@ async def test():
         "participants": 10,
         "purpose": "Rapat Internal",
         "deskripsi_kegiatan": "Membahas proker tahunan",
-        "date": "2026-05-28", # Send as string (pydantic will parse it, but create_booking wants date object or handles it?)
+        "date": "2026-05-28",
         "start_time": "09:00",
         "end_time": "11:00",
         "status": "Pending",

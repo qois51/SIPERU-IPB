@@ -2,7 +2,7 @@ import asyncio
 import sys
 import os
 
-# Adjust path to import from backend
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from database import AsyncSessionLocal, engine
@@ -13,7 +13,7 @@ from app.services.booking_service import BookingService
 
 async def test_booking():
     async with AsyncSessionLocal() as db:
-        # 1. Find a Mahasiswa
+
         m_result = await db.execute(select(Mahasiswa))
         mahasiswa = m_result.scalars().first()
         if not mahasiswa:
@@ -22,7 +22,7 @@ async def test_booking():
 
         print(f"Found Mahasiswa: {mahasiswa.nama} (ID: {mahasiswa.id_user})")
 
-        # 2. Find a Ruangan
+
         r_result = await db.execute(select(Ruangan))
         room = r_result.scalars().first()
         if not room:
@@ -31,7 +31,7 @@ async def test_booking():
 
         print(f"Found Ruangan: {room.nama_ruangan} (ID: {room.id_ruangan})")
 
-        # 3. Try to create a booking
+
         svc = BookingService(db)
         booking_data = {
             "room_id": room.id_ruangan,

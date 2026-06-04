@@ -1,4 +1,4 @@
-/* Verification List & Table */
+
 .table-container {
   background: white;
   border-radius: 12px;
@@ -38,7 +38,7 @@
   transition: opacity 0.2s;
 }
 
-/* Verification Detail */
+
 .detail-layout {
   display: grid;
   grid-template-columns: 1fr 350px;
@@ -132,7 +132,7 @@
   cursor: pointer;
 }
 
-/* Mini Table for Schedule */
+
 .mini-table-container {
   background: #f8fafc;
   border-radius: 12px;

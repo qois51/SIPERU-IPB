@@ -1,7 +1,4 @@
-/**
- * usePagination.js — Custom hook for client-side pagination control
- * Works with the paginated API responses from backend
- */
+
 import { useState, useCallback } from 'react';
 
 const usePagination = (initialPage = 1, initialPerPage = 10) => {
@@ -10,9 +7,7 @@ const usePagination = (initialPage = 1, initialPerPage = 10) => {
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
 
-  /**
-   * Update pagination state from API response
-   */
+  
   const updateFromResponse = useCallback((paginationData) => {
     if (paginationData) {
       setTotalPages(paginationData.total_pages || 1);
@@ -41,7 +36,7 @@ const usePagination = (initialPage = 1, initialPerPage = 10) => {
   const hasNext = page < totalPages;
   const hasPrev = page > 1;
 
-  // Generate page numbers for pagination display
+  
   const pageNumbers = () => {
     const pages = [];
     const delta = 2;

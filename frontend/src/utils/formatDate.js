@@ -1,10 +1,6 @@
-/**
- * formatDate.js — Date formatting utilities for Indonesia locale
- */
 
-/**
- * Format date string to Indonesian format: "13 Mei 2026"
- */
+
+
 export const formatDateID = (dateStr) => {
   if (!dateStr) return '-';
   const date = new Date(dateStr);
@@ -15,9 +11,7 @@ export const formatDateID = (dateStr) => {
   });
 };
 
-/**
- * Format date string to short format: "13/05/2026"
- */
+
 export const formatDateShort = (dateStr) => {
   if (!dateStr) return '-';
   const date = new Date(dateStr);
@@ -28,18 +22,14 @@ export const formatDateShort = (dateStr) => {
   });
 };
 
-/**
- * Format time range: "14.00 - 17.00"
- */
+
 export const formatTimeRange = (startTime, endTime) => {
   if (!startTime || !endTime) return '-';
   const fmt = (t) => t.replace(':', '.');
   return `${fmt(startTime)} - ${fmt(endTime)}`;
 };
 
-/**
- * Format ISO datetime to relative: "2 jam lalu"
- */
+
 export const formatRelativeTime = (dateStr) => {
   if (!dateStr) return '-';
   const date = new Date(dateStr);

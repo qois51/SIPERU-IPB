@@ -7,7 +7,7 @@ import random
 import string
 
 def generate_booking_code():
-    """Generate unique booking code: BK-YYYY-XXXX"""
+
     year = datetime.utcnow().strftime('%Y')
     rand = ''.join(random.choices(string.digits, k=4))
     return f"BK-{year}-{rand}"
@@ -19,27 +19,27 @@ class Peminjaman(Base):
     waktu_mulai: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     waktu_selesai: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     keperluan: Mapped[str] = mapped_column(Text, nullable=False)
-    status: Mapped[str] = mapped_column(String(20), default='Pending') # Pending, Approved, Rejected, CheckedIn, Completed, Expired
+    status: Mapped[str] = mapped_column(String(20), default='Pending')
     path_file_bukti: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     id_epass: Mapped[Optional[str]] = mapped_column(String(50), unique=True, nullable=True)
 
     id_mahasiswa: Mapped[int] = mapped_column(ForeignKey('mahasiswa.id_user'), nullable=False)
     id_ruangan: Mapped[int] = mapped_column(ForeignKey('ruangan.id_ruangan'), nullable=False)
 
-    # Optional columns to support existing UI services
+
     qr_code: Mapped[Optional[str]] = mapped_column(String(500), nullable=True)
     notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    # Relationships
-    # lazy="selectin" diperlukan agar async SQLAlchemy tidak error MissingGreenlet
-    # saat to_dict() mengakses field relasi di luar context await
+
+
+
     mahasiswa: Mapped["Mahasiswa"] = relationship("Mahasiswa", back_populates="peminjamans", lazy="selectin")
     ruangan: Mapped["Ruangan"] = relationship("Ruangan", back_populates="peminjamans", lazy="selectin")
     facilities: Mapped[List["BookingFacility"]] = relationship("BookingFacility", back_populates="peminjaman", cascade="all, delete-orphan", lazy="selectin")
 
-    # Compatibility properties for legacy routes and services
+
     @property
     def id(self) -> int:
         return self.id_booking
@@ -125,7 +125,7 @@ class Peminjaman(Base):
             "id_ruangan": self.id_ruangan,
             "qr_code": self.qr_code,
             "notes": self.notes,
-            # Fallback mappings for existing frontend compatibility
+
             "id": self.id_booking,
             "booking_code": self.id_epass,
             "room_id": self.id_ruangan,

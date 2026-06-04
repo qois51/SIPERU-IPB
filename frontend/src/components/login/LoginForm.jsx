@@ -13,17 +13,17 @@ const LoginForm = () => {
   const [error, setError] = useState('');
   const [toast, setToast] = useState({ show: false, message: '', type: 'error' });
 
-  // Modals state
+  
   const [showForgotModal, setShowForgotModal] = useState(false);
   const [showHelpModal, setShowHelpModal] = useState(false);
 
-  // Forgot password state
-  const [forgotStep, setForgotStep] = useState(1); // 1: email, 2: otp & new pass
+  
+  const [forgotStep, setForgotStep] = useState(1); 
   const [forgotData, setForgotData] = useState({ email: '', otp: '', newPassword: '' });
   const [forgotMsg, setForgotMsg] = useState('');
   const [forgotError, setForgotError] = useState('');
 
-  // Help center state
+  
   const [helpData, setHelpData] = useState({ nama: '', email: '', pesan: '' });
   const [helpSuccess, setHelpSuccess] = useState(false);
 
@@ -48,7 +48,7 @@ const LoginForm = () => {
       if (role === 'admin' || role === 'satpam' || role === 'dosen' || role === 'pic') {
         navigate('/admin');
       } else {
-        // mahasiswa → kembali ke landing page / dashboard
+        
         navigate('/dashboard');
       }
     } catch (err) {
@@ -111,7 +111,7 @@ const LoginForm = () => {
 
   return (
     <div className="login-right" style={{ position: 'relative' }}>
-      {/* Mobile Branding */}
+      {}
       <div className="login-mobile-brand" style={{ display: 'none', alignItems: 'center', gap: '16px', marginBottom: '24px' }}>
         <img src="/loginAsset/logologin.png" alt="SIPBeru" style={{ width: '48px', height: 'auto' }} />
         <div>
@@ -197,7 +197,7 @@ const LoginForm = () => {
         </p>
       </form>
 
-      {/* MODAL LUPA PASSWORD */}
+      {}
       {showForgotModal && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div className="login-modal-content" style={{ background: 'white', borderRadius: '16px', padding: '32px', width: 'calc(100% - 32px)', maxWidth: '400px', position: 'relative' }}>
@@ -242,7 +242,7 @@ const LoginForm = () => {
         </div>
       )}
 
-      {/* MODAL HELP CENTER */}
+      {}
       {showHelpModal && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div className="login-modal-content" style={{ background: 'white', borderRadius: '16px', padding: '32px', width: 'calc(100% - 32px)', maxWidth: '450px', position: 'relative' }}>
@@ -284,7 +284,7 @@ const LoginForm = () => {
           </div>
         </div>
       )}
-      {/* Premium Floating Error Toast */}
+      {}
       {toast.show && (
         <div
           style={{

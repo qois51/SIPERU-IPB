@@ -4,12 +4,12 @@ import json
 import sys
 import os
 
-# Add backend directory to sys.path
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def test_add_room():
     print("Logging in to get token...")
-    # 1. Login as admin
+
     login_url = "http://127.0.0.1:8000/api/auth/login"
     login_data = json.dumps({
         "username": "admin",
@@ -31,7 +31,7 @@ def test_add_room():
         print("Login failed:", e)
         return
 
-    # 2. Add Room
+
     add_room_url = "http://127.0.0.1:8000/api/rooms/"
     room_payload = {
         "name": "Ruangan Rapat Baru",

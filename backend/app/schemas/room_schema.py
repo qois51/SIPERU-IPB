@@ -2,17 +2,17 @@ from pydantic import BaseModel, Field, EmailStr
 from typing import Optional
 
 class RoomSchema(BaseModel):
-    # Core fields — pakai nama asli DB tapi keduanya opsional
-    # supaya route bisa fallback ke field alias (name, capacity, dll.)
+
+
     id_ruangan: Optional[int] = None
     nama_ruangan: Optional[str] = Field(None, min_length=3, max_length=100)
     kapasitas: Optional[int] = None
     fasilitas: Optional[str] = None
     biaya_peminjaman: Optional[int] = None
-    # id_pic opsional — RoomController akan resolve via pic_email/pic_name
+
     id_pic: Optional[int] = None
 
-    # Alias / legacy fields dari frontend lama
+
     id: Optional[int] = None
     name: Optional[str] = None
     location: Optional[str] = None

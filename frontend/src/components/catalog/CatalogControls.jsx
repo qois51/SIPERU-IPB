@@ -14,7 +14,7 @@ const CatalogControls = ({ searchQuery, setSearchQuery, sortBy, setSortBy }) => 
         width: '100%'
       }}
     >
-      {/* Kotak Pencarian */}
+      {}
       <div 
         style={{ 
           display: 'flex', 
@@ -42,7 +42,7 @@ const CatalogControls = ({ searchQuery, setSearchQuery, sortBy, setSortBy }) => 
         />
       </div>
 
-      {/* Menu Urutkan */}
+      {}
       <select 
         value={sortBy} 
         onChange={(e) => setSortBy(e.target.value)}

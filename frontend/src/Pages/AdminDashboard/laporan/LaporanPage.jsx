@@ -22,12 +22,12 @@ import ExportLaporanPDF from './ExportLaporanPDF';
 import html2pdf from 'html2pdf.js';
 
 const LaporanPage = () => {
-  const [period, setPeriod] = useState('1month'); // '1month', '6months', '1year', 'all'
+  const [period, setPeriod] = useState('1month'); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [data, setData] = useState(null);
   
-  // Table search and pagination states
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -92,7 +92,7 @@ const LaporanPage = () => {
     return { bg: 'bg-slate-50 text-slate-700 border-slate-200/60', dot: 'bg-slate-500', label: status };
   };
 
-  // Filter bookings based on search
+  
   const filteredBookings = data?.bookings?.filter(b => {
     const term = searchTerm.toLowerCase();
     return (
@@ -105,7 +105,7 @@ const LaporanPage = () => {
     );
   }) || [];
 
-  // Pagination calculations
+  
   const totalItems = filteredBookings.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -126,17 +126,17 @@ const LaporanPage = () => {
     ? Math.round((summary.total_approved / summary.total_bookings) * 100) 
     : 0;
 
-  // Circular progress calculations for approval rate
+  
   const radius = 28;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (approvalRate / 100) * circumference;
 
-  // Maximum count for normalizing charts
+  
   const maxRoomCount = Math.max(...(data?.by_room?.map(r => r.count) || [1]), 1);
   const maxDeptCount = Math.max(...(data?.by_department?.map(d => d.count) || [1]), 1);
   const maxOrgCount = Math.max(...(data?.by_organization?.map(o => o.count) || [1]), 1);
 
-  // Awards/Rankings styles
+  
   const getRankBadge = (idx) => {
     if (idx === 0) return { bg: 'bg-amber-100 text-amber-800 border-amber-200', label: '1st', color: '#d97706' };
     if (idx === 1) return { bg: 'bg-slate-100 text-slate-800 border-slate-200', label: '2nd', color: '#475569' };
@@ -284,10 +284,10 @@ const LaporanPage = () => {
         }
       `}</style>
       
-      {/* ===== HEADER SECTION ===== */}
+      {}
       <div className="lp-animate-fade-up" style={{ marginBottom: '36px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          {/* Title area */}
+          {}
           <div>
             <div className="admin-page-header" style={{ marginBottom: '8px' }}>
               <h2 className="admin-page-title">LAPORAN & ANALITIK</h2>
@@ -297,7 +297,7 @@ const LaporanPage = () => {
             </p>
           </div>
 
-          {/* Period Selector */}
+          {}
           <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
@@ -370,14 +370,14 @@ const LaporanPage = () => {
         </div>
       ) : (
         <>
-          {/* ===== STATS METRIC GRID ===== */}
+          {}
           <div className="lp-animate-fade-up" style={{ 
             display: 'grid', 
             gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', 
             gap: '20px', 
             marginBottom: '32px' 
           }}>
-            {/* CARD 1: Total Peminjaman */}
+            {}
             <div className="lp-stat-card" style={{ background: 'white', padding: '24px', borderRadius: '20px', border: '1px solid #f1f5f9', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '140px' }}>
               <div style={{ position: 'absolute', right: 0, top: 0, width: '80px', height: '80px', background: 'linear-gradient(180deg, rgba(59,130,246,0.06), transparent)', borderBottomLeftRadius: '100%', pointerEvents: 'none' }} />
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -400,7 +400,7 @@ const LaporanPage = () => {
               </div>
             </div>
 
-            {/* CARD 2: Approval Rate (Radial Progress Chart) */}
+            {}
             <div className="lp-stat-card" style={{ background: 'white', padding: '24px', borderRadius: '20px', border: '1px solid #f1f5f9', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '140px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
@@ -408,7 +408,7 @@ const LaporanPage = () => {
                   <h3 style={{ fontSize: '28px', fontWeight: 900, color: '#1e293b', margin: '8px 0 0 0' }}>{approvalRate}%</h3>
                 </div>
                 
-                {/* Radial SVG */}
+                {}
                 <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   <svg style={{ width: '60px', height: '60px', transform: 'rotate(-90deg)' }}>
                     <circle cx="30" cy="30" r={radius} stroke="#f1f5f9" strokeWidth="5" fill="transparent" />
@@ -434,7 +434,7 @@ const LaporanPage = () => {
               </div>
             </div>
 
-            {/* CARD 3: Accumulated Usage in Hours */}
+            {}
             <div className="lp-stat-card" style={{ background: 'white', padding: '24px', borderRadius: '20px', border: '1px solid #f1f5f9', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '140px' }}>
               <div style={{ position: 'absolute', right: 0, top: 0, width: '80px', height: '80px', background: 'linear-gradient(180deg, rgba(245,158,11,0.06), transparent)', borderBottomLeftRadius: '100%', pointerEvents: 'none' }} />
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -455,7 +455,7 @@ const LaporanPage = () => {
               </div>
             </div>
 
-            {/* CARD 4: Total Participants */}
+            {}
             <div className="lp-stat-card" style={{ background: 'white', padding: '24px', borderRadius: '20px', border: '1px solid #f1f5f9', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', minHeight: '140px' }}>
               <div style={{ position: 'absolute', right: 0, top: 0, width: '80px', height: '80px', background: 'linear-gradient(180deg, rgba(147,51,234,0.06), transparent)', borderBottomLeftRadius: '100%', pointerEvents: 'none' }} />
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -477,14 +477,14 @@ const LaporanPage = () => {
             </div>
           </div>
 
-          {/* ===== ANALYSIS CHARTS & RANKINGS ===== */}
+          {}
           <div className="lp-animate-fade-up lp-delay-1 lp-charts-grid" style={{ 
             display: 'grid', 
             gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))', 
             gap: '24px', 
             marginBottom: '28px' 
           }}>
-            {/* LEFT PANEL: Top Rooms Usage */}
+            {}
             <div className="lp-panel" style={{ background: 'white', padding: '28px', borderRadius: '20px', border: '1px solid #f1f5f9', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', display: 'flex', flexDirection: 'column' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', marginBottom: '24px', gap: '12px', flexWrap: 'wrap' }}>
                 <div>
@@ -543,7 +543,7 @@ const LaporanPage = () => {
               </div>
             </div>
 
-            {/* RIGHT PANEL: Top Active Departments / Study Programs */}
+            {}
             <div className="lp-panel" style={{ background: 'white', padding: '28px', borderRadius: '20px', border: '1px solid #f1f5f9', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', display: 'flex', flexDirection: 'column' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', marginBottom: '24px', gap: '12px', flexWrap: 'wrap' }}>
                 <div>
@@ -603,14 +603,14 @@ const LaporanPage = () => {
             </div>
           </div>
 
-          {/* ===== ORGANIZATIONS + STATUS BREAKDOWN ===== */}
+          {}
           <div className="lp-animate-fade-up lp-delay-2 lp-org-status-grid" style={{ 
             display: 'grid', 
             gridTemplateColumns: 'minmax(0, 2fr) minmax(280px, 1fr)', 
             gap: '24px', 
             marginBottom: '32px' 
           }}>
-            {/* PANEL 1: Top Organizations */}
+            {}
             <div className="lp-panel" style={{ background: 'white', padding: '28px', borderRadius: '20px', border: '1px solid #f1f5f9', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
               <div style={{ borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', marginBottom: '20px' }}>
                 <h4 style={{ fontSize: '16px', fontWeight: 900, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px', margin: '0 0 4px 0' }}>
@@ -660,7 +660,7 @@ const LaporanPage = () => {
               </div>
             </div>
 
-            {/* PANEL 2: Status Breakdown */}
+            {}
             <div className="lp-panel" style={{ background: 'white', padding: '28px', borderRadius: '20px', border: '1px solid #f1f5f9', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}>
               <div style={{ borderBottom: '1px solid #f1f5f9', paddingBottom: '16px', marginBottom: '20px' }}>
                 <h4 style={{ fontSize: '16px', fontWeight: 900, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px', margin: '0 0 4px 0' }}>
@@ -709,9 +709,9 @@ const LaporanPage = () => {
             </div>
           </div>
 
-          {/* ===== DETAILED DATA TABLE ===== */}
+          {}
           <div className="lp-panel lp-animate-fade-up lp-delay-3" style={{ background: 'white', borderRadius: '20px', border: '1px solid #f1f5f9', boxShadow: '0 1px 3px rgba(0,0,0,0.04)', overflow: 'hidden', marginBottom: '32px' }}>
-            {/* Table Header Controls */}
+            {}
             <div style={{ padding: '24px 28px', borderBottom: '1px solid #f1f5f9', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '16px' }}>
               <div>
                 <h4 style={{ fontSize: '16px', fontWeight: 900, color: '#1e293b', display: 'flex', alignItems: 'center', gap: '8px', margin: '0 0 4px 0' }}>
@@ -721,7 +721,7 @@ const LaporanPage = () => {
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-                {/* Search Bar */}
+                {}
                 <div style={{ position: 'relative', width: '240px', minWidth: '200px' }}>
                   <Search size={15} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
                   <input
@@ -742,7 +742,7 @@ const LaporanPage = () => {
                   />
                 </div>
 
-                {/* Show entries select */}
+                {}
                 <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #e2e8f0', padding: '8px 14px', borderRadius: '12px', gap: '8px', flexShrink: 0 }}>
                   <span style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '5px', whiteSpace: 'nowrap' }}>
                     <SlidersHorizontal size={12} /> Tampilkan:
@@ -760,7 +760,7 @@ const LaporanPage = () => {
               </div>
             </div>
 
-            {/* Table Content */}
+            {}
             <div className="lp-table-wrap">
               <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
                 <thead>
@@ -822,7 +822,7 @@ const LaporanPage = () => {
               </table>
             </div>
 
-            {/* Pagination footer */}
+            {}
             {totalPages > 1 && (
               <div style={{ padding: '20px 28px', borderTop: '1px solid #f1f5f9', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px', color: '#64748b', gap: '12px' }}>
                 <div style={{ fontWeight: 700 }}>
@@ -877,7 +877,7 @@ const LaporanPage = () => {
             )}
           </div>
 
-          {/* ===== EXPORT CALL-TO-ACTION ===== */}
+          {}
           <div className="lp-animate-fade-up lp-delay-4" style={{ 
             background: '#0f172a', color: 'white', borderRadius: '24px', 
             padding: '36px 32px', 
@@ -886,7 +886,7 @@ const LaporanPage = () => {
             gap: '24px', position: 'relative', overflow: 'hidden', 
             marginBottom: '16px', border: '1px solid rgba(51, 65, 85, 0.6)' 
           }}>
-            {/* Mesh gradient background */}
+            {}
             <div style={{ position: 'absolute', right: '-20px', top: '-20px', width: '250px', height: '250px', background: '#2563eb', borderRadius: '50%', opacity: 0.15, filter: 'blur(60px)', pointerEvents: 'none' }} />
             <div style={{ position: 'absolute', left: '40px', bottom: '-40px', width: '200px', height: '200px', background: '#059669', borderRadius: '50%', opacity: 0.08, filter: 'blur(60px)', pointerEvents: 'none' }} />
             
@@ -919,7 +919,7 @@ const LaporanPage = () => {
             </button>
           </div>
 
-          {/* HIDDEN PRINT-READY PDF CONTAINER */}
+          {}
           <div style={{ display: 'none' }}>
             <ExportLaporanPDF 
               ref={pdfRef} 

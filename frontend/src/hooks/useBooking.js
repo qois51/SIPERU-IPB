@@ -1,7 +1,4 @@
-/**
- * useBooking.js — Custom hook for booking operations
- * Provides: bookings, stats, pagination info, loading, error, and action functions
- */
+
 import { useState, useCallback } from 'react';
 import bookingService from '../services/bookingService';
 
@@ -12,9 +9,7 @@ const useBooking = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  /**
-   * Fetch current user's bookings
-   */
+  
   const fetchMyBookings = useCallback(async ({ page = 1, perPage = 10, status = null, search = null } = {}) => {
     setLoading(true);
     setError(null);
@@ -31,9 +26,7 @@ const useBooking = () => {
     }
   }, []);
 
-  /**
-   * Fetch dashboard stats for current user
-   */
+  
   const fetchMyStats = useCallback(async (userId) => {
     setLoading(true);
     setError(null);
@@ -48,9 +41,7 @@ const useBooking = () => {
     }
   }, []);
 
-  /**
-   * Create a new booking
-   */
+  
   const createBooking = useCallback(async (bookingData) => {
     setLoading(true);
     setError(null);
@@ -65,9 +56,7 @@ const useBooking = () => {
     }
   }, []);
 
-  /**
-   * Upload document for a booking
-   */
+  
   const uploadDocument = useCallback(async (bookingId, file) => {
     setLoading(true);
     setError(null);
@@ -82,9 +71,7 @@ const useBooking = () => {
     }
   }, []);
 
-  /**
-   * Cancel a booking
-   */
+  
   const cancelBooking = useCallback(async (bookingId) => {
     setLoading(true);
     setError(null);

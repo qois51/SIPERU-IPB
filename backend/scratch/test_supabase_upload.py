@@ -4,7 +4,7 @@ import urllib.request
 import urllib.error
 import json
 
-# Ensure backend directory is in path
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from config import settings
@@ -25,7 +25,7 @@ def test_upload():
     print(f"Target URL: {upload_url}")
     print(f"Using Key: {supabase_key[:15]}...")
     
-    # Dummy file bytes (just some plain text bytes representing a PDF)
+
     file_bytes = b"%PDF-1.4 test dummy data"
     
     headers = {

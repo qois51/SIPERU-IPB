@@ -21,7 +21,7 @@ const ExportRiwayatPDF = forwardRef(({ bookings, user }, ref) => {
     return { bg: '#f3f4f6', text: '#374151', label: status || '-' };
   };
 
-  // Format booking code: use booking_code field, or fallback to BK-YYYY-XXXX, or "-"
+  
   const formatBookingCode = (booking) => {
     const s = (booking.status || '').toLowerCase();
     if (['pending', 'menunggu', 'rejected', 'ditolak', 'draft'].includes(s)) {
@@ -34,9 +34,9 @@ const ExportRiwayatPDF = forwardRef(({ bookings, user }, ref) => {
 
   return (
     <div ref={ref} style={{ padding: '25px 25px 25px 30px', fontFamily: '"Times New Roman", Times, serif', color: '#1f2937', background: '#fff', width: '210mm', minHeight: '297mm', boxSizing: 'border-box' }}>
-      {/* 1. HEADER DOKUMEN */}
+      {}
       <div style={{ display: 'flex', alignItems: 'center', borderBottom: '3px solid #1e3a8a', paddingBottom: '16px', marginBottom: '20px' }}>
-        {/* Logo - natural aspect ratio */}
+        {}
         <img
           src="/loginAsset/logologin.png"
           alt="Logo IPB"
@@ -52,7 +52,7 @@ const ExportRiwayatPDF = forwardRef(({ bookings, user }, ref) => {
         </div>
       </div>
 
-      {/* 2. INFORMASI PENGGUNA + STATISTIK */}
+      {}
       <div style={{ display: 'flex', gap: '16px', marginBottom: '20px' }}>
         <div style={{ flex: 1.2, background: '#f8fafc', padding: '14px 16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
           <h3 style={{ margin: '0 0 10px', fontSize: '14px', color: '#1e3a8a', fontWeight: 'bold', borderBottom: '1px solid #cbd5e1', paddingBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Informasi Pemohon</h3>
@@ -89,7 +89,7 @@ const ExportRiwayatPDF = forwardRef(({ bookings, user }, ref) => {
         </div>
       </div>
 
-      {/* 3. TABEL RIWAYAT */}
+      {}
       <h3 style={{ margin: '0 0 10px', fontSize: '16px', color: '#1e3a8a', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Detail Riwayat Pengajuan</h3>
       <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '20px', fontSize: '11px' }}>
         <thead>
@@ -131,7 +131,7 @@ const ExportRiwayatPDF = forwardRef(({ bookings, user }, ref) => {
         </tbody>
       </table>
 
-      {/* 5. KETERANGAN STATUS */}
+      {}
       <div style={{ background: '#f8fafc', padding: '12px 16px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '20px', pageBreakInside: 'avoid' }}>
         <h3 style={{ margin: '0 0 8px', fontSize: '12px', color: '#475569', fontWeight: 'bold', textTransform: 'uppercase' }}>Keterangan Status:</h3>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', fontSize: '11px', color: '#4b5563' }}>
@@ -142,7 +142,7 @@ const ExportRiwayatPDF = forwardRef(({ bookings, user }, ref) => {
         </div>
       </div>
 
-      {/* 6. FOOTER */}
+      {}
       <div style={{ borderTop: '2px solid #e2e8f0', paddingTop: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
         <div style={{ fontSize: '9px', color: '#64748b', lineHeight: '1.6' }}>
           <strong>Catatan:</strong> Dokumen ini dicetak otomatis oleh Sistem SIPBeru IPB.<br/>

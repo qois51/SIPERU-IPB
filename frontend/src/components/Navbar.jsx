@@ -25,7 +25,7 @@ const Navbar = () => {
   const [navSearch, setNavSearch] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Pre-fill the search input if there's a 'q' parameter in the URL
+  
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const q = params.get('q');
@@ -86,12 +86,12 @@ const Navbar = () => {
           }
         }
         
-        // Filter out dismissed notifications stored in localStorage
+        
         const dismissedStr = localStorage.getItem('dismissedNotifs');
         const dismissed = dismissedStr ? JSON.parse(dismissedStr) : [];
         const activeNotifs = fetchedNotifs.filter(n => !dismissed.includes(n.id));
         
-        // Only update state if different to prevent unnecessary re-renders
+        
         setNotifications(prev => {
           if (JSON.stringify(prev) !== JSON.stringify(activeNotifs)) return activeNotifs;
           return prev;
@@ -107,7 +107,7 @@ const Navbar = () => {
     return () => clearInterval(interval);
   }, [isLoggedIn, role]);
 
-  // Dismiss a single notification
+  
   const dismissNotif = (id) => {
     const dismissedStr = localStorage.getItem('dismissedNotifs');
     const dismissed = dismissedStr ? JSON.parse(dismissedStr) : [];
@@ -118,7 +118,7 @@ const Navbar = () => {
     setNotifications(prev => prev.filter(n => n.id !== id));
   };
 
-  // Mark all notifications as read
+  
   const markAllRead = () => {
     const dismissedStr = localStorage.getItem('dismissedNotifs');
     const dismissed = dismissedStr ? JSON.parse(dismissedStr) : [];
@@ -141,7 +141,7 @@ const Navbar = () => {
 
   return (
     <nav className="landing-navbar">
-      {/* Logo */}
+      {}
       <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '14px', textDecoration: 'none', color: 'white' }}>
         <img src="/loginAsset/logologin.png" alt="SIPBeru" style={{ width: '48px' }} />
         <h2 style={{ fontSize: '28px', fontWeight: 800, margin: 0, letterSpacing: '-0.5px' }}>
@@ -149,7 +149,7 @@ const Navbar = () => {
         </h2>
       </Link>
 
-      {/* Nav Links - Desktop */}
+      {}
       <ul className="nav-links-desktop" style={{ margin: 0, padding: 0, display: 'flex', alignItems: 'center', gap: '40px', listStyle: 'none' }}>
         <li><Link to="/" style={navLinkStyle('/')}>Beranda</Link></li>
         <li><Link to="/katalog" style={navLinkStyle('/katalog')}>Katalog Ruangan</Link></li>
@@ -166,7 +166,7 @@ const Navbar = () => {
         </li>
       </ul>
 
-      {/* Right Actions */}
+      {}
       <div className="nav-actions" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
         <div className="search-wrapper-desktop" style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
           <input 
@@ -200,7 +200,7 @@ const Navbar = () => {
 
         {isLoggedIn ? (
           <>
-            {/* Bell notification */}
+            {}
             <div ref={notifRef} style={{ position: 'relative', cursor: 'pointer' }}>
               <div onClick={() => setShowNotif(!showNotif)}>
                 <Bell size={24} color="white" />
@@ -217,7 +217,7 @@ const Navbar = () => {
                 )}
               </div>
 
-              {/* Notifications Dropdown */}
+              {}
               {showNotif && (
                 <div className="notif-dropdown-mobile-adjust" style={{
                   position: 'absolute', top: 'calc(100% + 16px)', right: '-60px',
@@ -306,13 +306,13 @@ const Navbar = () => {
               )}
             </div>
 
-            {/* User profile + dropdown */}
+            {}
             <div ref={dropdownRef} style={{ position: 'relative' }}>
               <div
                 onClick={() => setShowDropdown((o) => !o)}
                 style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}
               >
-                {/* Name + role text */}
+                {}
                 <div className="nav-user-text" style={{ textAlign: 'right' }}>
                   <div style={{ fontWeight: 700, fontSize: '14px', color: 'white' }}>
                     {user?.full_name || user?.username || '-'}
@@ -322,7 +322,7 @@ const Navbar = () => {
                   </div>
                 </div>
 
-                {/* Avatar */}
+                {}
                 {user?.profile_image ? (
                   <img
                     src={user.profile_image}
@@ -334,7 +334,7 @@ const Navbar = () => {
                 )}
               </div>
 
-              {/* Dropdown */}
+              {}
               {showDropdown && (
                 <div style={{
                   position: 'absolute', top: 'calc(100% + 16px)', right: 0,
@@ -343,7 +343,7 @@ const Navbar = () => {
                   width: '240px', zIndex: 2000,
                   overflow: 'hidden', border: '1px solid #f3f4f6'
                 }}>
-                  {/* User header */}
+                  {}
                   <div style={{ padding: '16px', background: '#f8fafc', borderBottom: '1px solid #f1f5f9' }}>
                     <div style={{ fontWeight: 700, color: '#1e293b', fontSize: '15px' }}>
                       {user?.full_name || user?.username || '-'}
@@ -356,7 +356,7 @@ const Navbar = () => {
                     </div>
                   </div>
 
-                  {/* Menu items */}
+                  {}
                   <div style={{ padding: '8px' }}>
                     <div
                       onClick={() => { navigate('/profil'); setShowDropdown(false); }}
@@ -390,7 +390,7 @@ const Navbar = () => {
           </>
         ) : (
           <>
-            {/* Divider */}
+            {}
             <div className="login-divider" style={{ width: '1px', height: '28px', background: 'rgba(255,255,255,0.3)' }} />
             <Link to="/login">
               <button className="btn-login-nav">Login</button>
@@ -398,7 +398,7 @@ const Navbar = () => {
           </>
         )}
 
-        {/* Mobile Burger Menu Button */}
+        {}
         <button 
           className="mobile-menu-btn" 
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -408,7 +408,7 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Mobile Drawer Overlay */}
+      {}
       {isMobileMenuOpen && (
         <div className="mobile-nav-drawer-overlay" onClick={() => setIsMobileMenuOpen(false)}>
           <div className="mobile-nav-drawer" onClick={(e) => e.stopPropagation()}>

@@ -30,7 +30,7 @@ const bookingSchema = yup.object({
   deskripsi_kegiatan: yup.string().required('Tolong jelaskan secara singkat kegiatanmu.'),
 });
 
-/* ── Inline form field components ── */
+
 const Field = ({ label, children, error }) => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
     {label && (
@@ -71,7 +71,7 @@ const SectionHeader = ({ icon: Icon, title }) => (
   </div>
 );
 
-/* ── Stepper ── */
+
 const STEPS = ['Pilih Ruangan', 'Form Booking', 'Upload Dokumen', 'Review', 'Menunggu Approval'];
 const Stepper = ({ current }) => (
   <div style={{
@@ -124,7 +124,7 @@ const Stepper = ({ current }) => (
   </div>
 );
 
-/* ── Main Component ── */
+
 const BookingForm = () => {
   const { roomId } = useParams();
   const [searchParams] = useSearchParams();
@@ -138,9 +138,18 @@ const BookingForm = () => {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [modalErrorMessage, setModalErrorMessage] = useState('');
   const [uploadFile, setUploadFile] = useState(null);
+  const [existingFileUrl, setExistingFileUrl] = useState(null);
   const [selectedFacilities, setSelectedFacilities] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
+  const isDraftRef = useRef(false);
+
+  const customResolver = async (values, context, options) => {
+    if (isDraftRef.current) {
+      return { values, errors: {} };
+    }
+    return yupResolver(bookingSchema)(values, context, options);
+  };
 
   const showPopUpError = (msg) => {
     setModalErrorMessage(msg);
@@ -158,8 +167,8 @@ const BookingForm = () => {
   const startTime = searchParams.get('start') || '';
   const endTime = searchParams.get('end') || '';
 
-  const { register, handleSubmit, getValues, setValue, formState: { errors } } = useForm({
-    resolver: yupResolver(bookingSchema),
+  const { register, handleSubmit, getValues, setValue, clearErrors, formState: { errors } } = useForm({
+    resolver: customResolver,
     defaultValues: {
       nama_peminjam: '', nim_nip: '', program_studi: '',
       email: '', nomor_hp: '', activity_name: '',
@@ -198,6 +207,7 @@ const BookingForm = () => {
             setValue('jenis_kegiatan', b.jenis_kegiatan || '');
             setValue('deskripsi_kegiatan', b.deskripsi_kegiatan || '');
             if (b.facilities) setSelectedFacilities(b.facilities);
+            if (b.surat_file) setExistingFileUrl(b.surat_file);
           }
         } catch (err) {
           console.error('Gagal memuat data draft', err);
@@ -222,7 +232,7 @@ const BookingForm = () => {
 
   const buildPayload = (formData) => {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
-    // Backend to_dict() returns id_user; fallback to id for compatibility
+    
     const userId = user.id_user || user.id || null;
     return {
       ...formData,
@@ -238,16 +248,19 @@ const BookingForm = () => {
   };
 
   const onSubmit = async (formData) => {
+    isDraftRef.current = false;
     if (!selectedDate) { showPopUpError('Tanggal booking belum dipilih. Harap tentukan tanggalnya terlebih dahulu.'); return; }
     if (!startTime || !endTime) { showPopUpError('Waktu/Jam booking belum dipilih. Harap tentukan jam pemakaian terlebih dahulu.'); return; }
-    if (!uploadFile) { showPopUpError('Dokumen Surat Izin/Surat Pengantar wajib diunggah untuk mengajukan permohonan.'); return; }
+    if (!uploadFile && !existingFileUrl) { showPopUpError('Dokumen Surat Izin/Surat Pengantar wajib diunggah untuk mengajukan permohonan.'); return; }
     setSubmitting(true);
     setError('');
     try {
       const editId = searchParams.get('edit');
-      const payload = buildPayload(formData);
-      // When submitting for real, always set status to Pending
-      payload.status = 'Pending';
+      const payload = {
+        ...buildPayload(formData),
+        status: 'Pending',
+        surat_file: uploadFile ? undefined : (existingFileUrl || null)
+      };
       
       let res;
       if (editId) {
@@ -277,6 +290,8 @@ const BookingForm = () => {
   };
 
   const handleSaveDraft = async () => {
+    isDraftRef.current = true;
+    clearErrors();
     const formData = getValues();
     if (!formData.activity_name) { showPopUpError('Harap isi Nama Kegiatan terlebih dahulu untuk menyimpan draft.'); return; }
     if (!selectedDate || !startTime || !endTime) { showPopUpError('Tanggal & jam booking wajib dipilih sebelum menyimpan draft.'); return; }
@@ -297,13 +312,20 @@ const BookingForm = () => {
         start_time: startTime, 
         end_time: endTime,
         facilities: selectedFacilities,
-        status: 'Draft'
+        status: 'Draft',
+        surat_file: uploadFile ? undefined : (existingFileUrl || null)
       };
 
+      let res;
       if (editId) {
-        await bookingService.updateBooking(editId, payload);
+        res = await bookingService.updateBooking(editId, payload);
       } else {
-        await bookingService.createBooking(payload);
+        res = await bookingService.createBooking(payload);
+      }
+
+      const bookingId = res.data?.id || res.id;
+      if (uploadFile && bookingId) {
+        await bookingService.uploadDocument(bookingId, uploadFile);
       }
       navigate('/dashboard');
     } catch (err) {
@@ -364,7 +386,7 @@ const BookingForm = () => {
       <div style={{ flexGrow: 1, padding: '32px 0 56px' }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '0 20px' }}>
 
-          {/* Breadcrumbs */}
+          {}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#6b7280', marginBottom: '20px', fontWeight: 500 }}>
             <span style={{ cursor: 'pointer', transition: 'color 0.2s' }} onMouseOver={e => e.currentTarget.style.color = '#1e3a8a'} onMouseOut={e => e.currentTarget.style.color = '#6b7280'} onClick={() => navigate(`/katalog/${roomId}`)}>
               Detail Katalog
@@ -373,12 +395,12 @@ const BookingForm = () => {
             <span style={{ color: '#1e3a8a', fontWeight: 600 }}>Form Reservasi</span>
           </div>
 
-          {/* Stepper */}
+          {}
           <Stepper current={2} />
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '24px', alignItems: 'start' }}>
 
-            {/* ═══ MAIN FORM ═══ */}
+            {}
             <form onSubmit={handleSubmit(onSubmit, onInvalid)}>
               <div style={{
                 background: 'white', borderRadius: '16px',
@@ -405,7 +427,7 @@ const BookingForm = () => {
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
 
-                  {/* ── Data Peminjam ── */}
+                  {}
                   <SectionHeader icon={User} title="Data Peminjam" />
 
                   <Field label="Nama Peminjam" error={errors.nama_peminjam?.message}>
@@ -424,7 +446,7 @@ const BookingForm = () => {
                     <input {...register('nomor_hp')} placeholder="081234567890" style={inputStyle(errors.nomor_hp)} />
                   </Field>
 
-                  {/* ── Data Kegiatan ── */}
+                  {}
                   <SectionHeader icon={BookOpen} title="Data Kegiatan" />
 
                   <Field label="Nama Kegiatan" error={errors.activity_name?.message}>
@@ -448,7 +470,7 @@ const BookingForm = () => {
                       style={{ ...inputStyle(errors.deskripsi_kegiatan), resize: 'vertical', lineHeight: 1.6 }} />
                   </Field>
 
-                  {/* Kebutuhan Tambahan */}
+                  {}
                   <Field label="Kebutuhan Tambahan">
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '4px' }}>
                       {FACILITY_OPTIONS.map(f => (
@@ -466,7 +488,7 @@ const BookingForm = () => {
                     </div>
                   </Field>
 
-                  {/* ── Upload Surat ── */}
+                  {}
                   <SectionHeader icon={Upload} title="Upload Surat Izin/Surat Pengantar" />
 
                   {uploadFile ? (
@@ -483,6 +505,24 @@ const BookingForm = () => {
                         <p style={{ fontSize: '11px', color: '#6b7280' }}>{(uploadFile.size / 1024).toFixed(1)} KB</p>
                       </div>
                       <button type="button" onClick={() => setUploadFile(null)}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: '#ef4444' }}>
+                        <X size={18} />
+                      </button>
+                    </div>
+                  ) : existingFileUrl ? (
+                    <div style={{
+                      display: 'flex', alignItems: 'center', gap: '12px',
+                      padding: '14px 16px', background: '#f0fdf4', borderRadius: '10px',
+                      border: '1px solid #bbf7d0',
+                    }}>
+                      <FileText size={22} color="#15803d" />
+                      <div style={{ flex: 1, overflow: 'hidden' }}>
+                        <p style={{ fontSize: '13px', fontWeight: 600, color: '#1f2937', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {existingFileUrl.split('/').pop() || 'Dokumen Surat Izin'}
+                        </p>
+                        <p style={{ fontSize: '11px', color: '#15803d' }}>Dokumen terunggah (Klik untuk mengganti)</p>
+                      </div>
+                      <button type="button" onClick={() => setExistingFileUrl(null)}
                         style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: '#ef4444' }}>
                         <X size={18} />
                       </button>
@@ -517,7 +557,7 @@ const BookingForm = () => {
                 </div>
               </div>
 
-              {/* ── Action Buttons ── */}
+              {}
               <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
                 <button type="button" onClick={() => navigate(-1)}
                   style={{
@@ -559,10 +599,10 @@ const BookingForm = () => {
               </div>
             </form>
 
-            {/* ═══ SIDEBAR ═══ */}
+            {}
             <div style={{ position: 'sticky', top: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
-              {/* Room Info Card */}
+              {}
               <div style={{ background: 'white', borderRadius: '16px', border: '1px solid #e5e7eb', overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.07)' }}>
                 <div style={{ padding: '16px 16px 12px' }}>
                   <p style={{ fontSize: '13px', fontWeight: 700, color: '#1e3a8a', margin: '0 0 12px' }}>Informasi Peminjaman</p>
@@ -595,7 +635,7 @@ const BookingForm = () => {
                   )}
                 </div>
 
-                {/* PIC Section */}
+                {}
                 {room?.pic_name && (
                   <div style={{ borderTop: '1px solid #f3f4f6', padding: '12px 16px' }}>
                     <p style={{ fontSize: '11px', color: '#9ca3af', margin: '0 0 10px' }}>PIC Ruangan</p>
@@ -622,7 +662,7 @@ const BookingForm = () => {
 
       <Footer />
 
-      {/* Error Modal Popup */}
+      {}
       {showErrorModal && (
         <div style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,

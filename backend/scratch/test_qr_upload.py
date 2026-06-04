@@ -2,7 +2,7 @@ import asyncio
 import os
 import sys
 
-# Ensure backend directory is in path
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from database import engine
@@ -17,7 +17,7 @@ async def test_qr():
     
     async with async_session() as db:
         try:
-            # Let's query an existing booking (e.g. Booking ID 13)
+
             result = await db.execute(select(Booking).filter_by(id=13))
             booking = result.scalars().first()
             
@@ -32,7 +32,7 @@ async def test_qr():
                 
             print(f"Loaded Booking: ID {booking.id}, Code {booking.booking_code}, Room {booking.room_id}")
             
-            # Make sure booking has a code to construct filename
+
             if not booking.booking_code:
                 booking.booking_code = "BK-2026-TEST"
                 

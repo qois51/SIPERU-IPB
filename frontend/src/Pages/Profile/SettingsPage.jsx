@@ -7,12 +7,12 @@ import api from '../../services/api';
 const SettingsPage = () => {
   const [activeTab, setActiveTab] = useState('password');
   
-  // Password State
+  
   const [passData, setPassData] = useState({ old: '', new: '', confirm: '' });
   const [passStatus, setPassStatus] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  // Notif State
+  
   const [notifPrefs, setNotifPrefs] = useState(() => {
     try {
       const saved = localStorage.getItem('notif_prefs');
@@ -57,7 +57,7 @@ const SettingsPage = () => {
     try {
       setPassStatus('loading');
       
-      // Request update to the FastAPI backend endpoint PUT /api/users/{id}
+      
       await api.put(`/users/${user.id}`, {
         password: passData.new
       });
@@ -78,7 +78,7 @@ const SettingsPage = () => {
       <div style={{ flexGrow: 1, paddingTop: '32px', paddingBottom: '64px' }}>
         <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '0 16px', display: 'flex', gap: '32px', alignItems: 'flex-start' }}>
           
-          {/* Sidebar */}
+          {}
           <div style={{ width: '280px', background: 'white', borderRadius: '16px', border: '1px solid #e2e8f0', overflow: 'hidden', flexShrink: 0, boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
             <div style={{ padding: '24px 24px 16px', borderBottom: '1px solid #f1f5f9' }}>
               <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#1e293b', margin: 0 }}>Pengaturan</h2>
@@ -115,7 +115,7 @@ const SettingsPage = () => {
             </div>
           </div>
 
-          {/* Content */}
+          {}
           <div style={{ flexGrow: 1, background: 'white', borderRadius: '16px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', minHeight: '400px' }}>
             
             {activeTab === 'password' && (

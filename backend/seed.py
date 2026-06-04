@@ -12,7 +12,7 @@ from app.models import User, Mahasiswa, PICRuangan, PenjagaRuangan, Ruangan, Pem
 async def seed_users(db):
     print("\n--- Menyelaraskan data pengguna default ---")
     
-    # We define each user type with its specific class and properties
+
     users_data = [
         {
             "class": User,
@@ -76,7 +76,7 @@ async def seed_users(db):
         model_cls = item["class"]
         data = item["data"]
         
-        # Check if user already exists
+
         stmt = select(User).where(User.email == data['email'])
         result = await db.execute(stmt)
         user = result.scalars().first()
@@ -87,7 +87,7 @@ async def seed_users(db):
             user.no_telepon = data['no_telepon']
             user.set_password(data['password'])
             
-            # If subclass properties need updating
+
             if isinstance(user, Mahasiswa) and 'nim' in data:
                 user.nim = data['nim']
             elif isinstance(user, PICRuangan):
@@ -109,7 +109,7 @@ async def seed_users(db):
 async def seed_rooms(db):
     print("\n--- Menyelaraskan data ruangan default ---")
     
-    # Get PIC user first to link as foreign key
+
     pic_result = await db.execute(select(PICRuangan))
     pic = pic_result.scalars().first()
     if not pic:
@@ -211,13 +211,13 @@ async def seed_bookings(db):
         status = "Pending" if i < 4 else "Approved"
         booking_date = date.today() + timedelta(days=random.randint(0, 5))
         
-        # Calculate waktu_mulai and waktu_selesai
+
         start_hour = 9 + (i % 8)
         end_hour = 11 + (i % 8)
         waktu_mulai = datetime.combine(booking_date, datetime.min.time()) + timedelta(hours=start_hour)
         waktu_selesai = datetime.combine(booking_date, datetime.min.time()) + timedelta(hours=end_hour)
         
-        # Generate epass code
+
         year = waktu_mulai.strftime('%Y')
         rand = ''.join(random.choices(string.digits, k=4))
         id_epass = f"BK-{year}-{rand}"
@@ -244,7 +244,7 @@ async def main():
     async with AsyncSessionLocal() as db:
         try:
             await seed_users(db)
-            await db.commit() # Commit users first so pic is available for room seeding
+            await db.commit()
             
             await seed_rooms(db)
             await db.commit()

@@ -1,6 +1,4 @@
-"""
-HelpController — Business logic untuk HelpCenter.
-"""
+
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -11,11 +9,10 @@ from app.utils.email_service import send_help_reply_email
 
 
 class HelpController:
-    """Handles all help center request logic."""
 
     @staticmethod
     async def submit(data: HelpRequestCreate, db: AsyncSession) -> dict:
-        """Submit a new help request."""
+
         try:
             new_request = HelpRequest(
                 nama=data.nama.strip(),
@@ -31,7 +28,7 @@ class HelpController:
 
     @staticmethod
     async def get_all(db: AsyncSession) -> list:
-        """Return all help requests (admin only)."""
+
         result = await db.execute(
             select(HelpRequest).order_by(HelpRequest.created_at.desc())
         )
@@ -39,7 +36,7 @@ class HelpController:
 
     @staticmethod
     async def reply(id: int, data: HelpRequestReply, db: AsyncSession) -> dict:
-        """Reply to a help request and optionally send email."""
+
         result = await db.execute(
             select(HelpRequest).filter(HelpRequest.id == id)
         )

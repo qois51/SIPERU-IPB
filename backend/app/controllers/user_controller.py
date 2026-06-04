@@ -1,6 +1,4 @@
-"""
-UserController — Business logic untuk manajemen pengguna.
-"""
+
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -12,7 +10,7 @@ from app.models.user_model import User, Mahasiswa, PICRuangan, PenjagaRuangan
 from app.schemas.user_schema import UserSchema, UserCreateSchema
 
 
-# Re-export UserCreateSchema as UserCreate so routes can import it
+
 UserCreate = UserCreateSchema
 
 
@@ -29,24 +27,10 @@ class UserUpdate(BaseModel):
 
 
 class UserController:
-    """Handles all user-related CRUD operations."""
 
     @staticmethod
     async def get_all(db: AsyncSession) -> list:
-        """Return all users as dicts (admin only).
 
-        MENGAPA with_polymorphic:
-        select(User) dengan joined-table-inheritance mengembalikan instance
-        subclass (Mahasiswa, PICRuangan, dll). Kolom subclass (nim, nip, dll)
-        ada di tabel terpisah dan TIDAK dimuat secara otomatis — saat
-        to_dict() membaca self.nim, SQLAlchemy mencoba lazy-load sync
-        di dalam async session → MissingGreenlet.
-
-        with_polymorphic(User, '*') membuat SQLAlchemy melakukan satu
-        LEFT OUTER JOIN ke semua tabel subclass sekaligus, sehingga
-        seluruh kolom sudah tersedia tanpa lazy-load tambahan.
-        """
-        # Eager-load semua kolom subclass via single LEFT OUTER JOIN
         poly = with_polymorphic(User, [Mahasiswa, PICRuangan, PenjagaRuangan])
         result = await db.execute(select(poly))
         users = result.scalars().unique().all()
@@ -54,10 +38,10 @@ class UserController:
 
     @staticmethod
     async def get_by_id(id: int, current_user: dict, db: AsyncSession):
-        """Return user by ID, enforcing ownership for non-admins."""
+
         poly = with_polymorphic(User, [Mahasiswa, PICRuangan, PenjagaRuangan])
 
-        # Resolve calling user's DB record (with subclass columns loaded)
+
         db_user_stmt = await db.execute(
             select(poly).filter(User.nama == current_user.get("username"))
         )
@@ -79,14 +63,7 @@ class UserController:
 
     @staticmethod
     async def create(data: UserCreateSchema, db: AsyncSession):
-        """Create a new user with the appropriate type.
-        Mendukung field yang dikirim frontend:
-        - nama/username/full_name → kolom 'nama'
-        - role → menentukan subclass (Mahasiswa/PICRuangan/PenjagaRuangan)
-        - nim_nip/nim/nip → kolom identifier subclass
-        - no_telepon/phone → kolom 'no_telepon'
-        """
-        # Resolve nama dari berbagai kemungkinan field
+
         username_val = data.nama or data.full_name or data.username
         if not username_val:
             raise HTTPException(status_code=422, detail="Nama / username wajib diisi.")
@@ -95,7 +72,7 @@ class UserController:
         if result.scalars().first():
             raise HTTPException(status_code=400, detail="Username/nama sudah digunakan")
 
-        # Cek email sudah ada
+
         result_email = await db.execute(select(User).filter(User.email == data.email))
         if result_email.scalars().first():
             raise HTTPException(status_code=400, detail="Email sudah terdaftar")
@@ -133,7 +110,7 @@ class UserController:
                 unit_kerja=data.unit_kerja or "Bagian Keamanan",
             )
         else:
-            # admin / dosen / user biasa — pakai tabel user saja
+
             new_user = User(
                 nama=username_val,
                 email=email_val,
@@ -149,10 +126,10 @@ class UserController:
 
     @staticmethod
     async def update(id: int, data: UserUpdate, current_user: dict, db: AsyncSession):
-        """Update user details, enforcing ownership for non-admins."""
+
         poly = with_polymorphic(User, [Mahasiswa, PICRuangan, PenjagaRuangan])
 
-        # Eager-load calling user's subclass columns (untuk cek .role)
+
         db_user_stmt = await db.execute(
             select(poly).filter(User.nama == current_user.get("username"))
         )
@@ -166,7 +143,7 @@ class UserController:
                 detail="Akses ditolak!"
             )
 
-        # Eager-load target user's subclass columns (untuk isinstance + to_dict)
+
         result = await db.execute(select(poly).filter(User.id_user == id))
         user = result.scalars().first()
         if not user:
@@ -212,7 +189,7 @@ class UserController:
 
     @staticmethod
     async def delete(id: int, db: AsyncSession) -> dict:
-        """Delete a user (admin only)."""
+
         result = await db.execute(select(User).filter(User.id_user == id))
         user = result.scalars().first()
         if not user:
