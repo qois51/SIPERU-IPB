@@ -127,7 +127,7 @@ class BookingService:
             waktu_mulai=start_dt,
             waktu_selesai=end_dt,
             keperluan=keperluan,
-            status="Pending",
+            status=data.get("status") or "Pending",
             path_file_bukti=path_file_bukti,
             id_epass=id_epass,
         )

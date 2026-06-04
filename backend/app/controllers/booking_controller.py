@@ -197,6 +197,9 @@ class BookingController:
         elif "surat_file" in raw_data:
             booking.path_file_bukti = raw_data["surat_file"]
 
+        if "status" in raw_data:
+            booking.status = raw_data["status"]
+
         await db.commit()
         await db.refresh(booking)
         return _success(data=booking.to_dict(), message="Booking berhasil diupdate.")

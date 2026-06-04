@@ -71,6 +71,7 @@ class TestSIPBeruBackend(unittest.TestCase):
     booking_id_1 = None
     booking_code_1 = None
     booking_id_2 = None
+    booking_id_draft = None
 
     @classmethod
     def setUpClass(cls):
@@ -130,6 +131,9 @@ class TestSIPBeruBackend(unittest.TestCase):
         if cls.booking_id_2:
             print(f"[CLEANUP] Deleting test booking ID {cls.booking_id_2}...")
             api_request(f"{cls.BASE_URL}/api/bookings/{cls.booking_id_2}", method="DELETE", headers=headers)
+        if cls.booking_id_draft:
+            print(f"[CLEANUP] Deleting test draft booking ID {cls.booking_id_draft}...")
+            api_request(f"{cls.BASE_URL}/api/bookings/{cls.booking_id_draft}", method="DELETE", headers=headers)
         print("[CLEANUP] Database cleaned up successfully.")
         print("="*80)
 
@@ -189,6 +193,73 @@ class TestSIPBeruBackend(unittest.TestCase):
         self.__class__.booking_code_1 = booking.get("id_epass")
         
         print(f"-> Result: SUCCESS (HTTP {code}). Created Booking ID: {self.booking_id_1}, E-Pass Code: {self.booking_code_1}")
+
+    def test_02b_TC_PMJ_draft_flow(self):
+        print("[DRAFT_FLOW] Creating a booking as Draft...")
+        endpoint = f"{self.BASE_URL}/api/bookings/"
+        payload = {
+            "room_id": self.room_id,
+            "user_id": self.mahasiswa_id,
+            "activity_name": "TEST_CASE_Draft_Booking",
+            "date": "2026-06-25",
+            "start_time": "09:00",
+            "end_time": "11:00",
+            "nomor_hp": "081234567890",
+            "organization": "Himpunan Mahasiswa",
+            "participants": 10,
+            "purpose": "Penyusunan Draf Acara",
+            "deskripsi_kegiatan": "Mempersiapkan draf proposal",
+            "facilities": [],
+            "status": "Draft"
+        }
+        
+        code, _, body = api_request(
+            endpoint,
+            method="POST",
+            data=payload,
+            headers={"Authorization": f"Bearer {self.mahasiswa_token}"}
+        )
+        self.assertIn(code, [200, 201])
+        res_data = json.loads(body.decode('utf-8'))
+        self.assertTrue(res_data.get("success"))
+        
+        booking = res_data["data"]
+        self.assertEqual(booking["status"], "Draft")
+        self.__class__.booking_id_draft = booking["id_booking"]
+        print(f"-> Created Draft Booking ID: {self.booking_id_draft}")
+        
+        print("[DRAFT_FLOW] Submitting the Draft booking (updating status to Pending)...")
+        update_endpoint = f"{self.BASE_URL}/api/bookings/{self.booking_id_draft}"
+        update_payload = {
+            "room_id": self.room_id,
+            "user_id": self.mahasiswa_id,
+            "activity_name": "TEST_CASE_Draft_Booking_Submitted",
+            "date": "2026-06-25",
+            "start_time": "09:00",
+            "end_time": "11:00",
+            "nomor_hp": "081234567890",
+            "organization": "Himpunan Mahasiswa",
+            "participants": 10,
+            "purpose": "Penyusunan Draf Acara",
+            "deskripsi_kegiatan": "Mempersiapkan draf proposal",
+            "facilities": [],
+            "status": "Pending"
+        }
+        
+        code, _, body = api_request(
+            update_endpoint,
+            method="PUT",
+            data=update_payload,
+            headers={"Authorization": f"Bearer {self.mahasiswa_token}"}
+        )
+        self.assertEqual(code, 200)
+        res_data = json.loads(body.decode('utf-8'))
+        self.assertTrue(res_data.get("success"))
+        
+        updated_booking = res_data["data"]
+        self.assertEqual(updated_booking["status"], "Pending")
+        self.assertEqual(updated_booking["keperluan"], "TEST_CASE_Draft_Booking_Submitted")
+        print("-> Result: SUCCESS. Draft successfully transitioned to Pending.")
 
     def test_03_TC_PMJ_003_download_pdf_document(self):
         print("[TC_PMJ_003] Downloading E-Pass/Permission PDF document for booking ID:", self.booking_id_1)

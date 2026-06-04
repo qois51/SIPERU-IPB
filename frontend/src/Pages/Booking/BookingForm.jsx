@@ -138,9 +138,18 @@ const BookingForm = () => {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [modalErrorMessage, setModalErrorMessage] = useState('');
   const [uploadFile, setUploadFile] = useState(null);
+  const [existingFileUrl, setExistingFileUrl] = useState(null);
   const [selectedFacilities, setSelectedFacilities] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
+  const isDraftRef = useRef(false);
+
+  const customResolver = async (values, context, options) => {
+    if (isDraftRef.current) {
+      return { values, errors: {} };
+    }
+    return yupResolver(bookingSchema)(values, context, options);
+  };
 
   const showPopUpError = (msg) => {
     setModalErrorMessage(msg);
@@ -158,8 +167,8 @@ const BookingForm = () => {
   const startTime = searchParams.get('start') || '';
   const endTime = searchParams.get('end') || '';
 
-  const { register, handleSubmit, getValues, setValue, formState: { errors } } = useForm({
-    resolver: yupResolver(bookingSchema),
+  const { register, handleSubmit, getValues, setValue, clearErrors, formState: { errors } } = useForm({
+    resolver: customResolver,
     defaultValues: {
       nama_peminjam: '', nim_nip: '', program_studi: '',
       email: '', nomor_hp: '', activity_name: '',
@@ -198,6 +207,7 @@ const BookingForm = () => {
             setValue('jenis_kegiatan', b.jenis_kegiatan || '');
             setValue('deskripsi_kegiatan', b.deskripsi_kegiatan || '');
             if (b.facilities) setSelectedFacilities(b.facilities);
+            if (b.surat_file) setExistingFileUrl(b.surat_file);
           }
         } catch (err) {
           console.error('Gagal memuat data draft', err);
@@ -238,16 +248,19 @@ const BookingForm = () => {
   };
 
   const onSubmit = async (formData) => {
+    isDraftRef.current = false;
     if (!selectedDate) { showPopUpError('Tanggal booking belum dipilih. Harap tentukan tanggalnya terlebih dahulu.'); return; }
     if (!startTime || !endTime) { showPopUpError('Waktu/Jam booking belum dipilih. Harap tentukan jam pemakaian terlebih dahulu.'); return; }
-    if (!uploadFile) { showPopUpError('Dokumen Surat Izin/Surat Pengantar wajib diunggah untuk mengajukan permohonan.'); return; }
+    if (!uploadFile && !existingFileUrl) { showPopUpError('Dokumen Surat Izin/Surat Pengantar wajib diunggah untuk mengajukan permohonan.'); return; }
     setSubmitting(true);
     setError('');
     try {
       const editId = searchParams.get('edit');
-      const payload = buildPayload(formData);
-      
-      payload.status = 'Pending';
+      const payload = {
+        ...buildPayload(formData),
+        status: 'Pending',
+        surat_file: uploadFile ? undefined : (existingFileUrl || null)
+      };
       
       let res;
       if (editId) {
@@ -277,6 +290,8 @@ const BookingForm = () => {
   };
 
   const handleSaveDraft = async () => {
+    isDraftRef.current = true;
+    clearErrors();
     const formData = getValues();
     if (!formData.activity_name) { showPopUpError('Harap isi Nama Kegiatan terlebih dahulu untuk menyimpan draft.'); return; }
     if (!selectedDate || !startTime || !endTime) { showPopUpError('Tanggal & jam booking wajib dipilih sebelum menyimpan draft.'); return; }
@@ -297,13 +312,20 @@ const BookingForm = () => {
         start_time: startTime, 
         end_time: endTime,
         facilities: selectedFacilities,
-        status: 'Draft'
+        status: 'Draft',
+        surat_file: uploadFile ? undefined : (existingFileUrl || null)
       };
 
+      let res;
       if (editId) {
-        await bookingService.updateBooking(editId, payload);
+        res = await bookingService.updateBooking(editId, payload);
       } else {
-        await bookingService.createBooking(payload);
+        res = await bookingService.createBooking(payload);
+      }
+
+      const bookingId = res.data?.id || res.id;
+      if (uploadFile && bookingId) {
+        await bookingService.uploadDocument(bookingId, uploadFile);
       }
       navigate('/dashboard');
     } catch (err) {
@@ -483,6 +505,24 @@ const BookingForm = () => {
                         <p style={{ fontSize: '11px', color: '#6b7280' }}>{(uploadFile.size / 1024).toFixed(1)} KB</p>
                       </div>
                       <button type="button" onClick={() => setUploadFile(null)}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: '#ef4444' }}>
+                        <X size={18} />
+                      </button>
+                    </div>
+                  ) : existingFileUrl ? (
+                    <div style={{
+                      display: 'flex', alignItems: 'center', gap: '12px',
+                      padding: '14px 16px', background: '#f0fdf4', borderRadius: '10px',
+                      border: '1px solid #bbf7d0',
+                    }}>
+                      <FileText size={22} color="#15803d" />
+                      <div style={{ flex: 1, overflow: 'hidden' }}>
+                        <p style={{ fontSize: '13px', fontWeight: 600, color: '#1f2937', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {existingFileUrl.split('/').pop() || 'Dokumen Surat Izin'}
+                        </p>
+                        <p style={{ fontSize: '11px', color: '#15803d' }}>Dokumen terunggah (Klik untuk mengganti)</p>
+                      </div>
+                      <button type="button" onClick={() => setExistingFileUrl(null)}
                         style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: '#ef4444' }}>
                         <X size={18} />
                       </button>
